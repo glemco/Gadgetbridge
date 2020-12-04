@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        Schema schema = new Schema(31, MAIN_PACKAGE + ".entities");
+        Schema schema = new Schema(32, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -538,6 +538,7 @@ public class GBDaoGenerator {
 
         Property notificationFilterMode = notificatonFilter.addIntProperty("notificationFilterMode").notNull().getProperty();
         Property notificationFilterSubMode = notificatonFilter.addIntProperty("notificationFilterSubMode").notNull().getProperty();
+        Property showLocalNotifications = notificatonFilter.addBooleanProperty("showLocalNotifications").notNull().getProperty();
         return notificatonFilter;
     }
 

@@ -423,6 +423,29 @@ public class NotificationListener extends NotificationListenerService {
         GBApplication.deviceService().onNotification(notificationSpec);
     }
 
+    private NotificationFilter getNotificationFilter(String packageName) {
+        NotificationFilter notificationFilter;
+
+        try (DBHandler db = GBApplication.acquireDB()) {
+
+            NotificationFilterDao notificationFilterDao = db.getDaoSession().getNotificationFilterDao();
+            NotificationFilterEntryDao notificationFilterEntryDao = db.getDaoSession().getNotificationFilterEntryDao();
+
+            Query<NotificationFilter> query = notificationFilterDao.queryBuilder().where(NotificationFilterDao.Properties.AppIdentifier.eq(packageName.toLowerCase())).build();
+            notificationFilter = query.unique();
+
+            if (notificationFilter == null) {
+                LOG.debug("No Notification Filter found for '{}'", packageName);
+                return null;
+            }
+            LOG.debug("Loaded notification filter for '{}'", packageName);
+            return notificationFilter;
+        } catch (Exception e) {
+            LOG.error("Could not acquire DB.", e);
+            return null;
+        }
+    }
+
     private boolean checkNotificationContentForWhiteAndBlackList(String packageName, String body) {
         long start = System.currentTimeMillis();
 
@@ -817,8 +840,15 @@ public class NotificationListener extends NotificationListenerService {
                 type != NotificationType.WECHAT &&
                 type != NotificationType.OUTLOOK &&
                 type != NotificationType.SKYPE) { //see https://github.com/Freeyourgadget/Gadgetbridge/issues/1109
-            LOG.info("local only");
-            return true;
+
+            NotificationFilter nf = getNotificationFilter(sbn.getPackageName().toLowerCase());
+            if (nf == null || !nf.getShowLocalNotifications()) {
+                LOG.info("local only - ignoring");
+                return true;
+            } else {
+                LOG.info("local only, but enabled via Notification Filter");
+                return false;
+            }
         }
 
         // Check for screen on when posting the notification; for removal, the screen

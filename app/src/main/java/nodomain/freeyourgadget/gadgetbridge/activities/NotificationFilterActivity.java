@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class NotificationFilterActivity extends AbstractGBActivity {
     public static final int NOTIFICATION_FILTER_SUBMODE_ANY = 0;
     public static final int NOTIFICATION_FILTER_SUBMODE_ALL = 1;
 
+    private CheckBox mCheckBoxShowLocal;
     private Button mButtonSave;
     private Spinner mSpinnerFilterMode;
     private Spinner mSpinnerFilterSubMode;
@@ -114,6 +116,9 @@ public class NotificationFilterActivity extends AbstractGBActivity {
 
     private void setupView(DBHandler db) {
 
+        mCheckBoxShowLocal = findViewById(R.id.checkBoxShowLocal);
+        mCheckBoxShowLocal.setChecked(mNotificationFilter.getShowLocalNotifications());
+
         mSpinnerFilterMode = findViewById(R.id.spinnerFilterMode);
         mSpinnerFilterMode.setSelection(mNotificationFilter.getNotificationFilterMode());
 
@@ -168,6 +173,9 @@ public class NotificationFilterActivity extends AbstractGBActivity {
 
     private void saveFilter() {
         // TODO: check for modifications, only save if something changed
+
+        mNotificationFilter.setShowLocalNotifications(mCheckBoxShowLocal.isChecked());
+
         String words = mEditTextWords.getText().toString();
 
         if (StringUtils.isBlank(words) && mSpinnerFilterMode.getSelectedItemPosition() != NOTIFICATION_FILTER_MODE_NONE) {
