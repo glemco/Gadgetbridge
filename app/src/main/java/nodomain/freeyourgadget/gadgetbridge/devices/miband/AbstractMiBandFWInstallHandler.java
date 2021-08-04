@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer
 
     This file is part of Gadgetbridge.
 
@@ -30,6 +30,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType.AGPS_UIHH;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType.WATCHFACE;
 
 public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
@@ -100,7 +101,7 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             return;
         }
         StringBuilder builder = new StringBuilder();
-        if (helper.getFirmwareType() != WATCHFACE) {
+        if (helper.getFirmwareType() != WATCHFACE && helper.getFirmwareType() != AGPS_UIHH) {
             if (helper.isSingleFirmware()) {
                 getFwUpgradeNotice();
                 builder.append(getFwUpgradeNotice());

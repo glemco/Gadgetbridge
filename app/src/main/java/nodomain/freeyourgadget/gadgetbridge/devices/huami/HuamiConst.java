@@ -1,4 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer, Nephiel
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Nephiel,
+    odavo32nof, Petr Vaněk, Zhong Jianxin
 
     This file is part of Gadgetbridge.
 
@@ -50,7 +51,11 @@ public class HuamiConst {
     public static final String MI_BAND3_NAME_2 = "Xiaomi Band 3";
     public static final String MI_BAND4_NAME = "Mi Smart Band 4";
     public static final String MI_BAND5_NAME = "Mi Smart Band 5";
+    public static final String MI_BAND6_NAME = "Mi Smart Band 6";
     public static final String AMAZFIT_BAND5_NAME = "Amazfit Band 5";
+    public static final String AMAZFIT_NEO_NAME = "Amazfit Neo";
+    public static final String AMAZFIT_X = "Amazfit X";
+
 
     public static final String PREF_ACTIVATE_DISPLAY_ON_LIFT = "activate_display_on_lift_wrist";
     public static final String PREF_DISPLAY_ON_LIFT_START = "display_on_lift_start";
@@ -73,6 +78,8 @@ public class HuamiConst {
     public static final String PREF_BUTTON_ACTION_PRESS_MAX_INTERVAL = "button_action_press_max_interval";
     public static final String PREF_BUTTON_ACTION_BROADCAST_DELAY = "button_action_broadcast_delay";
     public static final String PREF_BUTTON_ACTION_BROADCAST = "button_action_broadcast";
+    public static final String PREF_BUTTON_ACTION_SELECTION_OFF = "UNKNOWN";
+    public static final String PREF_BUTTON_ACTION_SELECTION_BROADCAST = "BROADCAST";
 
     public static final String PREF_DEVICE_ACTION_SELECTION_OFF = "UNKNOWN";
     public static final String PREF_DEVICE_ACTION_SELECTION_BROADCAST = "BROADCAST";

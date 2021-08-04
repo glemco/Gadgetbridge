@@ -41,6 +41,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HYBRID_HR_FORCE_WHITE_COLOR = "force_white_color_scheme";
     public static final String PREF_HYBRID_HR_DRAW_WIDGET_CIRCLES = "widget_draw_circles";
     public static final String PREF_HYBRID_HR_SAVE_RAW_ACTIVITY_FILES = "save_raw_activity_files";
+    public static final String PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS = "dangerous_external_intents";
 
     public static final String PREF_LIFTWRIST_NOSHED = "activate_display_on_lift_wrist_noshed";
     public static final String PREF_DISCONNECTNOTIF_NOSHED = "disconnect_notification_noshed";
@@ -52,6 +53,12 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_LONGSIT_SWITCH_NOSHED = "screen_longsit_noshed";
     public static final String PREF_DO_NOT_DISTURB_NOAUTO = "do_not_disturb_no_auto";
     public static final String PREF_FIND_PHONE_ENABLED = "prefs_find_phone";
+    public static final String PREF_AUTOLIGHT = "autolight";
+    public static final String PREF_AUTOREMOVE_MESSAGE = "autoremove_message";
+    public static final String PREF_AUTOREMOVE_NOTIFICATIONS = "autoremove_notifications";
+    public static final String PREF_OPERATING_SOUNDS = "operating_sounds";
+    public static final String PREF_KEY_VIBRATION = "key_vibration";
+    public static final String PREF_FAKE_RING_DURATION = "fake_ring_duration";
 
     public static final String PREF_ANTILOST_ENABLED = "pref_antilost_enabled";
     public static final String PREF_HYDRATION_SWITCH = "pref_hydration_switch";
@@ -62,4 +69,9 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SONYSWR12_LOW_VIBRATION = "vibration_preference";
     public static final String PREF_SONYSWR12_STAMINA = "stamina_preference";
     public static final String PREF_SONYSWR12_SMART_INTERVAL = "smart_alarm_interval_preference";
+
+    public static final String PREF_BT_CONNECTED_ADVERTISEMENT = "bt_connected_advertisement";
+    public static final String PREF_TRANSLITERATION_ENABLED = "pref_transliteration_enabled";
+
+    public static final String PREF_SOUNDS = "sounds";
 }

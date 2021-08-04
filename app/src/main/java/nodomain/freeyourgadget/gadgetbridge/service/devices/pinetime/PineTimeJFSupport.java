@@ -1,4 +1,5 @@
-/*  Copyright (C) 2020 Andreas Shimokawa, Taavi Eomäe
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, JF, Sebastian
+    Kranz, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -41,6 +42,8 @@ import no.nordicsemi.android.dfu.DfuServiceController;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeDFUService;
@@ -66,13 +69,18 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.alertnotificat
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.alertnotification.AlertNotificationProfile;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.alertnotification.NewAlert;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.alertnotification.OverflowStrategy;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfoProfile;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfoProfile;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuLogListener {
     private static final Logger LOG = LoggerFactory.getLogger(PineTimeJFSupport.class);
     private final GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
+    private final GBDeviceEventBatteryInfo batteryCmd = new GBDeviceEventBatteryInfo();
+
     private final DeviceInfoProfile<PineTimeJFSupport> deviceInfoProfile;
+    private final BatteryInfoProfile<PineTimeJFSupport> batteryInfoProfile;
+
     private final int MaxNotificationLength = 100;
     private int firmwareVersionMajor = 0;
     private int firmwareVersionMinor = 0;
@@ -167,7 +175,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             handler = null;
             controller = null;
             DfuServiceListenerHelper.unregisterProgressListener(getContext(), progressListener);
-
+            gbDevice.unsetBusyTask();
             // TODO: Request reconnection
         }
 
@@ -180,11 +188,13 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         @Override
         public void onDfuAborted(final String mac) {
             this.setProgressText(getContext().getString(R.string.devicestatus_upload_aborted));
+            gbDevice.unsetBusyTask();
         }
 
         @Override
         public void onError(final String mac, int error, int errorType, final String message) {
             this.setProgressText(getContext().getString(R.string.devicestatus_upload_failed));
+            gbDevice.unsetBusyTask();
         }
 
         @Override
@@ -207,21 +217,37 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         addSupportedService(GattService.UUID_SERVICE_ALERT_NOTIFICATION);
         addSupportedService(GattService.UUID_SERVICE_CURRENT_TIME);
         addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
+        addSupportedService(GattService.UUID_SERVICE_BATTERY_SERVICE);
         addSupportedService(PineTimeJFConstants.UUID_SERVICE_MUSIC_CONTROL);
-        deviceInfoProfile = new DeviceInfoProfile<>(this);
+        addSupportedService(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
+
         IntentListener mListener = new IntentListener() {
             @Override
             public void notify(Intent intent) {
                 String action = intent.getAction();
                 if (DeviceInfoProfile.ACTION_DEVICE_INFO.equals(action)) {
                     handleDeviceInfo((nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfo) intent.getParcelableExtra(DeviceInfoProfile.EXTRA_DEVICE_INFO));
+                } else if (BatteryInfoProfile.ACTION_BATTERY_INFO.equals(action)) {
+                    handleBatteryInfo((nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfo) intent.getParcelableExtra(BatteryInfoProfile.EXTRA_BATTERY_INFO));
                 }
             }
         };
+
+        deviceInfoProfile = new DeviceInfoProfile<>(this);
         deviceInfoProfile.addListener(mListener);
+        addSupportedProfile(deviceInfoProfile);
+
         AlertNotificationProfile<PineTimeJFSupport> alertNotificationProfile = new AlertNotificationProfile<>(this);
         addSupportedProfile(alertNotificationProfile);
-        addSupportedProfile(deviceInfoProfile);
+
+        batteryInfoProfile = new BatteryInfoProfile<>(this);
+        batteryInfoProfile.addListener(mListener);
+        addSupportedProfile(batteryInfoProfile);
+    }
+
+    private void handleBatteryInfo(nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfo info) {
+        batteryCmd.level = (short) info.getPercentCharged();
+        handleGBDeviceEvent(batteryCmd);
     }
 
     @Override
@@ -232,19 +258,19 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
         TransactionBuilder builder = new TransactionBuilder("notification");
-        String message = notificationSpec.body;
-        if(!IsFirmwareAtLeastVersion0_9()) {
-            // Firmware versions prior to 0.9 ignore the last characters of the notification message
-            // Add an space character so that the whole message will be displayed
-            message += " ";
+
+        String message;
+
+        if (isFirmwareAtLeastVersion0_15()) {
+            String senderOrTitle = nodomain.freeyourgadget.gadgetbridge.util.StringUtils.getFirstOf(notificationSpec.sender, notificationSpec.title);
+            message = senderOrTitle + "\0" + notificationSpec.body;
+        } else {
+            message = notificationSpec.body;
         }
+
         NewAlert alert = new NewAlert(AlertCategory.CustomHuami, 1, message);
         AlertNotificationProfile<?> profile = new AlertNotificationProfile<>(this);
-        if(IsFirmwareAtLeastVersion0_9()) {
-            // InfiniTime 0.9+ support notification message of up to 100 characters
-            // Instead of 18 by default
-            profile.setMaxLength(MaxNotificationLength);
-        }
+        profile.setMaxLength(MaxNotificationLength);
         profile.newAlert(builder, alert, OverflowStrategy.TRUNCATE);
         builder.queue(getQueue());
     }
@@ -274,7 +300,15 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
     @Override
     public void onSetCallState(CallSpec callSpec) {
-
+        if (callSpec.command == CallSpec.CALL_INCOMING) {
+            TransactionBuilder builder = new TransactionBuilder("incomingcall");
+            String message = (byte) 0x01 + callSpec.name;
+            NewAlert alert = new NewAlert(AlertCategory.IncomingCall, 1, message);
+            AlertNotificationProfile<?> profile = new AlertNotificationProfile<>(this);
+            profile.setMaxLength(MaxNotificationLength);
+            profile.newAlert(builder, alert, OverflowStrategy.TRUNCATE);
+            builder.queue(getQueue());
+        }
     }
 
     @Override
@@ -292,8 +326,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         try {
             handler = new PineTimeInstallHandler(uri, getContext());
 
-            // TODO: Check validity more closely
-            if (true) {
+            if (handler.isValid()) {
+                gbDevice.setBusyTask("firmware upgrade");
                 DfuServiceInitiator starter = new DfuServiceInitiator(getDevice().getAddress())
                         .setDeviceName(getDevice().getName())
                         .setKeepBond(true)
@@ -313,10 +347,14 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                         .putExtra(GB.DISPLAY_MESSAGE_MESSAGE, getContext().getString(R.string.devicestatus_upload_starting))
                 );
             } else {
-                // TODO: Handle invalid firmware files
+                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(GB.ACTION_SET_PROGRESS_TEXT)
+                        .putExtra(GB.DISPLAY_MESSAGE_MESSAGE, getContext().getString(R.string.fwinstaller_firmware_not_compatible_to_device)));
             }
         } catch (Exception ex) {
             GB.toast(getContext(), getContext().getString(R.string.updatefirmwareoperation_write_failed) + ":" + ex.getMessage(), Toast.LENGTH_LONG, GB.ERROR, ex);
+            if (gbDevice.isBusy() && gbDevice.getBusyTask().equals("firmware upgrade")) {
+                gbDevice.unsetBusyTask();
+            }
         }
     }
 
@@ -367,9 +405,10 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
     @Override
     public void onFindDevice(boolean start) {
-        TransactionBuilder builder = new TransactionBuilder("Enable alert");
-        builder.write(getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL), new byte[]{(byte) (start ? 0x01 : 0x00)});
-        builder.queue(getQueue());
+        CallSpec callSpec = new CallSpec();
+        callSpec.command = start ? CallSpec.CALL_INCOMING : CallSpec.CALL_END;
+        callSpec.name = "Gadgetbridge";
+        onSetCallState(callSpec);
     }
 
     @Override
@@ -408,7 +447,14 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         requestDeviceInfo(builder);
         onSetTime();
         builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_EVENT), true);
+        BluetoothGattCharacteristic alertNotificationEventCharacteristic = getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
+        if (alertNotificationEventCharacteristic != null) {
+            builder.notify(alertNotificationEventCharacteristic, true);
+        }
         setInitialized(builder);
+        batteryInfoProfile.requestBatteryInfo(builder);
+        batteryInfoProfile.enableNotify(builder,true);
+
         return builder;
     }
 
@@ -546,7 +592,26 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
             evaluateGBDeviceEvent(deviceEventMusicControl);
             return true;
+        } else if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT)) {
+            byte[] value = characteristic.getValue();
+            GBDeviceEventCallControl deviceEventCallControl = new GBDeviceEventCallControl();
+            switch (value[0]) {
+                case 0:
+                    deviceEventCallControl.event = GBDeviceEventCallControl.Event.REJECT;
+                    break;
+                case 1:
+                    deviceEventCallControl.event = GBDeviceEventCallControl.Event.ACCEPT;
+                    break;
+                case 2:
+                    deviceEventCallControl.event = GBDeviceEventCallControl.Event.IGNORE;
+                    break;
+                default:
+                    return false;
+            }
+            evaluateGBDeviceEvent(deviceEventCallControl);
+            return true;
         }
+
         LOG.info("Unhandled characteristic changed: " + characteristicUUID);
         return false;
     }
@@ -593,7 +658,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         if(versionCmd.fwVersion != null && !versionCmd.fwVersion.isEmpty()) {
             // FW version format : "major.minor.patch". Ex : "0.8.2"
             String[] tokens = StringUtils.split(versionCmd.fwVersion, ".");
-            if(tokens.length == 3) {
+            if (tokens.length == 3) {
                 firmwareVersionMajor = Integer.parseInt(tokens[0]);
                 firmwareVersionMinor = Integer.parseInt(tokens[1]);
                 firmwareVersionPatch = Integer.parseInt(tokens[2]);
@@ -603,8 +668,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         handleGBDeviceEvent(versionCmd);
     }
 
-    private boolean IsFirmwareAtLeastVersion0_9() {
-        return firmwareVersionMajor > 0 || firmwareVersionMinor >= 9;
+    private boolean isFirmwareAtLeastVersion0_15() {
+        return firmwareVersionMajor > 0 || firmwareVersionMinor >= 15;
     }
 
     /**

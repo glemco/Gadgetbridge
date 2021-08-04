@@ -1,4 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Daniele Gobbetti
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Daniele Gobbetti, Dmytro
+    Bielik, pangwalla
 
     This file is part of Gadgetbridge.
 
@@ -77,7 +78,7 @@ public class AmazfitGTS2FirmwareInfo extends HuamiFirmwareInfo {
             }
             return HuamiFirmwareType.INVALID;
         }
-        if (ArrayUtils.startsWith(bytes, WATCHFACE_HEADER) || ArrayUtils.equals(bytes, WATCHFACE_HEADER, COMPRESSED_RES_HEADER_OFFSET_NEW) || ArrayUtils.equals(bytes, WATCHFACE_HEADER, COMPRESSED_RES_HEADER_OFFSET)) {
+        if ((ArrayUtils.startsWith(bytes, UIHH_HEADER) && (bytes[4] == 1 || bytes[4] == 2)) || ArrayUtils.startsWith(bytes, WATCHFACE_HEADER) || ArrayUtils.equals(bytes, WATCHFACE_HEADER, COMPRESSED_RES_HEADER_OFFSET_NEW) || ArrayUtils.equals(bytes, WATCHFACE_HEADER, COMPRESSED_RES_HEADER_OFFSET)) {
             return HuamiFirmwareType.WATCHFACE;
         }
         if (ArrayUtils.startsWith(bytes, NEWFT_HEADER)) {
@@ -93,6 +94,10 @@ public class AmazfitGTS2FirmwareInfo extends HuamiFirmwareInfo {
         }
         if (ArrayUtils.startsWith(bytes, GPS_CEP_HEADER)) {
             return HuamiFirmwareType.GPS_CEP;
+        }
+
+        if (ArrayUtils.startsWith(bytes, AGPS_UIHH_HEADER)) {
+            return HuamiFirmwareType.AGPS_UIHH;
         }
 
         for (byte[] gpsHeader : GPS_HEADERS) {

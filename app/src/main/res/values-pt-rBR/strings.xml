@@ -316,16 +316,21 @@
     <string name="live_activity_heart_rate">Frequência cardíaca</string>
     <string name="pref_title_pebble_health_store_raw">Armazenar registro bruto no banco de dados</string>
     <string name="pref_summary_pebble_health_store_raw">Armazena os dados \"como estão\", aumentando o uso do banco de dados para permitir posterior interpretação.</string>
-    <string name="action_db_management">Gerenciamento de banco de dados</string>
-    <string name="title_activity_db_management">Gerenciamento de banco de dados</string>
-    <string name="activity_db_management_import_export_explanation">As operações do banco de dados usam o caminho abaixo em seu dispositivo. 
-\nEste caminho está acessível a outros aplicativos do Android e ao seu computador. 
-\nEspere encontrar seu banco de dados (ou coloque o banco de dados que você deseja importar) em:</string>
+    <string name="action_db_management">Gerenciamento de dados</string>
+    <string name="title_activity_db_management">Gerenciamento de dados</string>
+    <string name="activity_db_management_import_export_explanation">As operações de exportação/importação usam o seguinte caminho (veja abaixo) para um diretório em seu dispositivo. Este diretório é acessível a outros aplicativos Android e seu computador. Observe que este diretório e todos os arquivos que contêm são excluídos se você desinstalar o Gadgetbridge. Os dados incluem:
+\n Export_preference - configurações globais
+\n Export_preference_MAC - configurações específicas do dispositivo
+\n Gadgetbridge - banco de dados de dispositivos e atividades
+\n Gadgetbridge_date - banco de dados exportado em uma data
+\n *.gpx - gravações deGPS
+\n *.log - arquivos de log
+\nEspere encontrar seus arquivos exportados (ou colocar os arquivos que deseja importar) lá:</string>
     <string name="dbmanagementactivvity_cannot_access_export_path">Não é possível acessar o caminho de exportação. Entre em contato com os desenvolvedores.</string>
     <string name="dbmanagementactivity_exported_to">Exportado para: %1$s</string>
     <string name="dbmanagementactivity_error_exporting_db">Erro ao exportar BD: %1$s</string>
     <string name="dbmanagementactivity_import_data_title">Importar dados?</string>
-    <string name="dbmanagementactivity_overwrite_database_confirmation">Realmente sobrescrever o banco de dados atual? Todos os seus dados atuais de atividade (se houver) serão perdidos.</string>
+    <string name="dbmanagementactivity_overwrite_database_confirmation">Realmente sobrescrever os dados atuais\? Todos os seus dados atuais de atividade (se houver) e preferências serão substituídos.</string>
     <string name="dbmanagementactivity_import_successful">Importado.</string>
     <string name="dbmanagementactivity_error_importing_db">Erro ao importar BD: %1$s</string>
     <string name="dbmanagementactivity_delete_activity_data_title">Excluir dados de atividade\?</string>
@@ -733,12 +738,12 @@
     <string name="pref_summary_use_custom_font">Habilite isso se seu dispositivo possui uma firmware de fonte personalizado para suporte a emoji</string>
     <string name="activity_db_management_autoexport_explanation">Localização de autoexportação do banco de dados foi definida para:</string>
     <string name="activity_db_management_autoexport_label">Autoexportar</string>
-    <string name="activity_DB_ExportButton">Exportar BD</string>
-    <string name="activity_DB_import_button">Importar BD</string>
+    <string name="activity_DB_ExportButton">Exportar dados</string>
+    <string name="activity_DB_import_button">Importar dados</string>
     <string name="activity_DB_test_export_button">Executar autoexportação agora</string>
     <string name="activity_DB_test_export_message">Exportando banco de dados…</string>
     <string name="activity_DB_delete_legacy_button">Excluir BD antigo</string>
-    <string name="activity_DB_empty_button">Esvaziar BD</string>
+    <string name="activity_DB_empty_button">Esvaziar banco de dados</string>
     <string name="activity_db_management_empty_DB">Esvaziar banco de dados</string>
     <string name="activity_db_management_exportimport_label">Exportar e importar</string>
     <string name="activity_db_management_empty_db_warning">Atenção! Ao pressionar esse botão, você vai apagar seus banco de dados e iniciar do zero.</string>
@@ -755,8 +760,8 @@
     <string name="pref_display_add_device_fab_on">Sempre visível</string>
     <string name="pref_display_add_device_fab_off">Visível apenas se nenhum dispositivo estiver adicionado</string>
     <plurals name="widget_alarm_target_hours">
-        <item quantity="one">% hora</item>
-        <item quantity="other">% horas</item>
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
     </plurals>
     <string name="activity_error_no_app_for_gpx">Para visualizar o rastreamento de atividade, instale um aplicativo que consegue manipular arquivos GPX.</string>
     <string name="preferences_makibes_hr3_settings">Configurações de Makibes HR3</string>
@@ -915,7 +920,7 @@
     <string name="about_additional_device_support">Suporte a dispositivos adicionais</string>
     <string name="about_contributors">Contribuidores</string>
     <string name="about_core_team_title">Equipe Core (na ordem da primeira contribuição de código)</string>
-    <string name="about_description">Um substituto livre e sem nuvem para os aplicativos Android de código fechado dos seus fornecedores de gadgets.</string>
+    <string name="about_description">Um substituto livre, protegido por copyleft, sem acesso a nuvem para os aplicativos Android de código fechado dos fornecedores de gadgets.</string>
     <string name="about_activity_title">Sobre o Gadgetbridge</string>
     <string name="about_title">Sobre</string>
     <string name="pref_title_weather_summary">Usado para o provedor do clima do LineageOS, outras versões do Android precisam usar um aplicativo como o \"Notificação de clima\". Encontrará mais informações no wiki do Gadgetbridge.</string>
@@ -933,7 +938,7 @@
     <string name="error_background_service_reason">A inicialização do serviço de plano de fundo falhou por causa de uma exceção. Erro:</string>
     <string name="error_background_service">Falha ao iniciar o serviço de plano de fundo</string>
     <string name="menuitem_stress">Estresse</string>
-    <string name="menuitem_cycles">Ciclos</string>
+    <string name="menuitem_cycles">Período</string>
     <string name="menuitem_breathing">Respiração</string>
     <string name="devicetype_miband5">Mi Band 5</string>
     <string name="devicetype_tlw64">TLW64</string>
@@ -1063,4 +1068,99 @@
     <string name="sonyswr12_settings_low_vibration_summary">Ativar baixa intensidade de vibração na banda</string>
     <string name="sonyswr12_settings_stamina_summary">O modo de economia de energia desativa a medição automática periódica da frequência cardíaca, aumentando assim o tempo de trabalho</string>
     <string name="sonyswr12_settings_alarm_interval_summary">O intervalo de alarme inteligente é o intervalo antes do alarme instalado. Neste intervalo, o dispositivo está tentando detectar a fase mais leve do sono para acordar o usuário</string>
+    <string name="qhybrid_calibration_align_hint">alinhar as mãos às 12:00</string>
+    <string name="devicetype_nut_mini">Nut mini</string>
+    <string name="gps_track">Rastro GPS</string>
+    <string name="descentSeconds">Descendente</string>
+    <string name="about_version">Versão %s</string>
+    <string name="pref_title_lower_button_function_double">Botão inferior duplo</string>
+    <string name="pref_title_middle_button_function_double">Botão central duplo</string>
+    <string name="pref_title_upper_button_function_double">Botão superior duplo</string>
+    <string name="pref_title_lower_button_function_long">Botão inferior longo</string>
+    <string name="pref_title_middle_button_function_long">Botão central longo</string>
+    <string name="pref_title_upper_button_function_long">Botão superior longo</string>
+    <string name="pref_title_lower_button_function_short">Botão inferior curto</string>
+    <string name="pref_title_middle_button_function_short">Botão central curto</string>
+    <string name="pref_title_upper_button_function_short">Botão superior curto</string>
+    <string name="menuitem_pomodoro">Rastreador Pomodoro</string>
+    <string name="menuitem_sleep">Sono</string>
+    <string name="menuitem_goal">Meta da atividade</string>
+    <string name="menuitem_stopwatch">Cronômetro</string>
+    <string name="menuitem_alexa">Alexa</string>
+    <string name="menuitem_takephoto">Tirar uma foto</string>
+    <string name="menuitem_mutephone">Silenciar telefone</string>
+    <string name="menuitem_findphone">Encontrar telefone</string>
+    <string name="menuitem_spo2">SpO2</string>
+    <string name="devicetype_lefun">Lefun</string>
+    <string name="devicetype_casiogbx100">Casio GBX-100</string>
+    <string name="devicetype_amazfit_gts2">Amazfit GTS 2</string>
+    <string name="devicetype_amazfit_gtr2">Amazfit GTR 2</string>
+    <string name="devicetype_amazfit_bipu">Amazfit Bip U</string>
+    <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
+    <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
+    <string name="activity_error_no_app_for_png">Para compartilhar esta captura de tela, instale um aplicativo que pode manipular arquivos de imagens.</string>
+    <string name="charts_legend_heartrate_average">Frequência cardíaca média</string>
+    <string name="activity_prefs_chart_min_session_length">Tamanho mínimo de atividade (minutos)</string>
+    <string name="activity_prefs_chart_max_idle_phase_length">Tamanho da pausa para separar atividades (minutos)</string>
+    <string name="activity_prefs_step_length_cm">Tamanho do passo em cm</string>
+    <string name="activity_prefs_chart_min_steps_per_minute">Passos mínimos por minuto para detectar atividade</string>
+    <string name="activity_prefs_chart_min_steps_per_minute_for_run">Passos mínimos por minuto para detectar corrida</string>
+    <string name="lefun_prefs_interface_language_title">Idioma da interface</string>
+    <string name="lefun_prefs_antilost_summary">A pulseira vai vibrar se seu telefone se desconectar da pulseira</string>
+    <string name="lefun_prefs_antilost_title">Antiperda</string>
+    <string name="lefun_prefs_hydration_reminder_interval_title">Intervalo de lembrete de hidratação (em minutos)</string>
+    <string name="lefun_prefs_hydration_reminder_summary">A pulseira vai vibrar para lhe lembrar de beber água</string>
+    <string name="lefun_prefs_hydration_reminder_title">Lembrete de hidratação</string>
+    <string name="charts_min_max_heartrate_popup">Frequência cardíaca mais baixa: %1$d
+\nFrequência cardíaca mais alta: %2$d
+\nIntensidade do movimento: %3$s</string>
+    <string name="movement_intensity">Intensidade do movimento</string>
+    <string name="firmware_update_progress">O upload está em progresso
+\n%1d%% a %.2fkbps (média de %.2fkbps)
+\nParte %1d de %1d</string>
+    <string name="devicestatus_upload_failed">O upload falhou</string>
+    <string name="devicestatus_upload_aborted">O upload foi abortado!</string>
+    <string name="devicestatus_upload_validating">O upload está sendo validado</string>
+    <string name="devicestatus_upload_completed">O upload foi concluído</string>
+    <string name="devicestatus_disconnected">O dispositivo foi desconectado!</string>
+    <string name="devicestatus_disconnecting">O dispositivo está desconectando!</string>
+    <string name="devicestatus_upload_started">O upload foi iniciado</string>
+    <string name="devicestatus_upload_starting">O upload está iniciando</string>
+    <string name="devicestatus_connected">O dispositivo está conectado</string>
+    <string name="devicestatus_connecting">O dispositivo está conectando</string>
+    <string name="activity_list_summary_activities">Atividades</string>
+    <string name="activity_list_summary_intensity">Movimento
+\nIntensidade</string>
+    <string name="activity_list_summary_active_time">Tempo ativo</string>
+    <string name="activity_list_summary_distance">Distância</string>
+    <string name="activity_list_summary_active_steps">Passos ativos</string>
+    <string name="charts_activity_list">Lista de atividades</string>
+    <string name="prefs_charts_tabs_summary">Abas de gráficos visíveis</string>
+    <string name="prefs_charts_tabs">Abas de gráficos</string>
+    <string name="chart_get_active_and_synchronize">Faça alguma atividade e sincronize o dispositivo.</string>
+    <string name="chart_no_active_data">Nenhuma atividade detectada.</string>
+    <string name="find_lost_device_message">Pesquisar por %1$s\?</string>
+    <string name="menuitem_dnd">DND</string>
+    <string name="pref_summary_connected_advertisement">Torna o dispositivo descobrível via Bluetooth mesmo quando conectado</string>
+    <string name="pref_title_connected_advertisement">Visível enquanto conectado</string>
+    <string name="prefs_autoremove_message">Remover automaticamente notificações SMS</string>
+    <string name="prefs_fake_ring_duration">Toque contínuo falso</string>
+    <string name="prefs_operating_sounds">Sons de operações</string>
+    <string name="prefs_key_vibration">Vibração de tecla</string>
+    <string name="prefs_autolight">Luz automática</string>
+    <string name="discovery_entered_invalid_authkey">A chave de autenticação secreta é inválida! Faça um pressionamento longo no dispositivo para editar.</string>
+    <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
+    <string name="fw_upgrade_notice_amazfitvergel">Você está prestes a instalar o firmware %s no seu Amazfit Verge Lite.
+\n
+\nCertifique-se de instalar o arquivo .fw, depois disso o arquivo .res e finalmente o arquivo .gps. Sua pulseira será reiniciada após a instalação do arquivo .fw.
+\n
+\nNota: você não precisa instalar .res e .gps se esses forem exatamente os mesmos que os instalados anteriormente.
+\n
+\nPROSSIGA AO SEU PRÓPRIO RISCO!</string>
+    <string name="activity_DB_ShowContentButton">Mostrar Exportar/Importar conteúdo do diretório</string>
+    <string name="activity_data_management_directory_content_title">Exportar/Importar conteúdo do diretório</string>
+    <string name="dbmanagementactivity_export_confirmation">Realmente exportar dados\? Dados de atividades exportados anteriormente (se houver) e preferências serão substituídos.</string>
+    <string name="dbmanagementactivity_export_data_title">Exportar dados\?</string>
+    <string name="dbmanagementactivity_error_cleaning_export_directory">Erro ao apagar arquivos de diretório externo %1$s</string>
+    <string name="battery_detail_activity_title">Informações da bateria</string>
 </resources>

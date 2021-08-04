@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, Taavi Eomäe
 
     This file is part of Gadgetbridge.
@@ -16,6 +16,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.miband;
+
+import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -48,8 +50,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-
-import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
 
 public class MiBandPairingActivity extends AbstractGBActivity implements BondingInterface {
     private static final Logger LOG = LoggerFactory.getLogger(MiBandPairingActivity.class);
@@ -137,7 +137,7 @@ public class MiBandPairingActivity extends AbstractGBActivity implements Bonding
         message.setText(getString(R.string.pairing, deviceCandidate));
 
         if (!BondingUtil.shouldUseBonding()) {
-            BondingUtil.attemptToFirstConnect(getCurrentTarget());
+            BondingUtil.attemptToFirstConnect(getCurrentTarget().getDevice());
             return;
         }
 
@@ -177,19 +177,19 @@ public class MiBandPairingActivity extends AbstractGBActivity implements Bonding
     }
 
     @Override
-    public BluetoothDevice getCurrentTarget() {
-        return this.deviceCandidate.getDevice();
+    public GBDeviceCandidate getCurrentTarget() {
+        return this.deviceCandidate;
     }
 
     @Override
     protected void onResume() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onStart();
     }
 
@@ -223,7 +223,7 @@ public class MiBandPairingActivity extends AbstractGBActivity implements Bonding
         AndroidUtils.safeUnregisterBroadcastReceiver(this, bondingReceiver);
     }
 
-    public void removeBroadcastReceivers() {
+    public void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(pairingReceiver, new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED));
         registerReceiver(bondingReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
     }

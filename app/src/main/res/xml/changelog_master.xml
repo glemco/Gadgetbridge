@@ -1,5 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.59.0" versioncode="199">
+        <change>Initial support for SMA Q2 OSS firmware (Emeryth)</change>
+        <change>Fix broken UM25 support</change>
+        <change>Fossil Hybrid HR: Add watchface designer</change>
+        <change>use '_' instead ':' in exported and imported file names to fix problems with some Android versions</change>
+        <change>Fix applying theme as set by the system</change>
+        <change>Try to improve behavior when quitting Gadgetbridge</change>
+    </release>
+    <release version="0.58.2" versioncode="198">
+        <change>InfiniTime: Support notification for battery level</change>
+        <change>Allow importing GPX tracks via Android Intent/Share system</change>
+        <change>Add option for black background to dark theme</change>
+        <change>BangleJS, WaspOS: Support for transliteration</change>
+        <change>Add missing icons to settings items</change>
+    </release>
+    <release version="0.58.1" versioncode="197">
+        <change>Pebble: Fix broken app manager (regression from 0.57.1)</change>
+        <change>Bangle.js: Try to fix crash when attempting to load activity chart</change>
+        <change>Amazfit T-Rex Pro: Add barometer to menu items</change>
+        <change>Remove battery data when device is being removed</change>
+        <change>Add transliteration to PineTime</change>
+        <change>Debug: Allow adding fake testing devices manually</change>
+        <change>Reduce margin of icons in device_item to keep one row for typical amount of icons</change>
+    </release>
+    <release version="0.58.0" versioncode="196">
+        <change>Initial experimental support for Amazfit T-Rex Pro</change>
+        <change>InfiniTime: Try to fix firmware upgrade by fiddling with optimization rules</change>
+        <change>Huami: Fix lost samples bug with timezones that are have a 30 minute offset</change>
+        <change>Fossil Hybrid HR: Block dangerous intents by default and move some settings to developer settings submenu</change>
+        <change>Improved logging in bonding and tried to recover from weirdness</change>
+        <change>Use a separate notification channel for low battery warnings</change>
+    </release>
+    <release version="0.57.1" versioncode="195">
+        <change>Mi Band 6: Add Pomodoro to menu items</change>
+        <change>Mi Band 6: Support flashing firmware, res and watchfaces</change>
+        <change>Mi Band 6: Enable Unicode Emoji support</change>
+        <change>Fossil Hybrid HR: Move commute actions to device specific settings</change>
+        <change>Fossil Hybrid HR: Use Gadgetbridge App Manager (same as Pebble), allowing quick switching of watchfaces and caching apps for later re-(installation)</change>
+        <change>Huami: Send changed weight, birthday and height data to watch immediately</change>
+        <change>Use flexbox layout for icons in device cards, allowing line breaks for small phones</change>
+    </release>
+    <release version="0.57.0" versioncode="194">
+        <change>Initial limited support for Mi Band 6</change>
+        <change>Amazfit GTR2/GTS2: Fix for flashing watchfaces</change>
+        <change>Amazfit GTR/GTS/GTR2/GTS2/Bip S: Allow flashing AGPS bundles</change>
+        <change>Amazfit Neo: Add lift wrist setting</change>
+        <change>Fossil Hybrid HR: Restructure settings menus for calibration, file management and physical buttons</change>
+        <change>Fossil Hybrid HR: Hide old settings on newer firmwares</change>
+        <change>Improved PineTime/InfiniTime firmware DFU metadata parsing and checks</change>
+    </release>
+    <release version="0.56.2" versioncode="193">
+        <change>Amazfit GTR2: Improve firmware update support (still partly broken)</change>
+        <change>Amazfit GTR2/GTS2: Prevent emoji transliterating (Seems to support emoji)</change>
+        <change>Amazfit GTS2/GTR2: Fixes for setting menu items (Probably still partly broken)</change>
+        <change>Amazfit GTS2/GTR2: Send wind speed and sunrise/sunset</change>
+        <change>Fossil Hybrid HR: Send actual application icons for notification on the watch</change>
+        <change>Fossil Hybrid HR: Support dismissing incoming calls with a quick SMS reply</change>
+        <change>Huami: Remove unused calendar slots</change>
+        <change>Huami: Send wind speed in Beaufort for some devices</change>
+        <change>InfiniTime: Add support for battery info</change>
+        <change>InfiniTime: Support title for notifications on firmware 0.15</change>
+        <change>InfiniTime: Implement find device by simulating a phone call</change>
+        <change>Adjust Steps Charts steps values offset to account for large phone screen sizes</change>
+        <change>Make Activity Charts dates move as calendar months and to go to now if jumping past today</change>
+        <change>Make Battery Info time span jump as calendar months and not as days</change>
+    </release>
+    <release version="0.56.1" versioncode="192">
+        <change>Fossil Hybrid HR: Fix compatibility for oder firmware revisions</change>
+        <change>Amazfit Neo: Implement firmware update</change>
+        <change>Amazfit Neo: Support setting all menu items and fix menu cycling bug</change>
+        <change>Amazfit Neo: Fix notifications</change>
+        <change>Amazfit Neo: Support sound settings</change>
+        <change>Allow OpenTracks and FitoTrack to send ongoing notifications</change>
+        <change>Make transliteration a per-device setting</change>
+    </release>
+    <release version="0.56.0" versioncode="191">
+        <change>Initial support for UM25 voltage meters</change>
+        <change>Pebble: Remove read/dismissed notifications on watch (can be disabled)</change>
+        <change>Fossil Hybrid HR: Remove read/dismissed notifications on watch (can be disabled)</change>
+        <change>Fossil Hybrid HR: Fixes for running firmware DN1.0.2.20 or newer (disable widget features, currently not supported)</change>
+        <change>Fossil Hybrid HR: Fix up/back navigation and add titles to Fossil specific menus</change>
+        <change>Huami: Fix displaying title for calendar events</change>
+        <change>Use requestLegacyExternalStorage in manifest to fix file access problems in some Android 10 roms</change>
+        <change>Add chart to each item in activity list</change>
+        <change>Add scroll view to activity detail to handle landscape view</change>
+        <change>Add header title to activity detail</change>
+    </release>
+    <release version="0.55.0" versioncode="190">
+        <change>InfiniTime: Fix music control for newer firmware releases</change>
+        <change>InfiniTime: Support call control and notification</change>
+        <change>Sony SWR12: Fix broken support since 0.53.0</change>
+        <change>Wasp-OS: Fix crash on Android 7 and lower</change>
+        <change>Add activity list dashboard summary calculations</change>
+        <change>Add battery level logging and graph activity</change>
+        <change>Use distinct icons for total step and distance values in widget</change>
+        <change>Flip and scale GPX canvas</change>
+        <change>Try to fix call notification on outgoing VoIP calls</change>
+    </release>
+    <release version="0.54.1" versioncode="189">
+        <change>Amazfit GTS2e: Really fix broken support</change>
+        <change>Amazfit Bip S Lite: Fix broken support (probably)</change>
+    </release>
+    <release version="0.54.0" versioncode="188">
+        <change>Initial support for Amazfit X</change>
+        <change>Fix missing menu items for GTS 2 Mini (some improvements also for other GTR2/GTS2 models)</change>
+        <change>Amazfit GTS2e: Fix broken support</change>
+    </release>
+    <release version="0.53.0" versioncode="187">
+        <change>Initial support for wasp-os on nRF52 devices</change>
+        <change>Initial support for Zepp E</change>
+        <change>Initial support for Amazfit GTS 2 Mini</change>
+        <change>Initial support for Amazfit Neo</change>
+        <change>Initial support for Amazfit GTR/GTS 2e</change>
+        <change>Fossil Hybrid HR: Fix bug with unknown data</change>
+        <change>Fossil Hybrid HR: allow app management on watch from GB</change>
+        <change>Fossil Hybrid HR: enumerate apps on watch on every connect</change>
+        <change>Fossil Hybrid HR: Do not configure buttons in unauthenticated mode</change>
+        <change>Fossil Classic: Fix unknown wearing state</change>
+        <change>Fossil Classic: Allow synchronizing activity data</change>
+        <change>Amazfit Bip U: Fix sports activity summary</change>
+        <change>Huami: Add Strength Training activity type</change>
+        <change>Honor Imperial units settings in widget, Activity list and workouts</change>
+        <change>Show all eligible devices in Widget Configuration Activity</change>
+        <change>Also include step of not-worn samples in weekly step statistics</change>
+    </release>
+    <release version="0.52.0" versioncode="186">
+        <change>Amazfit Bip U Pro: Initial support</change>
+        <change>Amazfit GTS2: fix pairing</change>
+        <change>Amazfit GTS/GTR2: Fix incoming call display</change>
+        <change>Fossil Hybrid HR: avoid unnecessary widget rendering</change>
+        <change>A lot of Data(base) Management screen clarifications and improvements</change>
+        <change>Fix a crash when when forecastConditionType length is 0 in weather notification data</change>
+        <change>Change Do Not Disturb support to allow priority notifications</change>
+        <change>Fix problems when pairing some devices which require a pin to be entered</change>
+    </release>
+    <release version="0.51.0" versioncode="185">
+       <change>Amazfit Bip U: Initial support</change>
+       <change>Amazfit Verge Lite: Initial Support</change>
+       <change>Amazfit T-Rex: Add missing menu items, remove non-existent</change>
+       <change>Amazfit Bip S: Fix crash with notifications with only a title (GitNex does this)</change>
+       <change>Casio GBX-100: Add step count data and more device settings</change>
+       <change>Fossil Hybrid Q: Support firmware upgrade</change>
+       <change>Bangle.js: Support for HRM and steps activity recording</change>
+       <change>Huami: Add new option to properly distinguish connected advertising and 3rd party hr exposure</change>
+       <change>Huami: Use blue icon instead of rainbow color icon for Signal (the rainbow icon was blue in early days)</change>
+       <change>Complete overhaul of the daily stats widget</change>
+       <change>Better error message for invalid authentication keys</change>
+    </release>
     <release version="0.50.0" versioncode="184">
         <change>Initial support for Casio GBX-100</change>
         <change>Mi/Amazfit Band 5: Support watchface installation</change>

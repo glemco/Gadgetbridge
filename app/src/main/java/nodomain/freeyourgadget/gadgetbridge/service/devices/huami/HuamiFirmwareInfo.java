@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa
+/*  Copyright (C) 2017-2021 Andreas Shimokawa
 
     This file is part of Gadgetbridge.
 
@@ -40,8 +40,12 @@ public abstract class HuamiFirmwareInfo {
             0x48, 0x4d, 0x44, 0x49, 0x41, 0x4c
     };
 
-    public static final byte[] WATCHFACE_HEADER_UIHH = new byte[]{
-            'U', 'I', 'H', 'H', 0x01
+    public static final byte[] UIHH_HEADER = new byte[]{
+            'U', 'I', 'H', 'H'
+    };
+
+    public static final byte[] AGPS_UIHH_HEADER = new byte[]{
+            'U', 'I', 'H', 'H', 0x04
     };
 
     protected static final byte[] FT_HEADER = new byte[]{ // HMZK font file (*.ft, *.ft.xx)
@@ -149,6 +153,9 @@ public abstract class HuamiFirmwareInfo {
                     break;
                 case GPS_ALMANAC:
                     version = "(unknown ALM)";
+                    break;
+                case AGPS_UIHH:
+                    version = "(unknown AGPS)";
                     break;
                 case WATCHFACE:
                     version = "(unknown watchface)";

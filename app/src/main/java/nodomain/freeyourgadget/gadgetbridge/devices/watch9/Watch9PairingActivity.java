@@ -1,4 +1,4 @@
-/*  Copyright (C) 2018-2020 Daniele Gobbetti, maxirnilian, Taavi Eomäe
+/*  Copyright (C) 2018-2021 Daniele Gobbetti, maxirnilian, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.watch9;
 
-import android.bluetooth.BluetoothDevice;
+import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -40,8 +41,6 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BondingInterface;
 import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
-
-import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
 
 public class Watch9PairingActivity extends AbstractGBActivity implements BondingInterface {
     private static final Logger LOG = LoggerFactory.getLogger(Watch9PairingActivity.class);
@@ -87,7 +86,7 @@ public class Watch9PairingActivity extends AbstractGBActivity implements Bonding
     private void startConnecting(GBDeviceCandidate deviceCandidate) {
         message.setText(getString(R.string.pairing, deviceCandidate));
 
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         BondingUtil.connectThenComplete(this, deviceCandidate);
     }
 
@@ -98,8 +97,8 @@ public class Watch9PairingActivity extends AbstractGBActivity implements Bonding
     }
 
     @Override
-    public BluetoothDevice getCurrentTarget() {
-        return this.deviceCandidate.getDevice();
+    public GBDeviceCandidate getCurrentTarget() {
+        return this.deviceCandidate;
     }
 
     @Override
@@ -114,7 +113,7 @@ public class Watch9PairingActivity extends AbstractGBActivity implements Bonding
     }
 
     @Override
-    public void removeBroadcastReceivers() {
+    public void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(pairingReceiver, new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED));
     }
 
@@ -125,13 +124,13 @@ public class Watch9PairingActivity extends AbstractGBActivity implements Bonding
 
     @Override
     protected void onResume() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onStart();
     }
 

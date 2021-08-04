@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2020 Andreas Shimokawa, Daniel Dakhno
+/*  Copyright (C) 2019-2021 Andreas Shimokawa, Daniel Dakhno
 
     This file is part of Gadgetbridge.
 
@@ -42,7 +42,11 @@ public class FilePutRequest extends FilePutRawRequest {
 
         buffer.putShort(fileHandle.getHandle());
         buffer.putShort(fileVersion);
-        buffer.putInt(0);
+        if (fileHandle == FileHandle.REPLY_MESSAGES) {
+            buffer.put(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x0d, (byte) 0x00});
+        } else {
+            buffer.putInt(0);
+        }
         buffer.putInt(file.length);
 
         buffer.put(file);

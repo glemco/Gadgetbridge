@@ -1,8 +1,10 @@
-/*  Copyright (C) 2015-2020 0nse, Andreas Böhler, Andreas Shimokawa, Carsten
-    Pfeiffer, Cre3per, criogenic, Daniel Dakhno, Daniele Gobbetti, Gordon Williams,
-    Jean-François Greffier, João Paulo Barraca, José Rebelo, Kranz, ladbsoft,
-    Manuel Ruß, maxirnilian, Pavel Elagin, protomors, Quallenauge, Sami Alaoui,
-    Sergey Trofimov, Sophanimus, tiparega, Vadim Kaushan
+/*  Copyright (C) 2015-2021 0nse, 115ek, Andreas Böhler, Andreas Shimokawa,
+    angelpup, Carsten Pfeiffer, Cre3per, criogenic, DanialHanif, Daniel Dakhno,
+    Daniele Gobbetti, Dmytro Bielik, Gordon Williams, Jean-François Greffier,
+    João Paulo Barraca, José Rebelo, ladbsoft, Manuel Ruß, maxirnilian,
+    mkusnierz, odavo32nof, opavlov, pangwalla, Pavel Elagin, protomors,
+    Quallenauge, Sami Alaoui, Sebastian Kranz, Sergey Trofimov, Sophanimus,
+    Taavi Eomäe, tiparega, Vadim Kaushan, Yukai Li
 
     This file is part of Gadgetbridge.
 
@@ -29,12 +31,12 @@ import java.util.EnumSet;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.devices.casio.gbx100.CasioGBX100DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGB6900DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGBX100DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.domyos.DomyosT540Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.hplus.HPlusSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitband5.AmazfitBand5Support;
@@ -43,17 +45,27 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.Ama
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSLiteSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbipu.AmazfitBipUSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbipupro.AmazfitBipUProSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitcor.AmazfitCorSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitcor2.AmazfitCor2Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr.AmazfitGTRLiteSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr.AmazfitGTRSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr2.AmazfitGTR2Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr2.AmazfitGTR2eSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts.AmazfitGTSSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts2.AmazfitGTS2MiniSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts2.AmazfitGTS2Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts2.AmazfitGTS2eSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitneo.AmazfitNeoSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfittrex.AmazfitTRexSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfittrexpro.AmazfitTRexProSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitvergel.AmazfitVergeLSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitx.AmazfitXSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband3.MiBand3Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband4.MiBand4Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband5.MiBand5Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband6.MiBand6Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppe.ZeppESupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.id115.ID115Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.itag.ITagSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.jyou.BFH16DeviceSupport;
@@ -72,9 +84,12 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleSupport
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pinetime.PineTimeJFSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.roidmi.RoidmiSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.smaq2oss.SMAQ2OSSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sonyswr12.SonySWR12DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.tlw64.TLW64Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.um25.Support.UM25Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.vibratissimo.VibratissimoSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.waspos.WaspOSDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.watch9.Watch9DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.xwatch.XWatchSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.zetime.ZeTimeDeviceSupport;
@@ -162,6 +177,9 @@ public class DeviceSupportFactory {
                     case MIBAND5:
                         deviceSupport = new ServiceDeviceSupport(new MiBand5Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
+                    case MIBAND6:
+                        deviceSupport = new ServiceDeviceSupport(new MiBand6Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
                     case AMAZFITBIP:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitBipSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
@@ -177,6 +195,9 @@ public class DeviceSupportFactory {
                     case AMAZFITBIPU:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitBipUSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
+                    case AMAZFITBIPUPRO:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitBipUProSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
                     case AMAZFITGTR:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitGTRSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
@@ -186,14 +207,32 @@ public class DeviceSupportFactory {
                     case AMAZFITGTR2:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitGTR2Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
+                    case ZEPP_E:
+                        deviceSupport = new ServiceDeviceSupport(new ZeppESupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITGTR2E:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitGTR2eSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
                     case AMAZFITTREX:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitTRexSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITTREXPRO:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitTRexProSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                     case AMAZFITGTS:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitGTSSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
+                    case AMAZFITVERGEL:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitVergeLSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
                     case AMAZFITGTS2:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitGTS2Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITGTS2_MINI:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitGTS2MiniSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITGTS2E:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitGTS2eSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                     case AMAZFITCOR:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitCorSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
@@ -203,6 +242,12 @@ public class DeviceSupportFactory {
                         break;
                     case AMAZFITBAND5:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitBand5Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITX:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitXSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITNEO:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitNeoSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                     case VIBRATISSIMO:
                         deviceSupport = new ServiceDeviceSupport(new VibratissimoSupport(), EnumSet.of(ServiceDeviceSupport.Flags.THROTTLING, ServiceDeviceSupport.Flags.BUSY_CHECKING));
@@ -296,6 +341,18 @@ public class DeviceSupportFactory {
                         break;
                     case SONY_SWR12:
                         deviceSupport = new ServiceDeviceSupport(new SonySWR12DeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case WASPOS:
+                        deviceSupport = new ServiceDeviceSupport(new WaspOSDeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case SMAQ2OSS:
+                        deviceSupport = new ServiceDeviceSupport(new SMAQ2OSSSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case UM25:
+                        deviceSupport = new ServiceDeviceSupport(new UM25Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case DOMYOS_T540:
+                        deviceSupport = new ServiceDeviceSupport(new DomyosT540Support(), EnumSet.of(ServiceDeviceSupport.Flags.THROTTLING, ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                 }
                 if (deviceSupport != null) {

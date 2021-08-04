@@ -96,7 +96,7 @@
     <string name="pref_title_canned_replies">Réponses</string>
     <string name="pref_title_canned_reply_suffix">Suffixe fréquent</string>
     <string name="pref_title_canned_messages_dismisscall">Raccrocher</string>
-    <string name="pref_title_canned_messages_set">Mise à jour Pebble</string>
+    <string name="pref_title_canned_messages_set">Mise à jour sur l\'appareil</string>
     <string name="pref_header_development">Options développeur</string>
     <string name="pref_title_development_miaddr">Adresse Mi Band</string>
     <string name="pref_title_pebble_settings">Paramètres Pebble</string>
@@ -115,7 +115,7 @@
     <string name="pref_title_enable_calendar_sync">Synchroniser le calendrier</string>
     <string name="pref_summary_enable_calendar_sync">Envoyer les événements du calendrier sur la timeline</string>
     <string name="pref_title_autoremove_notifications">Effacer automatiquement les notifications rejetées</string>
-    <string name="pref_summary_autoremove_notifications">Les notifications sont automatiquement effacées de la Pebble lorsqu\'elles sont rejetées sur l\'appareil Android</string>
+    <string name="pref_summary_autoremove_notifications">Les notifications sont automatiquement effacées de l\'appareil lorsqu\'elles sont rejetées sur le téléphone</string>
     <string name="pref_title_pebble_privacy_mode">Mode privé</string>
     <string name="pref_pebble_privacy_mode_off">Notifications normales</string>
     <string name="pref_pebble_privacy_mode_content">Déplace les notifications hors de l\'écran</string>
@@ -125,7 +125,7 @@
     <string name="pref_title_location_latitude">Latitude</string>
     <string name="pref_title_location_longitude">Longitude</string>
     <string name="pref_title_location_keep_uptodate">Garder l’emplacement à jour</string>
-    <string name="pref_summary_location_keep_uptodate">Essayer de garder la localisation à jour pendant le fonctionnement, sinon utiliser l’emplacement enregistré.</string>
+    <string name="pref_summary_location_keep_uptodate">Essayer de garder la localisation à jour pendant le fonctionnement, sinon utiliser l’emplacement enregistré</string>
     <string name="toast_enable_networklocationprovider">Veuillez activer la localisation réseau</string>
     <string name="toast_aqurired_networklocation">Emplacement obtenu</string>
     <string name="pref_title_pebble_forceprotocol">Forcer le protocole de notification</string>
@@ -136,8 +136,8 @@
     <string name="pref_summary_pebble_forcele">Utiliser le support expérimental du LE pour toutes les Pebble au lieu du Bluetooth classique. Cela requiert le jumelage d\'une Pebble non LE, puis d\'une Pebble LE</string>
     <string name="pref_title_pebble_mtu_limit">Limite du GATT MTU de Pebble 2/LE</string>
     <string name="pref_summary_pebble_mtu_limit">Si votre Pebble 2/LE ne fonctionne pas correctement, essayez d\'activer cette option pour limiter le MTU (plage valide 20–512)</string>
-    <string name="pref_title_pebble_enable_applogs">Activer les logs des apps du bracelet</string>
-    <string name="pref_summary_pebble_enable_applogs">Ceci permettra à Gadgetbridge de conserver les logs des Watch App (requiert une reconnexion)</string>
+    <string name="pref_title_pebble_enable_applogs">Activer la journalisation des applis du bracelet</string>
+    <string name="pref_summary_pebble_enable_applogs">Ceci fera en sorte que les journaux des applis de montre soient journalisés par Gadgetbridge (requiert une reconnexion)</string>
     <string name="pref_title_pebble_always_ack_pebblekit">ACK à l\'avance du PebbleKit</string>
     <string name="pref_summary_pebble_always_ack_pebblekit">Ceci permettra aux messages envoyés à des apps tierces d\'être toujours reconnus immédiatement</string>
     <string name="pref_title_pebble_reconnect_attempts">Tentatives de reconnexion</string>
@@ -166,7 +166,11 @@
     <string name="installation_failed_">Échec de l\'installation</string>
     <string name="installation_successful">Installé</string>
     <string name="firmware_install_warning">VOUS TENTEZ D\'INSTALLER UN MICROLOGICIEL, PROCÉDEZ À VOS RISQUES ET PÉRILS.\n\n\nCe micrologiciel est pour la version de matériel : %s</string>
-    <string name="app_install_info">Vous êtes sur le point d\'installer l\'application suivante :\n\n\n%1$s Version %2$s par %3$s\n</string>
+    <string name="app_install_info">Vous êtes sur le point d\'installer l\'application suivante :
+\n
+\n%1$s-
+\nVersion %2$s par %3$s
+\n</string>
     <string name="n_a">N.D.</string>
     <string name="initialized">Initialisé</string>
     <string name="appversion_by_creator">%1$s par %2$s</string>
@@ -347,18 +351,23 @@ Temps de sommeil préféré en heures</string>
     <string name="live_activity_heart_rate">Fréquence cardiaque</string>
     <string name="pref_title_pebble_health_store_raw">Stockez les enregistrements brut dans la base de données</string>
     <string name="pref_summary_pebble_health_store_raw">Si coché, les données « brutes » sont stockées pour une interprétation ultérieure, augmentant la taille de la base de données.</string>
-    <string name="action_db_management">Gestion de base de données</string>
-    <string name="title_activity_db_management">Gestion de base de données</string>
-    <string name="activity_db_management_import_export_explanation">Les opérations sur la base de données ont utilisé le chemin suivant sur votre appareil. 
-\nCe chemin est accessible par d\'autres applications Android ou par votre ordinateur. 
-\nVotre base de données (ou celle que vous souhaitez importer) se trouvera ici :</string>
+    <string name="action_db_management">Gestion des données</string>
+    <string name="title_activity_db_management">Gestion des données</string>
+    <string name="activity_db_management_import_export_explanation">Les opérations d\'Import/Export utilisent le répertoire suivant (voir ci-dessous) sur votre appareil. Ce répertoire est accessible à d\'autres applications Android et depuis votre ordinateur. Merci de prendre note que ce répertoire et tout son contenu seront effacés si vous désinstallez Gadgetbridge. Cela inclut :
+\n Export_preference - réglages généraux
+\n Export_preference_MAC - réglages spécifiques à l\'appareil
+\n Gadgetbridge - base de données des appareils et activités
+\n Gadgetbridge_date - export de la base de données sur une date
+\n *.gpx - enregistrements GPS
+\n *.log - fichiers de log
+\nAttendez-vous à trouver vos fichiers exportés (ou à placer là les fichiers que vous voulez importer) à cet endroit :</string>
     <string name="activity_db_management_merge_old_title">Effacer l\'ancienne base de données</string>
     <string name="dbmanagementactivvity_cannot_access_export_path">Impossible d\'accéder au fichier d\'export. Merci de contacter les développeurs.</string>
     <string name="dbmanagementactivity_exported_to">Exporter vers : %1$s</string>
     <string name="dbmanagementactivity_error_exporting_db">Erreur d\'exportation de la base de données : %1$s</string>
     <string name="dbmanagementactivity_error_exporting_shared">Erreur d\'exportation des préférences : %1$s</string>
     <string name="dbmanagementactivity_import_data_title">Importer des données ?</string>
-    <string name="dbmanagementactivity_overwrite_database_confirmation">Voulez-vous vraiment effacer la base de données actuelle ? Toutes vos données (si vous en avez) seront perdues.</string>
+    <string name="dbmanagementactivity_overwrite_database_confirmation">Voulez-vous vraiment écraser les données actuelles \? Toutes vos données actuelles d\'activité (s\'il y en a) et de préférences seront écrasées.</string>
     <string name="dbmanagementactivity_import_successful">Importé.</string>
     <string name="dbmanagementactivity_error_importing_db">Erreur lors de l\'importation de la base de données : %1$s</string>
     <string name="dbmanagementactivity_error_importing_shared">Erreur d\'importation des préférences : %1$s</string>
@@ -467,7 +476,7 @@ Temps de sommeil préféré en heures</string>
     <string name="devicetype_amazfit_bip">Amazfit Bip</string>
     <string name="devicetype_amazfit_cor">Amazfit Cor</string>
     <string name="devicetype_vibratissimo">Vibratissimo</string>
-    <string name="devicetype_liveview">LiveView</string>
+    <string name="devicetype_liveview">Vue en directe</string>
     <string name="devicetype_hplus">HPlus</string>
     <string name="devicetype_makibes_f68">Makibes F68</string>
     <string name="devicetype_exrizu_k8">Exrizu K8</string>
@@ -481,7 +490,7 @@ Temps de sommeil préféré en heures</string>
     <string name="notif_export_failed_title">L\'exportation de la base de données a échoué ! Veuillez vérifier vos paramètres.</string>
     <string name="choose_auto_export_location">Choisissez l\'emplacement d\'exportation</string>
     <string name="spanish">Espagnol</string>
-    <string name="notification_channel_name">Notifications de Gadgetbridge</string>
+    <string name="notification_channel_name">Général</string>
     <string name="devicetype_xwatch">XWatch</string>
     <string name="on">Actif</string>
     <string name="activity_type_not_measured">Non mesurée</string>
@@ -734,8 +743,8 @@ Temps de sommeil préféré en heures</string>
     <string name="pref_summary_use_custom_font">Activer ceci afin d’afficher les émojis si votre appareil a un micrologiciel de police personnalisée</string>
     <string name="activity_db_management_autoexport_explanation">L\'export automatique des données est réglé vers :</string>
     <string name="activity_db_management_autoexport_label">Exportation automatique</string>
-    <string name="activity_DB_ExportButton">Exporter la base de données</string>
-    <string name="activity_DB_import_button">Importer la base de données</string>
+    <string name="activity_DB_ExportButton">Exporter les données</string>
+    <string name="activity_DB_import_button">Importer les données</string>
     <string name="activity_DB_test_export_button">Lancer immédiatement l\'exportation automatique</string>
     <string name="activity_DB_delete_legacy_button">Supprimer l\'ancienne base de données</string>
     <string name="activity_DB_empty_button">Vider la base de données</string>
@@ -834,7 +843,7 @@ Temps de sommeil préféré en heures</string>
     <string name="hr_appname_stopwatch">Chronomètre</string>
     <string name="hr_appname_workout">Entraînement</string>
     <string name="hr_appname_wellness">Bien-être</string>
-    <string name="notification_channel_high_priority_name">Priorité haute des notifications Gadgetbridge</string>
+    <string name="notification_channel_high_priority_name">Haute priorité</string>
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="find_my_phone_notification">Trouver mon téléphone</string>
     <string name="pref_title_vibration_strength">Puissance du vibreur</string>
@@ -963,7 +972,7 @@ Temps de sommeil préféré en heures</string>
     <string name="flatSeconds">Plat</string>
     <string name="ascentSeconds">Ascendant</string>
     <string name="swimStyle">Type de nage</string>
-    <string name="swolfIndex">swolfIndex</string>
+    <string name="swolfIndex">index swolf</string>
     <string name="averageLapPace">Moyenne de pause</string>
     <string name="averageStrokesPerSecond">Foulées moyennes</string>
     <string name="averageStrokeDistance">Distance moyenne de foulée</string>
@@ -1028,7 +1037,7 @@ Temps de sommeil préféré en heures</string>
     <string name="activity_type_elliptical_trainer">Entraîneur elliptique</string>
     <string name="activity_type_indoor_cycling">Vélo d\'intérieur</string>
     <string name="activity_type_swimming_openwater">Natation (en eau libre)</string>
-    <string name="pref_title_weather_summary">Utilisé par le fournisseur météo de LineageOS, les autres versions d\'Android doivent utilisées une application comme \"Weather notification\". Se reporter au wiki Gadgetbridge.</string>
+    <string name="pref_title_weather_summary">Utilisé par le fournisseur météo de LineageOS, les autres versions d\'Android doivent utilisées une application comme Weather notification. Se reporter au wiki Gadgetbridge.</string>
     <string name="fw_upgrade_notice_miband5">Vous êtes sur le point d\'installer le micrologiciel %s dans votre Mi Band 5.
 \n
 \nVeuillez installer le fichier .fw, puis le fichier .res. Votre montre redémarrera après avoir installé le fichier .fw.
@@ -1093,7 +1102,7 @@ Temps de sommeil préféré en heures</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
     <string name="activity_prefs_step_length_cm">Longueur de pas en cm</string>
     <string name="menuitem_spo2">SpO2</string>
-    <string name="qhybrid_calibration_align_hint">aligner les mains à midi</string>
+    <string name="qhybrid_calibration_align_hint">Utiliser les boutons ci-dessous pour aligner les mains du bracelet à midi.</string>
     <string name="gps_track">Trace GPS</string>
     <string name="about_version">Version %s</string>
     <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
@@ -1118,4 +1127,177 @@ Temps de sommeil préféré en heures</string>
     <string name="activity_list_summary_active_steps">Pas réalisés</string>
     <string name="devicetype_amazfit_gts2">Amazfit GTS 2</string>
     <string name="devicetype_casiogbx100">Casio GBX-100</string>
+    <string name="prefs_charts_tabs_summary">Onglets visibles des tableaux</string>
+    <string name="prefs_charts_tabs">Onglets des Tableaux</string>
+    <string name="devicetype_amazfit_bipu">Amazfit Bip U</string>
+    <string name="menuitem_pomodoro">Tracker Pomodoro</string>
+    <string name="menuitem_sleep">Sommeil</string>
+    <string name="menuitem_goal">Objectif d\'activité</string>
+    <string name="pref_summary_connected_advertisement">Rend l\'appareil découvrable via Bluetooth même si connecté</string>
+    <string name="pref_title_connected_advertisement">Visible si connecté</string>
+    <string name="prefs_autoremove_message">Désactiver automatiquement les notifications SMS</string>
+    <string name="prefs_fake_ring_duration">Simulation de sonnerie permanente</string>
+    <string name="prefs_operating_sounds">Sons en fonctionnement</string>
+    <string name="prefs_key_vibration">Mode de vibration</string>
+    <string name="prefs_autolight">Éclairage automatique</string>
+    <string name="discovery_entered_invalid_authkey">La clé secrète d\'identification saisie est invalide ! Faire un appui long sur l\'appareil pour la modifier.</string>
+    <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
+    <string name="fw_upgrade_notice_amazfitvergel">Vous êtes sur le point d\'installer le firmware %s dans votre Amazfit Verge Lite.
+\n
+\nAssurez-vous d\'installer le fichier .fw, puis le fichier .res, et pour finir le fichier .gps. Votre montre va redémarrer après l\'installation du fichier .fw.
+\n
+\nRemarque : Vous n\'avez pas besoin d\'installer les fichiers .res et .gps si ce sont exactement les mêmes fichiers que précédemment.
+\n
+\nMANIPULATION À VOS RISQUES ET PÉRILS !</string>
+    <string name="activity_DB_ShowContentButton">Montrer le contenu du répertoire d\'Import/Export</string>
+    <string name="activity_data_management_directory_content_title">Exporter/Importer le contenu du répertoire</string>
+    <string name="widget_settings_select_device_title">Choisir l\'appareil</string>
+    <string name="dbmanagementactivity_export_confirmation">Exporter réellement les données \? Les données et les préférences précédemment exportées (s\'il y en a) seront écrasées.</string>
+    <string name="dbmanagementactivity_export_data_title">Exporter les Données \?</string>
+    <string name="devicetype_amazfit_bipupro">Amazfit Bip U Pro</string>
+    <string name="dbmanagementactivity_export_finished">Suppression terminée</string>
+    <string name="activity_db_management_clean_export_directory_text">Les fichiers exportés dans le répertoire d\'Import/Export sont accessibles depuis n\'importe quelle application sur votre appareil. Il est préférable de supprimer ces fichiers après synchronisation ou sauvegarde. Assurez-vous d\'avoir une sauvegarde avant de supprimer les fichiers. Les fichiers GPX, les sous-répertoires, et les fichiers de base de données auto-exportés (s\'ils existent) ne seront pas supprimés. Le chemin du répertoire d\'Import/Export est:</string>
+    <string name="activity_DB_clean_export_directory_warning_message">Vraiment effacer les fichiers dans le répertoire d\'Import/Export \?</string>
+    <string name="activity_DB_clean_export_directory_warning_title">Effacer les fichiers dans le répertoire d\'Import/Export \?</string>
+    <string name="activity_db_management_clean_export_directory_label">Effacer les fichiers dans le répertoire d\'Import/Export</string>
+    <string name="dbmanagementactivity_error_cleaning_export_directory">Erreur lors de l\'effacement des fichiers du répertoire d\'exportation %1$s</string>
+    <string name="devicetype_amazfit_neo">Amazfit Neo</string>
+    <string name="activity_type_strength_training">Entrainement de Puissance</string>
+    <string name="mi">miles</string>
+    <string name="minutes_mi">min/miles</string>
+    <string name="mi_h">miles/h</string>
+    <string name="ft">pieds</string>
+    <string name="devicetype_amazfit_gts2_mini">Amazfit GTS 2 Mini</string>
+    <string name="devicetype_zepp_e">Zepp E</string>
+    <string name="devicetype_amazfit_gtr2e">Amazfit GTR 2e</string>
+    <string name="devicetype_waspos">Wasp-os</string>
+    <string name="battery_detail_activity_title">Info. Batterie</string>
+    <string name="devicetype_amazfit_gts2e">Amazfit GTS 2e</string>
+    <string name="devicetype_amazfit_x">Amazfit X</string>
+    <string name="fw_upgrade_notice_amazfitx">Vous allez installer le microcode %s dans votre Amazfit X.
+\n
+\nAssurez-vous d\'abord d\'installer le fichier .fw, puis ensuite le fichier .res. Votre bracelet va redémarrer après l\'installation du fichier .fw.
+\n
+\nRemarque : Vous n\'avez pas à réinstaller le fichiers .res si c\'est exactement le même que vous avez précédemment installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="calendar_year">Année</string>
+    <string name="calendar_six_months">Semestre</string>
+    <string name="calendar_month">Mois</string>
+    <string name="calendar_two_weeks">Deux semaines</string>
+    <string name="calendar_week">Semaine</string>
+    <string name="calendar_day">Jour</string>
+    <string name="battery_level">Niveau de batterie</string>
+    <string name="show_ongoing_activity">Afficher une popup pour l\'activité en cours</string>
+    <string name="dialog_hide">Cacher</string>
+    <string name="calendar_three_months">3 mois</string>
+    <string name="fossil_hr_auth_failed">AUthentification ratée, fonctionnalités limitées</string>
+    <string name="fossil_hr_unavailable_unauthed">Indisponible en mode non authentifié</string>
+    <string name="fossil_hr_synced_activity_data">Données d\'activité synchronisées</string>
+    <string name="fossil_hr_commute_processing">En cours de traitement...</string>
+    <string name="qhybrid_title_calibration">Calibration</string>
+    <string name="qhybrid_title_apps_management">Gestion des apps</string>
+    <string name="qhybrid_title_file_management">Gestion de fichiers</string>
+    <string name="qhybrid_title_background_image">Image de fond</string>
+    <string name="qhybrid_title_apps">Apps</string>
+    <string name="qhybrid_title_watchface_apps">Écran et apps</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="fossil_hr_warning_firmware_too_new">Certaines fonctions sont désactivées en raison de la version trop récente du micrologiciel du bracelet</string>
+    <string name="prefs_sounds_summary">Configurer une fois que l\'appareil a bipé</string>
+    <string name="prefs_sounds">Sons</string>
+    <string name="fw_upgrade_notice_amazfitneo">Vous êtes sur le point d\'installer le micrologiciel %s dans votre Amazfit Neo.
+\n
+\n- Votre bracelet va redémarrer après l\'installation du micrologiciel.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="menuitem_temperature">Température</string>
+    <string name="menuitem_widgets">Widgets</string>
+    <string name="menuitem_events">Évènements</string>
+    <string name="pref_summary_canned_messages_dismisscall">Refuser les appels depuis la montre avec un message SMS</string>
+    <string name="pref_summary_canned_messages_set">Envoyer le message saisi ci-dessous vers votre bracelet</string>
+    <string name="qhybrid_summary_calibration">Choisir la main du bracelet</string>
+    <string name="qhybrid_summary_file_management">Envoyer et recevoir des fichiers</string>
+    <string name="pref_summary_physical_buttons">Configurer les fonctions des boutons physiques du bracelet</string>
+    <string name="pref_title_physical_buttons">Boutons physiques</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="kind_agps_bundle">Bundle AGPS</string>
+    <string name="fw_upgrade_notice_miband6">Vous êtes sur le point d\'installer le micro-logiciel %s dans votre Mi Band 6.
+\n
+\nAssurez-vous d\'installer le fichier .fw, et puis ensuite le fichier .res. Votre bracelet redémarrera après l\'installation du fichier .fw.
+\n
+\nRemarque. Vous n\'avez pas besoin d\'installer le fichier .res si c\'est exactement le même que celui précédemment installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="watchface_install_info">Vous êtes sur le point d\'installer la facade suivante:
+\n
+\n%1$s
+\nVersion %2$s par %3$s
+\n</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Configuration de la façade pour les bracelets dont le micro-logiciel est en version DN1.0.2.19r ou inférieur</string>
+    <string name="qhybrid_calibration_100_steps">100 pas</string>
+    <string name="qhybrid_calibration_10_steps">10 pas</string>
+    <string name="qhybrid_calibration_1_step">1 pas</string>
+    <string name="qhybrid_calibration_clockwise">Dans le sens horaire</string>
+    <string name="qhybrid_calibration_counterclockwise">Dans le sens anti-horaire</string>
+    <string name="fossil_hr_new_action">Nouvelle action</string>
+    <string name="fossil_hr_new_action_cancel">annuler</string>
+    <string name="fossil_hr_edit_action">Modifier l\'action</string>
+    <string name="fossil_hr_edit_action_delete">supprimer</string>
+    <string name="fossil_hr_commute_actions_explanation">Les actions configurées ici apparaitront dans l\'app Commute dans votre bracelet. Consulter le wiki pour plus d\'informations sur la gestion des intentions générés par ces actions.</string>
+    <string name="qhybrid_title_watchface">Configuration de la facade</string>
+    <string name="notification_channel_low_battery_name">Batterie faible</string>
+    <string name="notification_channel_transfer_name">Transfert de données</string>
+    <string name="qhybrid_pref_summary_external_intents">Autoriser d\'autres apps Android à envoyer/écraser des fichiers</string>
+    <string name="qhybrid_pref_title_external_intents">Autorise des intentions externes dangereux</string>
+    <string name="pref_summary_developer_settings">Réglages et fonctionnalités utilisés par les développeurs</string>
+    <string name="pref_title_developer_settings">Réglages Développeurs</string>
+    <string name="qhybrid_pref_summary_actions">Actions pour l\'app Commute</string>
+    <string name="qhybrid_pref_title_actions">Actions</string>
+    <string name="devicetype_amazfit_trex_pro">Amazfit T-Rex Pro</string>
+    <string name="menuitem_barometer">Baromètre</string>
+    <string name="pref_theme_black_background">Utiliser un fond sombre en mode Thème Sombre</string>
+    <string name="gpx_receiver_overwrite_some_files">Certain(s) fichier(s) existe(nt) déja. Les écraser \?</string>
+    <string name="gpx_receiver_files_received">Fichier(s) GPX reçu(s):</string>
+    <string name="gpx_receiver_activity_title">Récepteur GPX Gadgetbridge</string>
+    <string name="activity_summary_detail_editing_gpx_track">Modifier les traces GPX liées</string>
+    <string name="activity_summary_detail_clear_gpx_track">Effacer la trace GPX</string>
+    <string name="activity_summary_detail_select_gpx_track">Choisir une trace GPX</string>
+    <string name="set">Configurer</string>
+    <string name="watchface_setting_wrist_flick_duration">Durée (en ms):</string>
+    <string name="watchface_setting_wrist_flick_minute">Orientation minute (-360 à 360):</string>
+    <string name="watchface_setting_wrist_flick_hour">Orientation de l\'heure (-360 à +360):</string>
+    <string name="watchface_setting_wrist_flick_move_relative">Déplacement des mains en fonction du temps:</string>
+    <string name="watchface_setting_desc_wrist_flick">(pour désactiver complètement, permettre le mouvement relatif et configurer toutes les valeurs à 0)</string>
+    <string name="watchface_setting_title_wrist_flick">Mouvement du poignet</string>
+    <string name="watchface_setting_display_refresh_partial">Rafraîchissement partiel (en minutes):</string>
+    <string name="watchface_setting_display_refresh_full">Rafraichissement complet (en minutes):</string>
+    <string name="watchface_setting_title_display_refresh_timeout">Intervalle de rafraîchissement de l\'écran</string>
+    <string name="watchface_dialog_title_settings">Réglages du thème d\'écran</string>
+    <string name="watchface_dialog_widget_color_black">Noir sur blanc</string>
+    <string name="watchface_dialog_widget_color_white">Blanc sur noir</string>
+    <string name="watchface_dialog_widget_color">Couleur:</string>
+    <string name="qhybrid_title_watchface_designer">Concepteur de thème d\'écran</string>
+    <string name="watchface_dialog_widget_preset_right">Droite</string>
+    <string name="watchface_dialog_widget_preset_left">Gauche</string>
+    <string name="watchface_dialog_widget_preset_bottom">Bas</string>
+    <string name="watchface_dialog_widget_preset_top">Sommet</string>
+    <string name="watchface_dialog_widget_presets">Réglages de position:</string>
+    <string name="watchface_dialog_widget_y_coordinate">Coordonnée Y (max 240):</string>
+    <string name="watchface_dialog_widget_x_coordinate">Coordonnée X (max 240):</string>
+    <string name="watchface_dialog_widget_type">Genre:</string>
+    <string name="appmanager_app_edit">Modifier</string>
+    <string name="button_watchface_save_apply">Enregistrer et appliquer</string>
+    <string name="button_watchface_preview">Aperçu sur la montre</string>
+    <string name="watchface_widget_type_heart_rate">Rythme cardiaque</string>
+    <string name="watchface_widget_type_steps">Pas</string>
+    <string name="watchface_widget_type_weather">Météo</string>
+    <string name="watchface_widget_type_date">Date</string>
+    <string name="watchface_dialog_title_add_widget">Ajouter un widget</string>
+    <string name="watchface_toast_settings_incomplete">Configuration incomplète, widget non ajouté</string>
+    <string name="watchface_dialog_title_set_name">Configurer le nom du thème d\'écran</string>
+    <string name="button_watchface_settings">Réglages du thème d\'écran</string>
+    <string name="button_watchface_add_widget">Ajouter un widget</string>
+    <string name="button_watchface_select_image">Choisir l\'image d\'arrière-plan</string>
+    <string name="button_watchface_edit_name">Modifier le nom</string>
+    <string name="devicetype_smaq2oss">SMA-Q2 OSS</string>
 </resources>

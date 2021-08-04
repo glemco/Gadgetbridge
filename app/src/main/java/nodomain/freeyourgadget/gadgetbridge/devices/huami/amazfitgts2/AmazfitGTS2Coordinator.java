@@ -1,5 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Daniele Gobbetti, João
-    Paulo Barraca, José Rebelo, tiparega
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Daniele Gobbetti, João
+    Paulo Barraca, José Rebelo, pangwalla, tiparega
 
     This file is part of Gadgetbridge.
 
@@ -86,15 +86,22 @@ public class AmazfitGTS2Coordinator extends HuamiCoordinator {
     public boolean supportsMusicInfo() {
         return true;
     }
+
+    @Override
+    public boolean supportsUnicodeEmojis() {
+        return true;
+    }
+
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_amazfitgtsgtr,
+                R.xml.devicesettings_amazfitgtsgtr2,
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_timeformat,
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_disconnectnotification,
                 R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
+                R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_pairingkey,
                 R.xml.devicesettings_high_mtu

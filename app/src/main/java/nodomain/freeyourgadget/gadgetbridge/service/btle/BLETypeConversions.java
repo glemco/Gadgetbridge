@@ -1,5 +1,5 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, Lukas Veneziano
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Lukas Veneziano, Maxim Baz
 
     This file is part of Gadgetbridge.
 
@@ -63,7 +63,7 @@ public class BLETypeConversions {
     /**
      * Similar to calendarToRawBytes, but only up to (and including) the MINUTES.
      * @param timestamp
-     * @return
+     * @return byte array of 6 bytes
      */
     public static byte[] shortCalendarToRawBytes(Calendar timestamp) {
         // MiBand2:
@@ -227,11 +227,11 @@ public class BLETypeConversions {
      */
     public static byte mapTimeZone(TimeZone timeZone, int timezoneFlags) {
         int offsetMillis = timeZone.getRawOffset();
-        if (false && timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
+        if (timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
             offsetMillis += timeZone.getDSTSavings();
         }
-        int utcOffsetInHours =  (offsetMillis / (1000 * 60 * 60));
-        return (byte) (utcOffsetInHours * 4);
+        int utcOffsetInQuarterHours = (offsetMillis / (1000 * 60 * 15));
+        return (byte) utcOffsetInQuarterHours;
     }
 
     /**

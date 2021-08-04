@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, José Rebelo, Nephiel
 
     This file is part of Gadgetbridge.
@@ -41,6 +41,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.DateTimeDisplay;
@@ -253,6 +254,11 @@ public abstract class HuamiCoordinator extends AbstractDeviceCoordinator {
     public static boolean getExposeHRThirdParty(String deviceAddress) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
         return prefs.getBoolean(HuamiConst.PREF_EXPOSE_HR_THIRDPARTY, false);
+    }
+
+    public static boolean getBtConnectedAdvertising(String deviceAddress) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
+        return prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_BT_CONNECTED_ADVERTISEMENT, false);
     }
 
     protected static Date getTimePreference(String key, String defaultValue, String deviceAddress) {

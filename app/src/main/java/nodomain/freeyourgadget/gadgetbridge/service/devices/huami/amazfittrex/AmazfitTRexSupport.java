@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Dmytro Bielik
 
     This file is part of Gadgetbridge.
 
@@ -25,7 +25,6 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfittrex.AmazfitTRexFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts.AmazfitGTSSupport;
 
 public class AmazfitTRexSupport extends AmazfitGTSSupport {
@@ -37,7 +36,7 @@ public class AmazfitTRexSupport extends AmazfitGTSSupport {
 
     @Override
     protected AmazfitTRexSupport setDisplayItems(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, false, R.array.pref_trex_display_items_default);
+        setDisplayItemsNew(builder, false, true, R.array.pref_trex_display_items_default);
         return this;
     }
 

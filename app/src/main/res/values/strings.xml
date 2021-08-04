@@ -25,6 +25,16 @@
     <string name="controlcenter_snackbar_connecting">Connecting…</string>
     <string name="controlcenter_snackbar_requested_screenshot">Taking a screenshot of the device</string>
     <string name="controlcenter_calibrate_device">Calibrate Device</string>
+    <!-- Strings related to battery Info Activity -->
+    <string name="battery_detail_activity_title">Battery info</string>
+    <string name="battery_level">Battery level</string>
+    <string name="calendar_day">Day</string>
+    <string name="calendar_week">Week</string>
+    <string name="calendar_two_weeks">Two weeks</string>
+    <string name="calendar_month">Month</string>
+    <string name="calendar_three_months">3 months</string>
+    <string name="calendar_six_months">6 months</string>
+    <string name="calendar_year">Year</string>
     <!-- Strings related to Debug Activity -->
     <string name="title_activity_debug">Debug</string>
     <string name="debugactivity_really_factoryreset_title">Really factory reset?</string>
@@ -71,9 +81,17 @@
     <string name="fw_upgrade_notice_amazfitgtr">You are about to install the %s firmware on your Amazfit GTR.\n\nPlease make sure to install the .fw file, then the .res file, and finally the .gps file. Your watch will reboot after installing the .fw file.\n\nNote: You do not have to install .res and .gps if these files are exactly the same as the ones previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfitgts">You are about to install the %s firmware on your Amazfit GTS.\n\nPlease make sure to install the .fw file, then the .res file, and finally the .gps file. Your watch will reboot after installing the .fw file.\n\nNote: You do not have to install .res and .gps if these files are exactly the same as the ones previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_trex">You are about to install the %s firmware on your Amazfit T-Rex.\n\nPlease make sure to install the .fw file, then the .res file, and finally the .gps file. Your watch will reboot after installing the .fw file.\n\nNote: You do not have to install .res and .gps if these files are exactly the same as the ones previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfitvergel">You are about to install the %s firmware on your Amazfit Verge Lite.\n\nPlease make sure to install the .fw file, then the .res file, and finally the .gps file. Your watch will reboot after installing the .fw file.\n\nNote: You do not have to install .res and .gps if these files are exactly the same as the ones previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband3">You are about to install the %s firmware on your Mi Band 3.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband4">You are about to install the %s firmware on your Mi Band 4.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband5">You are about to install the %s firmware on your Mi Band 5.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_miband6">You are about to install the %s firmware on your Mi Band 6.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfitx">You are about to install the %s firmware on your Amazfit X.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfitneo">You are about to install the %s firmware on your Amazfit Neo.
+\n
+\nYour band will reboot after installing the .fw file.
+\n
+\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_multi_upgrade_notice">You are about to install the %1$s and %2$s firmware, instead of the ones currently on your Mi Band.</string>
     <string name="miband_firmware_known">This firmware has been tested and is known to be compatible with Gadgetbridge.</string>
     <string name="miband_firmware_unknown_warning">"This firmware is untested and may not be compatible with Gadgetbridge.\n\nYou are DISCOURAGED from flashing it!"</string>
@@ -93,6 +111,7 @@
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_system">System</string>
+    <string name="pref_theme_black_background">Use black background in Dark Theme</string>
     <string name="pref_title_language">Language</string>
     <string name="pref_title_minimize_priority">Hide the Gadgetbridge notification</string>
     <string name="pref_summary_minimize_priority_off">The icon in the status bar and the notification in the lockscreen are shown</string>
@@ -133,7 +152,7 @@
     <string name="pref_title_canned_replies">Replies</string>
     <string name="pref_title_canned_reply_suffix">Common suffix</string>
     <string name="pref_title_canned_messages_dismisscall">Call Dismissal</string>
-    <string name="pref_title_canned_messages_set">Update on Pebble</string>
+    <string name="pref_title_canned_messages_set">Update on device</string>
     <string name="pref_header_development">Developer options</string>
     <string name="pref_title_development_miaddr">Mi Band address</string>
     <string name="pref_title_pebble_settings">Pebble settings</string>
@@ -154,7 +173,7 @@
     <string name="pref_title_custom_deviceicon">Show device specific notification icon</string>
     <string name="pref_summary_custom_deviceicon">Show a device specific Android notification icon instead the Gadgetbridge icon when connected</string>
     <string name="pref_title_autoremove_notifications">Autoremove dismissed notifications</string>
-    <string name="pref_summary_autoremove_notifications">Notifications are automatically removed from the Pebble when dismissed from the Android device</string>
+    <string name="pref_summary_autoremove_notifications">Notifications are automatically removed from the device when dismissed from the phone</string>
     <string name="pref_title_pebble_privacy_mode">Privacy mode</string>
     <string name="pref_pebble_privacy_mode_off">Normal notifications</string>
     <string name="pref_pebble_privacy_mode_content">Shift the notification text off-screen</string>
@@ -186,6 +205,8 @@
     <string name="pref_title_pebble_reconnect_attempts">Reconnection attempts</string>
     <string name="pref_summary_expose_hr">Allows other apps to access HR data in realtime while Gadgetbridge is connected</string>
     <string name="pref_title_expose_hr">3rd party realtime HR access</string>
+    <string name="pref_title_connected_advertisement">Visible while connected</string>
+    <string name="pref_summary_connected_advertisement">Makes the device discoverable via Bluetooth even when connected</string>
     <string name="pref_title_use_custom_font">Use custom font</string>
     <string name="pref_summary_use_custom_font">Enable this if your device has a custom font firmware for emoji support</string>
     <string name="pref_title_allow_high_mtu">Allow high MTU</string>
@@ -324,7 +345,8 @@
     <string name="installation_failed_">Installation failed</string>
     <string name="installation_successful">Installed</string>
     <string name="firmware_install_warning">YOU ARE TRYING TO INSTALL A FIRMWARE, PROCEED AT YOUR OWN RISK.\n\n\n This firmware is for HW Revision: %s</string>
-    <string name="app_install_info">You are about to install the following app:\n\n\n%1$s Version %2$s by %3$s\n</string>
+    <string name="app_install_info">You are about to install the following app:\n\n%1$s\nVersion %2$s by %3$s\n</string>
+    <string name="watchface_install_info">You are about to install the following watchface:\n\n%1$s\nVersion %2$s by %3$s\n</string>
     <string name="n_a">N/A</string>
     <string name="initialized">initialized</string>
     <string name="appversion_by_creator">%1$s by %2$s</string>
@@ -356,6 +378,7 @@
     <string name="appinstaller_install">Install</string>
     <string name="discovery_connected_devices_hint">Make your device discoverable. Currently connected devices will likely not be discovered. Activate location (e.g. GPS) on Android 6+. Disable Privacy Guard for Gadgetbridge, because it may crash and reboot your phone. If no device is found after a few minutes, try again after rebooting your mobile device.</string>
     <string name="discovery_need_to_enter_authkey">This device needs a secret auth key, long press on the device to enter it. Read the wiki.</string>
+    <string name="discovery_entered_invalid_authkey">The secret auth key you entered is invalid! Long press on the device to edit.</string>
     <string name="discovery_note">Note:</string>
     <string name="candidate_item_device_image">Device image</string>
     <string name="miband_prefs_alias">Name/Alias</string>
@@ -438,7 +461,7 @@
     <string name="notif_battery_low_extended">%1$s battery low: %2$s</string>
     <string name="notif_export_failed_title">Export database failed! Please check your settings.</string>
     <string name="prefs_charts_tabs">Charts tabs</string>
-    <string name="prefs_charts_tabs_summary">Visible charts tabs</string>
+    <string name="prefs_charts_tabs_summary">Visible chart tabs</string>
     <string name="sleepchart_your_sleep">Sleep</string>
     <string name="weeksleepchart_sleep_a_week">Sleep per week</string>
     <string name="weeksleepchart_today_sleep_description">Sleep today, target: %1$s</string>
@@ -450,8 +473,12 @@
     <string name="activity_list_summary_active_time">Active time</string>
     <string name="activity_list_summary_intensity">Movement\nIntensity</string>
     <string name="activity_list_summary_activities">Activities</string>
+    <string name="dialog_hide">Hide</string>
+    <string name="show_ongoing_activity">Show ongoing activity popup</string>
     <string name="lack_of_sleep">Lack of sleep: %1$s</string>
     <string name="overslept">Overslept: %1$s</string>
+    <string name="prefs_sounds">Sounds</string>
+    <string name="prefs_sounds_summary">Configure when the device will beep</string>
     <!-- Firmware updating -->
     <string name="devicestatus_connecting">Device is connecting</string>
     <string name="devicestatus_connected">Device is connected</string>
@@ -649,16 +676,19 @@
     <string name="activity_prefs_activetime_minutes">Daily target: active time in minutes</string>
     <string name="pref_title_pebble_health_store_raw">Store raw record in the database</string>
     <string name="pref_summary_pebble_health_store_raw">Stores the data \"as is\", increasing the database usage to allow for later interpretation.</string>
-    <string name="action_db_management">Database management</string>
-    <string name="title_activity_db_management">Database management</string>
-    <string name="activity_db_management_import_export_explanation">The database operations use the following path on your device. \nThis path is accessible to other Android apps and your computer. \nExpect to find your exported database (or place the database you want to import) there:</string>
+    <string name="action_db_management">Data management</string>
+    <string name="title_activity_db_management">Data management</string>
+    <string name="activity_db_management_import_export_explanation">The export/import operations use the following path (see below) to a directory on your device. This directory is accessible to other Android apps and your computer. Do note, that this directory and all containing files are deleted if you uninstall Gadgetbridge. The data includes:\n Export_preference - global settings\n Export_preference_MAC - device specific settings\n Gadgetbridge - device and activity database\n Gadgetbridge_date - database exported on a date\n *.gpx - GPS recordings\n *.log - log files\nExpect to find your exported files (or place the files you want to import) there:</string>
     <string name="activity_db_management_merge_old_title">Legacy database delete</string>
     <string name="dbmanagementactivvity_cannot_access_export_path">Cannot access export path. Please contact the developers.</string>
     <string name="dbmanagementactivity_exported_to">Exported to: %1$s</string>
     <string name="dbmanagementactivity_error_exporting_db">"Error exporting DB: %1$s"</string>
+    <string name="dbmanagementactivity_error_cleaning_export_directory">"Error erasing files from export directory %1$s"</string>
     <string name="dbmanagementactivity_error_exporting_shared">"Error exporting preference: %1$s"</string>
     <string name="dbmanagementactivity_import_data_title">Import Data?</string>
-    <string name="dbmanagementactivity_overwrite_database_confirmation">Really overwrite the current database? All your current activity data (if any) will be lost.</string>
+    <string name="dbmanagementactivity_export_data_title">Export Data?</string>
+    <string name="dbmanagementactivity_overwrite_database_confirmation">Really overwrite the current data? All your current activity data (if any) and preferences will be overwritten.</string>
+    <string name="dbmanagementactivity_export_confirmation">Really export data? Previously exported activity data (if any) and preferences will be overwritten.</string>
     <string name="dbmanagementactivity_import_successful">Imported.</string>
     <string name="dbmanagementactivity_error_importing_db">"Error importing DB: %1$s"</string>
     <string name="dbmanagementactivity_error_importing_shared">"Error importing preference: %1$s"</string>
@@ -673,18 +703,26 @@
     <string name="dbmanagementactivity_overwrite">Overwrite</string>
     <string name="activity_db_management_autoexport_explanation">Database autoexport location has been set to:</string>
     <string name="activity_db_management_autoexport_label">AutoExport</string>
-    <string name="activity_DB_ExportButton">Export DB</string>
-    <string name="activity_DB_import_button">Import DB</string>
+    <string name="activity_DB_ExportButton">Export Data</string>
+    <string name="activity_DB_import_button">Import Data</string>
     <string name="activity_DB_test_export_button">Run AutoExport Now</string>
     <string name="activity_DB_test_export_message">Exporting database…</string>
     <string name="activity_DB_delete_legacy_button">Delete old DB</string>
-    <string name="activity_DB_empty_button">Empty DB</string>
+    <string name="activity_DB_empty_button">Empty Database</string>
     <string name="activity_db_management_empty_DB">Empty Database</string>
     <string name="activity_db_management_exportimport_label">Export and Import</string>
     <string name="activity_db_management_empty_db_warning">Warning! By pushing this button you will wipe your database and start from scratch.</string>
     <string name="Cancel">Cancel</string>
     <string name="Delete">Delete</string>
     <string name="ok">OK</string>
+    <string name="set">Set</string>
+    <string name="activity_data_management_directory_content_title">Export/Import directory content</string>
+    <string name="activity_DB_ShowContentButton">Show Export/Import directory content</string>
+    <string name="activity_db_management_clean_export_directory_label">Delete files in Export/Import directory</string>
+    <string name="activity_DB_clean_export_directory_warning_title">Delete files in the Export/Import directory?</string>
+    <string name="activity_DB_clean_export_directory_warning_message">Really delete files in the Export/Import directory?</string>
+    <string name="activity_db_management_clean_export_directory_text">Exported files in the Export/Import directory are accessible by any app on your device. You might like to remove these files after synchronisation or backup. Make sure to have a backup before deleting them. GPX files, sub-directories and auto-exported database file (if exist) will not be deleted. The path to the Export/Import directory is:</string>
+    <string name="dbmanagementactivity_export_finished">Deletion finished</string>
     <!-- Strings related to Vibration Activity -->
     <string name="title_activity_vibration">Vibration</string>
     <!-- Strings related to Pebble Pairing Activity-->
@@ -746,10 +784,14 @@
     <string name="activity_type_basketball">Basketball</string>
     <string name="activity_type_pingpong">Ping Pong</string>
     <string name="activity_type_badminton">Badminton</string>
+    <string name="activity_type_strength_training">Strength Training</string>
     <string name="activity_type_unknown">Unknown activity</string>
     <string name="activity_summaries">Sport Activities</string>
     <string name="activity_summary_detail">Sport Activity Detail</string>
     <string name="activity_summary_edit_name_title">Edit label</string>
+    <string name="activity_summary_detail_select_gpx_track">Select GPX track</string>
+    <string name="activity_summary_detail_clear_gpx_track">Clear GPX track</string>
+    <string name="activity_summary_detail_editing_gpx_track">Editing linked GPX track</string>
     <string name="activity_summary_today">Today</string>
     <string name="activity_summary_yesterday">Yesterday</string>
     <string name="activity_type_biking">Biking</string>
@@ -766,6 +808,7 @@
     <string name="kind_gps">GPS Firmware</string>
     <string name="kind_gps_almanac">GPS Almanac</string>
     <string name="kind_gps_cep">GPS Error Correction</string>
+    <string name="kind_agps_bundle">AGPS Bundle</string>
     <string name="kind_resources">Resources</string>
     <string name="kind_watchface">Watchface</string>
     <string name="devicetype_unknown">Unknown Device</string>
@@ -776,7 +819,9 @@
     <string name="devicetype_miband3">Mi Band 3</string>
     <string name="devicetype_miband4">Mi Band 4</string>
     <string name="devicetype_miband5">Mi Band 5</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
+    <string name="devicetype_amazfit_neo">Amazfit Neo</string>
     <string name="devicetype_amazfit_bip">Amazfit Bip</string>
     <string name="devicetype_amazfit_bip_lite">Amazfit Bip Lite</string>
     <string name="devicetype_amazfit_cor">Amazfit Cor</string>
@@ -786,9 +831,16 @@
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
     <string name="devicetype_amazfit_bipu">Amazfit Bip U</string>
+    <string name="devicetype_amazfit_bipupro">Amazfit Bip U Pro</string>
     <string name="devicetype_amazfit_gtr2">Amazfit GTR 2</string>
+    <string name="devicetype_amazfit_gtr2e">Amazfit GTR 2e</string>
     <string name="devicetype_amazfit_gts2">Amazfit GTS 2</string>
+    <string name="devicetype_amazfit_gts2_mini">Amazfit GTS 2 Mini</string>
+    <string name="devicetype_amazfit_gts2e">Amazfit GTS 2e</string>
+    <string name="devicetype_amazfit_x">Amazfit X</string>
+    <string name="devicetype_zepp_e">Zepp E</string>
     <string name="devicetype_vibratissimo">Vibratissimo</string>
+    <string name="devicetype_um25">UM-25</string>
     <string name="devicetype_liveview">LiveView</string>
     <string name="devicetype_hplus">HPlus</string>
     <string name="devicetype_makibes_f68">Makibes F68</string>
@@ -817,10 +869,16 @@
     <string name="devicetype_tlw64">TLW64</string>
     <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
     <string name="devicetype_sonyswr12" translatable="false">Sony SWR12</string>
+    <string name="devicetype_waspos">Wasp-os</string>
+    <string name="devicetype_smaq2oss">SMA-Q2 OSS</string>
+    <string name="devicetype_domyos_t540"/>
     <string name="choose_auto_export_location">Choose export location</string>
-    <string name="notification_channel_name">Gadgetbridge notifications</string>
-    <string name="notification_channel_high_priority_name">Gadgetbridge notifications high priority</string>
+    <string name="notification_channel_name">General</string>
+    <string name="notification_channel_high_priority_name">High-priority</string>
+    <string name="notification_channel_transfer_name">Data transfer</string>
+    <string name="notification_channel_low_battery_name">Low battery</string>
     <string name="devicetype_amazfit_gts">Amazfit GTS</string>
+    <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
     <string name="devicetype_lefun">Lefun</string>
     <!-- Menus on the smart device -->
@@ -853,6 +911,13 @@
     <string name="menuitem_alexa">Alexa</string>
     <string name="menuitem_dnd">DND</string>
     <string name="menuitem_stopwatch">Stopwatch</string>
+    <string name="menuitem_goal">Activity Goal</string>
+    <string name="menuitem_sleep">Sleep</string>
+    <string name="menuitem_pomodoro">Pomodoro Tracker</string>
+    <string name="menuitem_events">Events</string>
+    <string name="menuitem_widgets">Widgets</string>
+    <string name="menuitem_temperature">Temperature</string>
+    <string name="menuitem_barometer">Barometer</string>
     <string name="watch9_time_minutes">Minutes:</string>
     <string name="watch9_time_hours">Hours:</string>
     <string name="watch9_time_seconds">Seconds:</string>
@@ -891,12 +956,11 @@
     <string name="save_configuration">Save Configuration</string>
     <!-- App Widgets-->
     <string name="appwidget_not_connected">Not connected, alarm not set.</string>
+    <string name="widget_settings_select_device_title">Select device</string>
     <string name="appwidget_text">Zzz</string>
     <string name="add_widget">Add widget</string>
     <string name="appwidget_setting_alarm">Setting alarm for %1$02d:%2$02d</string>
     <string name="appwidget_sleep_alarm_widget_label">Sleep Alarm</string>
-    <string name="widget_steps_label">Steps: %1$02d</string>
-    <string name="widget_sleep_label">Sleep: %1$s</string>
     <string name="widget_listing_label">Status and Alarms</string>
     <string name="widget_set_alarm_after">Set alarm after:</string>
     <string name="widget_5_minutes">5 minutes</string>
@@ -953,6 +1017,9 @@
     <string name="about_title">About</string>
     <string name="about_version">Version %s</string>
     <string name="about_activity_title">About Gadgetbridge</string>
+    <string name="gpx_receiver_activity_title">GPX Receiver Gadgetbridge</string>
+    <string name="gpx_receiver_files_received">GPX file(s) received:</string>
+    <string name="gpx_receiver_overwrite_some_files">Some file(s) already exist. Overwrite?</string>
     <string name="about_description">Cloudless copylefted libre replacement for closed source Android gadget apps from vendors.</string>
     <string name="about_core_team_title">Core Team (in order of first code contribution)</string>
     <string name="about_contributors">Contributors</string>
@@ -1016,9 +1083,12 @@
     <!-- activity summary units-->
     <string name="meters">m</string>
     <string name="cm">cm</string>
+    <string name="ft">ft</string>
     <string name="steps_unit">steps</string>
     <string name="meters_second">m/s</string>
     <string name="km_h">km/h</string>
+    <string name="mi_h">mi/h</string>
+    <string name="minutes_mi">min/mi</string>
     <string name="strokes_second">str/s</string>
     <string name="strokes_unit">str</string>
     <string name="seconds">sec</string>
@@ -1031,6 +1101,7 @@
     <string name="minutes_km">min/km</string>
     <string name="bpm">bpm</string>
     <string name="km">km</string>
+    <string name="mi">mi</string>
     <!-- activity summary groups-->
     <string name="Strokes">Strokes</string>
     <string name="Swimming">Swimming</string>
@@ -1086,7 +1157,8 @@
     <string name="backstroke">Backstroke</string>
     <string name="medley">Medley</string>
     <string name="devicetype_nut_mini">Nut mini</string>
-    <string name="qhybrid_calibration_align_hint">align hands to 12:00</string>
+    <string name="qhybrid_calibration_align_hint">Use the buttons below to align the watch hands to 12:00.</string>
+    <string translatable="false" name="lorem_ipsum">Lorem Ipsum</string>
     <plurals name="widget_alarm_target_hours">
         <item quantity="one">%d hour</item>
         <item quantity="two">%d hours</item>
@@ -1094,4 +1166,82 @@
         <item quantity="many">%d hours</item>
         <item quantity="other">%d hours</item>
     </plurals>
+    <string name="prefs_autolight">Automatic light</string>
+    <string name="prefs_key_vibration">Key Vibration</string>
+    <string name="prefs_operating_sounds">Operating Sounds</string>
+    <string name="prefs_fake_ring_duration">Fake continuous ringing</string>
+    <string name="prefs_autoremove_message">Automatically remove SMS notifications</string>
+    <string name="fossil_hr_commute_processing">Processing request...</string>
+    <string name="fossil_hr_synced_activity_data">Synchronised activity data</string>
+    <string name="fossil_hr_unavailable_unauthed">Not available in unauthenticated mode</string>
+    <string name="fossil_hr_auth_failed">Authentication failed, limited functionality</string>
+    <string name="qhybrid_title_watchface">Watchface configuration</string>
+    <string name="qhybrid_title_apps">Apps</string>
+    <string name="qhybrid_title_background_image">Background image</string>
+    <string name="qhybrid_title_file_management">File management</string>
+    <string name="qhybrid_title_apps_management">Apps management</string>
+    <string name="qhybrid_title_calibration">Calibration</string>
+    <string name="fossil_hr_warning_firmware_too_new">Some functions are disabled because the firmware of the watch is too new</string>
+    <string name="pref_title_physical_buttons">Physical buttons</string>
+    <string name="pref_summary_physical_buttons">Configure the functionality of the physical buttons on the watch</string>
+    <string name="qhybrid_summary_file_management">Upload and download files</string>
+    <string name="qhybrid_summary_calibration">Calibrate the watch hands</string>
+    <string name="pref_summary_canned_messages_set">Send the messages configured below to your device</string>
+    <string name="pref_summary_canned_messages_dismisscall">Dismiss calls from the watch with an SMS message</string>
+    <string name="fossil_hr_commute_actions_explanation">The actions configured here will appear in the Commute app on your watch. Read the wiki for information on how to handle the intents produced by these actions.</string>
+    <string name="fossil_hr_edit_action_delete">delete</string>
+    <string name="fossil_hr_edit_action">Edit action</string>
+    <string name="fossil_hr_new_action_cancel">cancel</string>
+    <string name="fossil_hr_new_action">New action</string>
+    <string name="qhybrid_calibration_counterclockwise">Counterclockwise</string>
+    <string name="qhybrid_calibration_clockwise">Clockwise</string>
+    <string name="qhybrid_calibration_1_step">1 step</string>
+    <string name="qhybrid_calibration_10_steps">10 steps</string>
+    <string name="qhybrid_calibration_100_steps">100 steps</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Watchface configuration screen for watches with firmware version DN1.0.2.19r and lower</string>
+    <string name="qhybrid_pref_title_actions">Actions</string>
+    <string name="qhybrid_pref_summary_actions">Actions for the Commute app</string>
+    <string name="pref_title_developer_settings">Developer settings</string>
+    <string name="pref_summary_developer_settings">Settings and functionality used by developers</string>
+    <string name="qhybrid_pref_title_external_intents">Allow dangerous external intents</string>
+    <string name="qhybrid_pref_summary_external_intents">Allows other Android apps to upload/overwrite files</string>
+    <string name="devicetype_amazfit_trex_pro">Amazfit T-Rex Pro</string>
+    <string name="button_watchface_edit_name">Edit name</string>
+    <string name="button_watchface_select_image">Change background image</string>
+    <string name="button_watchface_add_widget">Add widget</string>
+    <string name="button_watchface_settings">Watchface settings</string>
+    <string name="watchface_dialog_title_set_name">Set watchface name</string>
+    <string name="watchface_toast_settings_incomplete">Settings incomplete, widget not added</string>
+    <string name="watchface_dialog_title_add_widget">Add widget</string>
+    <string name="watchface_widget_type_date">Date</string>
+    <string name="watchface_widget_type_weather">Weather</string>
+    <string name="watchface_widget_type_steps">Steps</string>
+    <string name="watchface_widget_type_heart_rate">Heart rate</string>
+    <string name="button_watchface_preview">Preview on watch</string>
+    <string name="button_watchface_save_apply">Save and apply</string>
+    <string name="appmanager_app_edit">Edit</string>
+    <string name="watchface_dialog_widget_type">Type:</string>
+    <string name="watchface_dialog_widget_x_coordinate">X coordinate (max 240):</string>
+    <string name="watchface_dialog_widget_y_coordinate">Y coordinate (max 240):</string>
+    <string name="watchface_dialog_widget_presets">Position presets:</string>
+    <string name="watchface_dialog_widget_preset_top">Top</string>
+    <string name="watchface_dialog_widget_preset_bottom">Bottom</string>
+    <string name="watchface_dialog_widget_preset_left">Left</string>
+    <string name="watchface_dialog_widget_preset_right">Right</string>
+    <string name="qhybrid_title_watchface_designer">Watchface designer</string>
+    <string name="watchface_dialog_widget_color">Color:</string>
+    <string name="watchface_dialog_widget_color_white">White</string>
+    <string name="watchface_dialog_widget_color_black">Black</string>
+    <string name="watchface_dialog_title_settings">Watchface settings</string>
+    <string name="watchface_setting_title_display_refresh_timeout">Display refresh timeout</string>
+    <string name="watchface_setting_display_refresh_full">Full refresh (in minutes):</string>
+    <string name="watchface_setting_display_refresh_partial">Partial refresh (in minutes):</string>
+    <string name="watchface_setting_title_wrist_flick">Wrist flick</string>
+    <string name="watchface_setting_desc_wrist_flick">(to disable completely, enable relative movement and set all values to 0)</string>
+    <string name="watchface_setting_wrist_flick_move_relative">Move hands relative to time:</string>
+    <string name="watchface_setting_wrist_flick_hour">Hour hand (-360 to 360):</string>
+    <string name="watchface_setting_wrist_flick_minute">Minute hand (-360 to 360):</string>
+    <string name="watchface_setting_wrist_flick_duration">Duration (in ms):</string>
+    <string name="watchface_cache_confirm_overwrite">A watchface with this name already exists in the cache. Do you want to overwrite it?</string>
+    <string name="watchface_upload_failed">Upload of the watchface failed. Please try again.</string>
 </resources>

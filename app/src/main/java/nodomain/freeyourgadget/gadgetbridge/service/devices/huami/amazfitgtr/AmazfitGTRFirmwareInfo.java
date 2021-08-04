@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Daniele Gobbetti
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Daniele Gobbetti
 
     This file is part of Gadgetbridge.
 
@@ -93,6 +93,10 @@ public class AmazfitGTRFirmwareInfo extends HuamiFirmwareInfo {
         }
         if (ArrayUtils.startsWith(bytes, GPS_CEP_HEADER)) {
             return HuamiFirmwareType.GPS_CEP;
+        }
+
+        if (ArrayUtils.startsWith(bytes, AGPS_UIHH_HEADER)) {
+            return HuamiFirmwareType.AGPS_UIHH;
         }
 
         for (byte[] gpsHeader : GPS_HEADERS) {

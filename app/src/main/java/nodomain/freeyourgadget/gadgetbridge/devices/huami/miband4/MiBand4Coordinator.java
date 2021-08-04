@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, HardLight, José Rebelo
 
     This file is part of Gadgetbridge.
@@ -98,6 +98,7 @@ public class MiBand4Coordinator extends HuamiCoordinator {
                 R.xml.devicesettings_swipeunlock,
                 R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
+                R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_pairingkey,
                 R.xml.devicesettings_high_mtu

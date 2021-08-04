@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti
 
     This file is part of Gadgetbridge.
@@ -59,6 +59,9 @@ public abstract class HuamiFWHelper extends AbstractMiBandFWHelper {
                 break;
             case GPS_CEP:
                 resId = R.string.kind_gps_cep;
+                break;
+            case AGPS_UIHH:
+                resId = R.string.kind_agps_bundle;
                 break;
             case RES:
             case RES_COMPRESSED:

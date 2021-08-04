@@ -1,5 +1,6 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, José Rebelo, Matthieu Baerts, Nephiel, vanous
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Dmitry Markin, José Rebelo, Matthieu Baerts, Nephiel, Petr Vaněk,
+    Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -28,6 +29,8 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,6 +40,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.entities.BatteryLevelDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.DeviceAttributesDao;
@@ -97,6 +101,8 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
                 deleteDevice(gbDevice, device, session);
                 QueryBuilder<?> qb = session.getDeviceAttributesDao().queryBuilder();
                 qb.where(DeviceAttributesDao.Properties.DeviceId.eq(device.getId())).buildDelete().executeDeleteWithoutDetachingEntities();
+                QueryBuilder<?> batteryLevelQueryBuilder = session.getBatteryLevelDao().queryBuilder();
+                batteryLevelQueryBuilder.where(BatteryLevelDao.Properties.DeviceId.eq(device.getId())).buildDelete().executeDeleteWithoutDetachingEntities();
                 session.getDeviceDao().delete(device);
             } else {
                 LOG.info("device to delete not found in db: " + gbDevice);
@@ -141,6 +147,37 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
             return (bluetoothClass.getDeviceClass() & deviceClasses) != 0;
         }
         return false;
+    }
+
+    @Override
+    public File getAppCacheDir() throws IOException {
+        return null;
+    }
+
+    @Override
+    public String getAppCacheSortFilename() {
+        return null;
+    }
+
+    @Override
+    public String getAppFileExtension() {
+        return null;
+    }
+
+    @Override
+    public boolean supportsAppListFetching() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsAppReordering() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Class<? extends Activity> getWatchfaceDesignerActivity() {
+        return null;
     }
 
     @Override

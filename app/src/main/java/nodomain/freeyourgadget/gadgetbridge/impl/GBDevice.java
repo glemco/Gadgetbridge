@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniel
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel
     Dakhno, Daniele Gobbetti, José Rebelo, Taavi Eomäe, Uwe Hermann
 
     This file is part of Gadgetbridge.
@@ -60,10 +60,10 @@ public class GBDevice implements Parcelable {
     public static final short BATTERY_UNKNOWN = -1;
     private static final short BATTERY_THRESHOLD_PERCENT = 10;
     public static final String EXTRA_DEVICE = "device";
+    public static final String EXTRA_UUID = "extraUUID";
     private static final String DEVINFO_HW_VER = "HW: ";
     private static final String DEVINFO_FW_VER = "FW: ";
-    private static final String DEVINFO_HR_VER = "HR: ";
-    private static final String DEVINFO_GPS_VER = "GPS: ";
+    private static final String DEVINFO_FW2_VER = "FW2: ";
     private static final String DEVINFO_ADDR = "ADDR: ";
     private static final String DEVINFO_ADDR2 = "ADDR2: ";
     private String mName;
@@ -562,12 +562,7 @@ public class GBDevice implements Parcelable {
             result.add(new GenericItem(DEVINFO_FW_VER, mFirmwareVersion));
         }
         if (mFirmwareVersion2 != null) {
-            // FIXME: This is ugly
-            if (mDeviceType == DeviceType.AMAZFITBIP) {
-                result.add(new GenericItem(DEVINFO_GPS_VER, mFirmwareVersion2));
-            } else {
-                result.add(new GenericItem(DEVINFO_HR_VER, mFirmwareVersion2));
-            }
+            result.add(new GenericItem(DEVINFO_FW2_VER, mFirmwareVersion2));
         }
         if (mAddress != null) {
             result.add(new GenericItem(DEVINFO_ADDR, mAddress));

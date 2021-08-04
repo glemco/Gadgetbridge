@@ -31,13 +31,21 @@
             android:key="audio_player"
             android:title="@string/pref_title_audio_player"
             android:summary="%s" />
-        <ListPreference
-            android:key="pref_key_theme"
-            android:title="@string/pref_title_theme"
-            android:entries="@array/pref_theme_options"
-            android:entryValues="@array/pref_theme_values"
-            android:defaultValue="@string/pref_theme_value_light"
-            android:summary="%s" />
+
+        <PreferenceScreen android:title="@string/pref_title_theme">
+            <ListPreference
+                android:defaultValue="@string/pref_theme_value_light"
+                android:entries="@array/pref_theme_options"
+                android:entryValues="@array/pref_theme_values"
+                android:key="pref_key_theme"
+                android:summary="%s"
+                android:title="@string/pref_title_theme" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pref_key_theme_amoled_black"
+                android:layout="@layout/preference_checkbox"
+                android:title="@string/pref_theme_black_background" />
+        </PreferenceScreen>
 
         <PreferenceScreen
             android:key="language_category"
@@ -56,13 +64,6 @@
                 android:key="measurement_system"
                 android:summary="%s"
                 android:title="@string/pref_title_unit_system" />
-            <CheckBoxPreference
-                android:layout="@layout/preference_checkbox"
-                android:defaultValue="false"
-                android:key="transliteration"
-                android:summary="@string/pref_summary_transliteration"
-                android:title="@string/pref_title_transliteration" />
-
             <PreferenceScreen
                 android:title="@string/preferences_rtl_settings">
                 <CheckBoxPreference
@@ -235,14 +236,6 @@
                     android:key="pebble_reconnect_attempts"
                     android:maxLength="4"
                     android:title="@string/pref_title_pebble_reconnect_attempts" />
-<!--
-                <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-                    android:defaultValue="false"
-                    android:key="autoremove_notifications"
-                    android:summary="@string/pref_summary_autoremove_notifications"
-                    android:title="@string/pref_title_autoremove_notifications" />
--->
                 <ListPreference
                     android:key="pebble_pref_privacy_mode"
                     android:title="@string/pref_title_pebble_privacy_mode"

@@ -1,5 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Daniele Gobbetti, Lukas
-    Veneziano
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Daniele Gobbetti, Lukas
+    Veneziano, Maxim Baz
 
     This file is part of Gadgetbridge.
 
@@ -98,6 +98,7 @@ public class HuamiIcon {
             case LINE:
                 return LINE;
             case SIGNAL:
+                return FACEBOOK_MESSENGER;
             case WIRE:
                 return CHAT_BLUE_13;
             case TWITTER:

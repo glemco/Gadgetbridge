@@ -17,67 +17,67 @@
     <string name="title_activity_appblacklist">Danh sách đen thông báo</string>
     <!--Strings related to FwAppInstaller-->
     <string name="title_activity_fw_app_insaller">Trình cài đặt FW/ứng dụng</string>
-    <string name="fw_upgrade_notice">Bạn sắp cài đặt phần cứng %s thay cho phiên bản hiện thời trên Mi Band của bạn.</string>
+    <string name="fw_upgrade_notice">Bạn sắp cài đặt %s.</string>
     <!--Strings related to Settings-->
     <string name="title_activity_settings">Cài đặt</string>
-    <string name="pref_header_general">Cài đặt tổng quát</string>
+    <string name="pref_header_general">Cài đặt chung</string>
     <string name="pref_default">Mặc định</string>
     <string name="pref_header_datetime">Ngày giờ</string>
     <string name="pref_title_datetime_syctimeonconnect">Đồng bộ giờ</string>
-    <string name="pref_summary_datetime_syctimeonconnect">Đồng bộ giờ cho thiết bị khi kết nối và khi giờ hoặc múi giờ thay đổi trên Android.</string>
+    <string name="pref_summary_datetime_syctimeonconnect">Đồng bộ thời gian đến thiết bị Gadgetbridge khi kết nối và khi thời gian hoặc múi giờ thay đổi trên thiết bị Android</string>
     <string name="pref_header_notifications">Thông báo</string>
     <string name="pref_title_notifications_repetitions">Lặp lại</string>
     <string name="pref_title_notifications_call">Các cuộc gọi</string>
     <string name="pref_title_notifications_sms">SMS</string>
     <string name="pref_title_notifications_pebblemsg">Tin nhắn Pebble</string>
-    <string name="always">luôn luôn</string>
-    <string name="when_screen_off">khi tắt màn hình</string>
-    <string name="never">không bao giờ</string>
+    <string name="always">Luôn luôn</string>
+    <string name="when_screen_off">Khi màn hình tắt</string>
+    <string name="never">Không bao giờ</string>
     <string name="pref_blacklist">Ứng dụng trong Danh sách đen</string>
-    <string name="pref_header_development">Tuỳ chọn cho Nhà phát triển</string>
+    <string name="pref_header_development">Tuỳ chọn cho nhà phát triển</string>
     <string name="pref_title_development_miaddr">Địa chỉ Mi Band</string>
     <string name="pref_title_pebble_settings">Cài đặt Pebble</string>
-    <string name="pref_title_enable_pebblekit">Cho phép ứng dụng Android bên thứ 3 quyền truy cập</string>
-    <string name="not_connected">chưa kết nối</string>
-    <string name="connecting">đang kết nối</string>
-    <string name="connected">đã kết nối</string>
-    <string name="unknown_state">không rõ tình trạng</string>
+    <string name="pref_title_enable_pebblekit">Cho phép ứng dụng Android bên thứ ba quyền truy cập</string>
+    <string name="not_connected">Chưa kết nối</string>
+    <string name="connecting">Đang kết nối</string>
+    <string name="connected">Đã kết nối</string>
+    <string name="unknown_state">Trạng thái không xác định</string>
     <string name="_unknown_">(không rõ)</string>
     <string name="test">Kiểm tra</string>
     <string name="test_notification">Kiểm tra thông báo</string>
-    <string name="this_is_a_test_notification_from_gadgetbridge">Đây là một kiểm tra thông báo từ Gadgetbridge</string>
+    <string name="this_is_a_test_notification_from_gadgetbridge">Đây là một thông báo thử nghiệm từ Gadgetbridge</string>
     <string name="bluetooth_is_not_supported_">Không hỗ trợ Bluetooth.</string>
     <string name="bluetooth_is_disabled_">Đã tắt Bluetooth.</string>
-    <string name="cannot_connect_bt_address_invalid_">Không thể kết nối. Địa chỉ BT không hợp lệ?</string>
+    <string name="cannot_connect_bt_address_invalid_">Không thể kết nối. Địa chỉ Bluetooth không hợp lệ\?</string>
     <string name="gadgetbridge_running">Gadgetbridge đang chạy</string>
-    <string name="installing_binary_d_d">đang cài phần mềm chạy %1$d/%2$d</string>
-    <string name="installation_failed_">cài đặt thất bại!</string>
-    <string name="installation_successful">cài đặt thành công</string>
+    <string name="installing_binary_d_d">Đang cài tệp nhị phân %1$d/%2$d</string>
+    <string name="installation_failed_">Cài đặt thất bại</string>
+    <string name="installation_successful">Đã cài đặt</string>
     <string name="n_a">N/A</string>
     <string name="initialized">đã khởi chạy</string>
     <string name="appversion_by_creator">%1$s bởi %2$s</string>
-    <string name="title_activity_discovery">Dò tìm thiết bị</string>
+    <string name="title_activity_discovery">Khám phá thiết bị</string>
     <string name="discovery_stop_scanning">Dừng quét</string>
-    <string name="discovery_start_scanning">Bắt đầu dò tìm</string>
+    <string name="discovery_start_scanning">Bắt đầu khám phá</string>
     <string name="action_discover">Kết nối thiết bị mới</string>
     <string name="device_with_rssi">%1$s (%2$s)</string>
     <string name="title_activity_android_pairing">Ghép đôi thiết bị</string>
     <string name="title_activity_mi_band_pairing">Ghép đôi Mi Band</string>
     <string name="pairing">Đang ghép đôi với %s…</string>
-    <string name="message_cannot_pair_no_mac">không thể kiểm tra địa chỉ mac, không thể ghép đôi.</string>
-    <string name="preferences_category_device_specific_settings">Cài đặt cụ thể cho thiết bị</string>
-    <string name="preferences_miband_settings">Cài đặt Mi Band</string>
-    <string name="male">nam</string>
-    <string name="female">nữ</string>
-    <string name="other">khác</string>
-    <string name="left">trái</string>
-    <string name="right">phải</string>
+    <string name="message_cannot_pair_no_mac">Không có địa chỉ MAC được cho, không thể ghép đôi.</string>
+    <string name="preferences_category_device_specific_settings">Cài đặt cho thiết bị cụ thể</string>
+    <string name="preferences_miband_settings">Cài đặt Mi Band / Amazfit</string>
+    <string name="male">Nam</string>
+    <string name="female">Nữ</string>
+    <string name="other">Khác</string>
+    <string name="left">Trái</string>
+    <string name="right">Phải</string>
     <string name="appinstaller_install">Cài đặt</string>
     <string name="discovery_note">Ghi chú:</string>
-    <string name="candidate_item_device_image">Ảnh thiết bị</string>
+    <string name="candidate_item_device_image">Hình ảnh thiết bị</string>
     <string name="miband_prefs_alias">Tên/Bí danh</string>
-    <string name="title_activity_sleepmonitor">Trình giám sát giấc ngủ</string>
-    <string name="initializing">đang khởi chạy</string>
+    <string name="title_activity_sleepmonitor">Giám sát giấc ngủ</string>
+    <string name="initializing">Đang khởi chạy</string>
     <string name="sleep_activity_date_range">Từ %1$s đến %2$s</string>
     <string name="prefs_wearside">Đeo bên trái hay phải?</string>
     <string name="vibration_profile_short">Ngắn</string>
@@ -85,12 +85,12 @@
     <string name="vibration_profile_long">Dài</string>
     <string name="pref_screen_notification_profile_sms">Thông báo SMS</string>
     <string name="pref_header_vibration_settings">Cài đặt rung</string>
-    <string name="pref_screen_notification_profile_email">Thông báo Mail</string>
+    <string name="pref_screen_notification_profile_email">Thông báo email</string>
     <string name="pref_screen_notification_profile_incoming_call">Thông báo cuộc gọi đến</string>
     <string name="control_center_find_lost_device">Tìm thiết bị thất lạc</string>
     <string name="control_center_cancel_to_stop_vibration">Huỷ để ngừng rung.</string>
-    <string name="title_activity_charts">Hoạt động của bạn</string>
-    <string name="title_activity_set_alarm">Cấu hình báo thức</string>
+    <string name="title_activity_charts">Hoạt động và Ngủ</string>
+    <string name="title_activity_set_alarm">Thiết lập báo thức</string>
     <string name="controlcenter_start_configure_alarms">Cấu hình báo thức</string>
     <string name="title_activity_alarm_details">Chi tiết báo thức</string>
     <string name="alarm_sun_short">CN</string>
@@ -110,7 +110,7 @@
     <string name="abstract_chart_fragment_kind_activity">Hoạt động</string>
     <string name="abstract_chart_fragment_kind_light_sleep">Giấc ngủ nông</string>
     <string name="abstract_chart_fragment_kind_deep_sleep">Giấc ngủ sâu</string>
-    <string name="abstract_chart_fragment_kind_not_worn">Không đeo</string>
+    <string name="abstract_chart_fragment_kind_not_worn">Không được đeo</string>
     <string name="device_not_connected">Không kết nối.</string>
     <string name="user_feedback_all_alarms_disabled">Đã tắt hết báo thức</string>
     <string name="pref_title_keep_data_on_device">Giữ dữ liệu hoạt động trên thiết bị</string>
@@ -173,12 +173,12 @@
     <string name="pref_call_privacy_mode_number">Ẩn số điện thoại nhưng hiện tên</string>
     <string name="pref_call_privacy_mode_complete">Ẩn tên và số điện thoại</string>
     <string name="pref_title_weather">Thời tiết</string>
-    <string name="pref_title_weather_location">Vị trí thời tiết (CM/LOS)</string>
-    <string name="pref_title_canned_messages_set">Cập nhật trên Pebble</string>
+    <string name="pref_title_weather_location">Vị trí thời tiết (cho nhà cung cấp thời tiết của LineageOS)</string>
+    <string name="pref_title_canned_messages_set">Cập nhật trên thiết bị</string>
     <string name="pref_title_pebble_sync_health">Đồng bộ Pebble Health</string>
     <string name="pref_title_pebble_sync_misfit">Đồng bộ Misfit</string>
     <string name="pref_title_pebble_sync_morpheuz">Đồng bộ Morpheuz</string>
-    <string name="pref_summary_sunrise_sunset">Gửi thời gian mặt trời mọc và mặt trời lặn dựa trên địa điểm đến Pebble timeline</string>
+    <string name="pref_summary_sunrise_sunset">Gửi thời gian mặt trời mọc và mặt trời lặn dựa trên vị trí đến dòng thời gian của Pebble</string>
     <string name="pref_title_enable_calendar_sync">Đồng bộ lịch</string>
     <string name="pref_summary_enable_calendar_sync">Gửi sự kiện trên lịch đến dòng thời gian</string>
     <string name="pref_title_pebble_privacy_mode">Chế độ riêng tư</string>
@@ -197,4 +197,186 @@
     <string name="sonyswr12_settings_stamina_summary">Chế độ tiết kiệm năng lượng tắt tính năng đo nhịp tim tự động định kỳ do đó tăng thời gian làm việc</string>
     <string name="sonyswr12_settings_alarm_interval_summary">Khoảng thời gian báo động thông minh là khoảng thời gian trước khi báo động được cài đặt. Trong khoảng thời gian này, thiết bị đang cố gắng phát hiện giai đoạn ngủ nhẹ nhất để người dùng tỉnh táo</string>
     <string name="sonyswr12_settings_low_vibration">Độ rung thấp được kích hoạt</string>
+    <string name="appmanager_weather_install_provider">Cài đặt ứng dụng Thông báo thời tiết</string>
+    <string name="appmanager_weather_deactivate">Vô hiệu hoá ứng dụng Thời tiết hệ thống</string>
+    <string name="appmanager_weather_activate">Kích hoạt ứng dụng Thời tiết hệ thống</string>
+    <string name="debugactivity_really_factoryreset">Việc khôi phục cài đặt gốc sẽ xoá tất cả dữ liệu khỏi thiết bị đã kết nối (nếu được hỗ trợ). Các thiết bị Xiaomi/Huami cũng thay đổi địa chỉ MAC của Bluetooth, nên chúng hiện ra là thiết bị mới đối với Gadgetbridge.</string>
+    <string name="debugactivity_really_factoryreset_title">Thực sự khôi phục cài đặt gốc\?</string>
+    <string name="calendar_year">Năm</string>
+    <string name="calendar_six_months">6 tháng</string>
+    <string name="calendar_three_months">3 tháng</string>
+    <string name="calendar_month">Tháng</string>
+    <string name="calendar_two_weeks">Hai tuần</string>
+    <string name="calendar_week">Tuần</string>
+    <string name="calendar_day">Ngày</string>
+    <string name="battery_level">Mức pin</string>
+    <string name="battery_detail_activity_title">Thông tin pin</string>
+    <string name="controlcenter_navigation_drawer_close">Đóng ngăn điều hướng</string>
+    <string name="controlcenter_navigation_drawer_open">Mở ngăn điều hướng</string>
+    <string name="find_lost_device_message">Tìm kiếm %1$s\?</string>
+    <string name="pref_theme_system">Hệ thống</string>
+    <string name="pref_title_canned_replies">Trả lời</string>
+    <string name="pref_title_pebble_activitytracker">Trình theo dõi hoạt động được ưu tiên</string>
+    <string name="pref_header_activitytrackers">Trình theo dõi hoạt động</string>
+    <string name="pref_title_sunrise_sunset">Mặt trời mọc và mặt trời lặn</string>
+    <string name="pref_header_pebble_timeline">Dòng thời gian của Pebble</string>
+    <string name="appmanager_hrm_deactivate">Vô hiệu hoá HRM</string>
+    <string name="appmanager_hrm_activate">Kích hoạt HRM</string>
+    <string name="controlcenter_set_alias">Đặt bí danh</string>
+    <string name="miband_firmware_suggest_whitelist">Nếu bạn vẫn muốn tiếp tục và sau đó mọi thứ tiếp tục vận hành đúng, thì hãy bảo các nhà phát triển của Gadgetbridge cho phiên bản phần mềm %s vào danh sách trắng.</string>
+    <string name="miband_firmware_unknown_warning">Phần mềm hệ thống này chưa được thử nghiệm và có thể không tương thích với Gadgetbridge.
+\n
+\nBạn KHÔNG ĐƯỢC KHUYẾN KHÍCH cài đặt nó!</string>
+    <string name="miband_firmware_known">Phần mềm hệ thống này đã được thử nghiệm và đã được biết là tương thích với Gadgetbridge.</string>
+    <string name="fw_multi_upgrade_notice">Bạn sắp cài đặt phần mềm hệ thống %1$s và %2$s, thay vì phần mềm hiện tại đang trên Mi Band của bạn.</string>
+    <string name="fw_upgrade_notice_amazfitneo">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit Neo của bạn.
+\n
+\nBăng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitx">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit X của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_miband5">Bạn sắp cài đặt phần mềm hệ thống %s lên Mi Band 5 của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_miband4">Bạn sắp cài đặt phần mềm hệ thống %s lên Mi Band 4 của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_miband3">Bạn sắp cài đặt phần mềm hệ thống %s lên Mi Band 3 của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitvergel">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit Verge Lite của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, sau đó là tệp .res, và cuối cùng là tệp .gps. Đồng hồ của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res và .gps nếu các tệp đó giống hệt với các tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfit_trex">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit T-Rex của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, sau đó là tệp .res, và cuối cùng là tệp .gps. Đồng hồ của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res và .gps nếu các tệp đó giống hệt với các tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitgts">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit GTS của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, sau đó là tệp .res, và cuối cùng là tệp .gps. Đồng hồ của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res và .gps nếu các tệp đó giống hệt với các tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitgtr">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit GTR của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, sau đó là tệp .res, và cuối cùng là tệp .gps. Đồng hồ của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res và .gps nếu các tệp đó giống hệt với các tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitcor2">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit Cor 2 của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!
+\n
+\nHOÀN TOÀN CHƯA ĐƯỢC THỬ NGHIỆM, CÓ THỂ BẠN CẦN CÀI ĐẶT PHẦN MỀM BEATS_W NẾU TÊN THIẾT BỊ CỦA BẠN LÀ \"Amazfit Band 2\"</string>
+    <string name="fw_upgrade_notice_amazfitcor">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit Cor của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitbip_lite">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit Bip Lite của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Đồng hồ của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="fw_upgrade_notice_amazfitbip">Bạn sắp cài đặt phần mềm hệ thống %s lên Amazfit Bip của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, sau đó là tệp .res, và cuối cùng là tệp .gps. Đồng hồ của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res và .gps nếu các tệp đó giống hệt với các tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="title_activity_calblacklist">Các lịch đã thêm vào danh sách đen</string>
+    <string name="pref_title_location_aquire">Lấy vị trí</string>
+    <string name="pref_title_allow_high_mtu">Cho phép MTU cao</string>
+    <string name="pref_summary_use_custom_font">Bật tuỳ chọn này nếu thiết bị của bạn có phần mềm phông chữ tuỳ chỉnh để hỗ trợ emoji</string>
+    <string name="pref_title_use_custom_font">Sử dụng phông chữ tuỳ chỉnh</string>
+    <string name="pref_summary_pebble_forceuntested">Bật các tính năng chưa được thử nghiệm. HÃY BIẾT BẠN ĐANG LÀM GÌ!</string>
+    <string name="pref_title_pebble_forceuntested">Bật các tính năng chưa được thử nghiệm</string>
+    <string name="pref_pebble_privacy_mode_content">Dịch chuyển văn bản thông báo ra ngoài màn hình</string>
+    <string name="pref_title_pebble_forcele">Luôn ưu tiên BLE</string>
+    <string name="pref_summary_location_keep_uptodate">Cố gắng lấy vị trí hiện tại khi chạy, sử dụng vị trí đã lưu trữ làm vị trí dự phòng</string>
+    <string name="pref_pebble_privacy_mode_complete">Chỉ hiện biểu tượng thông báo</string>
+    <string name="pref_header_notifications_and_calls">Thông báo và Cuộc gọi</string>
+    <string name="preferences_hplus_settings">Cài đặt HPlus/Makibes</string>
+    <string name="prefs_title_all_day_heart_rate">Đo nhịp tim cả ngày</string>
+    <string name="pref_title_screentime">Thời gian bật màn hình</string>
+    <string name="pref_title_timeformat">Định dạng thời gian</string>
+    <string name="pref_title_unit_system">Đơn vị</string>
+    <string name="pref_display_add_device_fab_off">Chỉ nhìn thấy được nếu không có thiết bị nào được thêm</string>
+    <string name="pref_display_add_device_fab_on">Luôn nhìn thấy được</string>
+    <string name="pref_display_add_device_fab">Nút kết nối thiết bị mới</string>
+    <string name="pref_title_vibration_strength">Cường độ rung</string>
+    <string name="pref_title_relax_firmware_checks">Hãy bật tuỳ chọn này nếu bạn muốn cài đặt một firmware không dành cho thiết bị của bạn (bạn tự chịu rủi ro)</string>
+    <string name="pref_summary_relax_firmware_checks">Kiểm tra firmware không chặt</string>
+    <string name="pref_title_sync_caldendar">Đồng bộ các sự kiện trong lịch</string>
+    <string name="pref_summary_sync_calendar">Bật các cảnh báo lịch, kể cả khi đã ngắt kết nối</string>
+    <string name="pref_summary_allow_high_mtu">Tăng tốc độ truyền, nhưng có thể sẽ không hoạt động trên một số thiết bị Android.</string>
+    <string name="pref_summary_pebble_enable_applogs">Sẽ làm nhật ký từ các ứng dụng đồng hồ được Gadgetbridge ghi nhật ký (yêu cầu kết nối lại)</string>
+    <string name="pref_summary_pebble_gatt_clientonly">Tuỳ chọn này chỉ dành cho Pebble 2 và có tính thử nghiệm, hãy thử tuỳ chọn này nếu bạn có vấn đề về kết nối</string>
+    <string name="pref_title_pebble_gatt_clientonly">Chỉ có khách GATT</string>
+    <string name="pref_title_pebble_enable_applogs">Bật ghi nhật ký ứng dụng đồng hồ</string>
+    <string name="pref_summary_pebble_mtu_limit">Nếu Pebble 2/Pebble LE của bạn không hoạt động như mong đợi, hãy thử cài đặt này để giới hạn MTU (phạm vi hợp lệ 20-512)</string>
+    <string name="pref_title_pebble_mtu_limit">Giới hạn GATT MTU của Pebble 2/LE</string>
+    <string name="pref_summary_pebble_forcele">Sử dụng sự hỗ trợ Pebble LE có tính thử nghiệm cho tất cả thiết bị Pebble, thay vì BT cổ điển. Việc này yêu cầu ghép đôi với thiết bị không phải LE trước, và sau đó đến Pebble LE</string>
+    <string name="pref_summary_pebble_forceprotocol">Tuỳ chọn này buộc sử dụng giao thức thông báo mới nhất tuỳ vào phiên bản firmware. HÃY BIẾT BẠN ĐANG LÀM GÌ!</string>
+    <string name="pref_title_pebble_forceprotocol">Buộc giao thức thông báo</string>
+    <string name="toast_aqurired_networklocation">đã nhận được vị trí</string>
+    <string name="toast_enable_networklocationprovider">Vui lòng bật vị trí mạng</string>
+    <string name="pref_summary_autoremove_notifications">Các thông báo sẽ tự động được xoá khỏi thiết bị khi chúng bị bỏ qua từ điện thoại</string>
+    <string name="pref_title_autoremove_notifications">Tự động xoá các thông báo đã bị bỏ qua</string>
+    <string name="pref_summary_custom_deviceicon">Hiện biểu tượng thông báo Android cho riêng từng thiết bị thay vì biểu tượng Gadgetbridge khi được kết nối</string>
+    <string name="pref_title_custom_deviceicon">Hiện biểu tượng thông báo cho riêng từng thiết bị</string>
+    <string name="pref_summary_enable_pebblekit">Bật sự hỗ trợ có tính thử nghiệm cho các ứng dụng Android bằng PebbleKit</string>
+    <string name="pref_summary_enable_outgoing_call">Việc tắt tuỳ chọn này cũng sẽ dừng việc Pebble 2/LE rung khi có cuộc gọi đi</string>
+    <string name="pref_title_enable_outgoing_call">Hỗ trợ các cuộc gọi đi</string>
+    <string name="pref_title_canned_messages_dismisscall">Từ chối cuộc gọi</string>
+    <string name="pref_title_canned_reply_suffix">Hậu tố thường gặp</string>
+    <string name="pref_blacklist_calendars">Cho các lịch vào danh sách đen</string>
+    <string name="pref_title_weather_summary">Được sử dụng cho nhà cung cấp thời tiết của LineageOS, các phiên bản Android khác cần sử dụng một ứng dụng như \"Weather notification\". Hãy tìm thêm thông tin trong wiki của Gadgetbridge.</string>
+    <string name="pref_rtl_max_line_length_summary">Kéo dài hoặc rút ngắn các dòng mà văn bản Phải-Qua-Trái được tách thành</string>
+    <string name="pref_title_support_voip_calls">Bật các cuộc gọi ứng dụng VoIP</string>
+    <string name="fw_upgrade_notice_miband6">Bạn sắp cài đặt phần mềm hệ thống %s lên Mi Band 6 của bạn.
+\n
+\nHãy chắc chắn bạn cài đặt tệp .fw, và sau đó là tệp .res. Băng đeo tay của bạn sẽ khởi động lại sau khi cài đặt tệp .fw.
+\n
+\nLưu ý: Bạn không cần phải cài đặt .res nếu tệp đó giống hệt với tệp đã cài đặt trước đó.
+\n
+\nBẠN TỰ CHỊU RỦI RO KHI TIẾP TỤC!</string>
+    <string name="whitelist_all_for_notifications">Cho tất cả vào danh sách trắng đối với các thông báo</string>
+    <string name="blacklist_all_for_notifications">Cho tất cả vào danh sách đen đối với các thông báo</string>
 </resources>

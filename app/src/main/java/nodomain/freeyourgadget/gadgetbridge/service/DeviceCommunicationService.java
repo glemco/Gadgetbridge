@@ -1,8 +1,8 @@
-/*  Copyright (C) 2015-2020 Andreas Böhler, Andreas Shimokawa, Avamander,
+/*  Copyright (C) 2015-2021 Andreas Böhler, Andreas Shimokawa, Avamander,
     Carsten Pfeiffer, Daniel Dakhno, Daniele Gobbetti, Daniel Hauck, Dikay900,
     Frank Slezak, ivanovlev, João Paulo Barraca, José Rebelo, Julien Pivotto,
-    Kasha, keeshii, Martin, Matthieu Baerts, Nephiel, Sebastian Kranz, Sergey
-    Trofimov, Steffen Liebergeld, Taavi Eomäe, Uwe Hermann
+    Kasha, keeshii, mamucho, Martin, Matthieu Baerts, Nephiel, Sebastian Kranz,
+    Sergey Trofimov, Steffen Liebergeld, Taavi Eomäe, Uwe Hermann
 
     This file is part of Gadgetbridge.
 
@@ -22,7 +22,6 @@ package nodomain.freeyourgadget.gadgetbridge.service;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -65,6 +64,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.SMSReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.TimeChangeReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.TinyWeatherForecastGermanyReceiver;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -80,8 +80,10 @@ import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.EmojiConverter;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
+import nodomain.freeyourgadget.gadgetbridge.util.LanguageUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TRANSLITERATION_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_ADD_CALENDAREVENT;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_APP_CONFIGURE;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_APP_REORDER;
@@ -156,6 +158,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUS
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ACTIONS;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_BODY;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_FLAGS;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ICONID;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ID;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_PEBBLE_COLOR;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_PHONENUMBER;
@@ -380,6 +383,17 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     }
 
     private void handleAction(Intent intent, String action, Prefs prefs) {
+        Prefs devicePrefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress()));
+        boolean transliterate = devicePrefs.getBoolean(PREF_TRANSLITERATION_ENABLED, false);
+
+        if (transliterate) {
+            for (String extra : GBDeviceService.transliterationExtras) {
+                if (intent.hasExtra(extra)) {
+                    intent.putExtra(extra, LanguageUtils.transliterate(intent.getStringExtra(extra)));
+                }
+            }
+        }
+
         switch (action) {
             case ACTION_REQUEST_DEVICEINFO:
                 mGBDevice.sendDeviceUpdateIntent(this);
@@ -398,6 +412,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 notificationSpec.pebbleColor = (byte) intent.getSerializableExtra(EXTRA_NOTIFICATION_PEBBLE_COLOR);
                 notificationSpec.flags = intent.getIntExtra(EXTRA_NOTIFICATION_FLAGS, 0);
                 notificationSpec.sourceAppId = intent.getStringExtra(EXTRA_NOTIFICATION_SOURCEAPPID);
+                notificationSpec.iconId = intent.getIntExtra(EXTRA_NOTIFICATION_ICONID, 0);
 
                 if (notificationSpec.type == NotificationType.GENERIC_SMS && notificationSpec.phoneNumber != null) {
                     GBApplication.getIDSenderLookup().add(notificationSpec.getId(), notificationSpec.phoneNumber);
@@ -410,7 +425,6 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     // I would rather like to save that as an array in SharedPreferences
                     // this would work but I dont know how to do the same in the Settings Activity's xml
                     ArrayList<String> replies = new ArrayList<>();
-                    SharedPreferences devicePrefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
                     for (int i = 1; i <= 16; i++) {
                         String reply = devicePrefs.getString("canned_reply_" + i, null);
                         if (reply != null && !reply.equals("")) {
@@ -638,6 +652,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
 
     private void start() {
         if (!mStarted) {
+            GB.createNotificationChannels(this);
             startForeground(GB.NOTIFICATION_ID, GB.createNotification(getString(R.string.gadgetbridge_running), this));
             mStarted = true;
         }
@@ -851,10 +866,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         setReceiversEnableState(false, false, null); // disable BroadcastReceivers
 
         setDeviceSupport(null);
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (nm != null) {
-            nm.cancel(GB.NOTIFICATION_ID); // need to do this because the updated notification won't be cancelled when service stops
-        }
+        GB.removeNotification(GB.NOTIFICATION_ID, this); // need to do this because the updated notification won't be cancelled when service stops
     }
 
     @Override

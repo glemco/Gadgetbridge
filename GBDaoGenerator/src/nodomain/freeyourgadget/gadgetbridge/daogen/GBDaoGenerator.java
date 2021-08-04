@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        Schema schema = new Schema(32, MAIN_PACKAGE + ".entities");
+        Schema schema = new Schema(33, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -78,6 +78,8 @@ public class GBDaoGenerator {
         addLefunBiometricSample(schema,user,device);
         addLefunSleepSample(schema, user, device);
         addSonySWR12Sample(schema, user, device);
+        addBangleJSActivitySample(schema, user, device);
+        addCasioGBX100Sample(schema, user, device);
 
         addHybridHRActivitySample(schema, user, device);
         addCalendarSyncState(schema, device);
@@ -88,7 +90,7 @@ public class GBDaoGenerator {
         addNotificationFilterEntry(schema, notificationFilter);
 
         addActivitySummary(schema, user, device);
-
+        addBatteryLevel(schema, device);
         new DaoGenerator().generateAll(schema, "app/src/main/java");
     }
 
@@ -419,6 +421,16 @@ public class GBDaoGenerator {
         return activitySample;
     }
 
+    private static Entity addCasioGBX100Sample(Schema schema, Entity user, Entity device)  {
+        Entity activitySample = addEntity(schema, "CasioGBX100ActivitySample");
+        activitySample.implementsSerializable();
+        addCommonActivitySampleProperties("AbstractGBX100ActivitySample", activitySample, user, device);
+        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty("calories").notNull();
+        return activitySample;
+    }
+
     private static Entity addLefunActivitySample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "LefunActivitySample");
         activitySample.implementsSerializable();
@@ -459,6 +471,16 @@ public class GBDaoGenerator {
 
         sleepSample.addIntProperty("type").notNull();
         return sleepSample;
+    }
+
+    private static Entity addBangleJSActivitySample(Schema schema, Entity user, Entity device) {
+        Entity activitySample = addEntity(schema, "BangleJSActivitySample");
+        activitySample.implementsSerializable();
+        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        addHeartRateProperties(activitySample);
+        return activitySample;
     }
 
     private static void addCommonActivitySampleProperties(String superClass, Entity activitySample, Entity user, Entity device) {
@@ -582,5 +604,15 @@ public class GBDaoGenerator {
         Entity entity = schema.addEntity(className);
         entity.addImport("de.greenrobot.dao.AbstractDao");
         return entity;
+    }
+
+    private static Entity addBatteryLevel(Schema schema, Entity device) {
+        Entity batteryLevel = addEntity(schema, "BatteryLevel");
+        batteryLevel.implementsSerializable();
+        batteryLevel.addIntProperty("timestamp").notNull().primaryKey();
+        Property deviceId = batteryLevel.addLongProperty("deviceId").primaryKey().notNull().getProperty();
+        batteryLevel.addToOne(device, deviceId);
+        batteryLevel.addIntProperty("level").notNull();
+        return batteryLevel;
     }
 }
