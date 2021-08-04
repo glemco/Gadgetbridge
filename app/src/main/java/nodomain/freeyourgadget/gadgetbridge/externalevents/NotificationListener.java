@@ -30,6 +30,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.media.MediaMetadata;
 import android.os.Bundle;
 import android.os.Handler;
@@ -78,6 +79,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.PebbleUtils;
@@ -115,7 +117,8 @@ public class NotificationListener extends NotificationListenerService {
     );
 
     public static ArrayList<String> notificationStack = new ArrayList<>();
-    private static ArrayList<Integer> notificationsActive = new ArrayList<Integer>();
+    /** All active notifications stored by ID */
+    private static HashMap<Integer, NotificationSpec> notificationsActive = new HashMap<>();
 
     private long activeCallPostTime;
     private int mLastCallCommand = CallSpec.CALL_UNDEFINED;
@@ -260,7 +263,7 @@ public class NotificationListener extends NotificationListenerService {
         onNotificationPosted(sbn, null);
     }
 
-    @Override
+     @Override
     public void onNotificationPosted(StatusBarNotification sbn, RankingMap rankingMap) {
         logNotification(sbn, true);
 
@@ -325,7 +328,7 @@ public class NotificationListener extends NotificationListenerService {
             }
         }
 
-        NotificationSpec notificationSpec = new NotificationSpec();
+        NotificationSpec notificationSpec = new NotificationSpec(sbn.getId());
 
         // determinate Source App Name ("Label")
         String name = getAppName(source);
@@ -341,6 +344,11 @@ public class NotificationListener extends NotificationListenerService {
         // Get the icon of the notification
         notificationSpec.iconId = notification.icon;
 
+        // Get the large icon for the notification (if it exists)
+        Icon icon = notification.getLargeIcon();
+        if (icon!=null) {
+          notificationSpec.iconB64 = BangleJSDeviceSupport.bitmapToEspruino(BangleJSDeviceSupport.drawableToBitmap(icon.loadDrawable(getApplicationContext())));
+        }
         notificationSpec.type = AppNotificationType.getInstance().get(source);
 
         //FIXME: some quirks lookup table would be the minor evil here
@@ -431,7 +439,20 @@ public class NotificationListener extends NotificationListenerService {
         }else {
             LOG.info("This app might show old/duplicate notifications. notification.when is 0 for " + source);
         }
-        notificationsActive.add(notificationSpec.getId());
+        if (notificationsActive.containsKey(notificationSpec.getId())) {
+            NotificationSpec existing = notificationsActive.get(notificationSpec.getId());
+            //LOG.info("EXISTING "+existing.toString());
+            //LOG.info("NEW      "+notificationSpec.toString());
+            if (existing.equals(notificationSpec)) {
+                LOG.info("Notification exists and is identical - skipping");
+                return;
+            } else {
+                LOG.info("Notification exists already but has changed");
+                notificationsActive.remove(notificationSpec.getId());
+            }
+        }
+        notificationsActive.put(notificationSpec.getId(), notificationSpec);
+
         // NOTE for future developers: this call goes to implementations of DeviceService.onNotification(NotificationSpec), like in GBDeviceService
         // this does NOT directly go to implementations of DeviceSupport.onNotification(NotificationSpec)!
         GBApplication.deviceService().onNotification(notificationSpec);
@@ -769,14 +790,15 @@ public class NotificationListener extends NotificationListenerService {
 
         // Build list of notifications that aren't active anymore
         ArrayList<Integer> notificationsToRemove = new ArrayList<Integer>();
-        for (int notificationId : notificationsActive) {
+        for (int notificationId : notificationsActive.keySet()) {
             if (!activeNotificationsIds.contains(notificationId)) {
                 notificationsToRemove.add(notificationId);
             }
         }
 
         // Clean up removed notifications from internal list
-        notificationsActive.removeAll(notificationsToRemove);
+        for (int notificationId : notificationsToRemove)
+            notificationsActive.remove(notificationId);
 
         // Send notification remove request to device
         GBDevice connectedDevice = GBApplication.app().getDeviceManager().getSelectedDevice();

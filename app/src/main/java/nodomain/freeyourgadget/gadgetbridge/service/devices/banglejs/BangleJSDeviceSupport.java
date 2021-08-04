@@ -328,6 +328,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("body", notificationSpec.body);
             o.put("sender", notificationSpec.sender);
             o.put("tel", notificationSpec.phoneNumber);
+            if (notificationSpec.iconB64 != null) {
+                o.put("img", notificationSpec.iconB64);
+            }
             uartTxJSON("onNotification", o);
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());

@@ -43,6 +43,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.RtlUtils;
 
 import static nodomain.freeyourgadget.gadgetbridge.util.JavaExtensions.coalesce;
@@ -151,7 +152,8 @@ public class GBDeviceService implements DeviceService {
                 .putExtra(EXTRA_NOTIFICATION_SOURCENAME, notificationSpec.sourceName)
                 .putExtra(EXTRA_NOTIFICATION_PEBBLE_COLOR, notificationSpec.pebbleColor)
                 .putExtra(EXTRA_NOTIFICATION_SOURCEAPPID, notificationSpec.sourceAppId)
-                .putExtra(EXTRA_NOTIFICATION_ICONID, notificationSpec.iconId);
+                .putExtra(EXTRA_NOTIFICATION_ICONID, notificationSpec.iconId)
+                .putExtra(EXTRA_NOTIFICATION_ICONB64, notificationSpec.iconB64);
         invokeService(intent);
     }
 

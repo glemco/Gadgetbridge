@@ -159,6 +159,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOT
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_BODY;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_FLAGS;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ICONID;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ICONB64;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ID;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_PEBBLE_COLOR;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_PHONENUMBER;
@@ -413,6 +414,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 notificationSpec.flags = intent.getIntExtra(EXTRA_NOTIFICATION_FLAGS, 0);
                 notificationSpec.sourceAppId = intent.getStringExtra(EXTRA_NOTIFICATION_SOURCEAPPID);
                 notificationSpec.iconId = intent.getIntExtra(EXTRA_NOTIFICATION_ICONID, 0);
+                notificationSpec.iconB64 = intent.getStringExtra(EXTRA_NOTIFICATION_ICONB64);
 
                 if (notificationSpec.type == NotificationType.GENERIC_SMS && notificationSpec.phoneNumber != null) {
                     GBApplication.getIDSenderLookup().add(notificationSpec.getId(), notificationSpec.phoneNumber);

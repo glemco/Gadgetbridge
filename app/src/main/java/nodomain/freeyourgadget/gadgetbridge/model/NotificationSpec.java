@@ -16,8 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.model;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NotificationSpec {
@@ -46,6 +51,12 @@ public class NotificationSpec {
     public int iconId;
 
     /**
+     * The notification's large icon, if one exists, encoded as base64 for Bangle.js
+     * Eg, Caller image, map direction, etc
+     */
+    public String iconB64;
+
+    /**
      * The color that should be assigned to this notification when displayed on a Pebble
      */
     public byte pebbleColor;
@@ -63,6 +74,39 @@ public class NotificationSpec {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotificationSpec that = (NotificationSpec) o;
+        return flags == that.flags &&
+                id == that.id &&
+                iconId == that.iconId &&
+                pebbleColor == that.pebbleColor &&
+                Objects.equals(sender, that.sender) &&
+                Objects.equals(phoneNumber, that.phoneNumber) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(subject, that.subject) &&
+                Objects.equals(body, that.body) &&
+                type == that.type &&
+                Objects.equals(sourceName, that.sourceName) &&
+                Arrays.equals(cannedReplies, that.cannedReplies) &&
+                Objects.equals(sourceAppId, that.sourceAppId) &&
+                Objects.equals(iconB64, that.iconB64);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(flags, id, sender, phoneNumber, title, subject, body, type, sourceName, sourceAppId, iconId, iconB64, pebbleColor);
+        result = 31 * result + Arrays.hashCode(cannedReplies);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return flags+","+id+","+ sender+","+ phoneNumber+","+ title+","+ subject+","+ body+","+ type+","+ sourceName+","+ attachedActions+","+ sourceAppId+","+ iconId+","+ iconB64+","+ pebbleColor;
     }
 
     public static class Action implements Serializable {
