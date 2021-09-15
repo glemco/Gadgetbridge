@@ -52,6 +52,8 @@ public class HuamiService {
     public static final UUID UUID_CHARACTERISTIC_AUDIO = UUID.fromString("00000012-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHARACTERISTIC_AUDIODATA = UUID.fromString("00000013-0000-3512-2118-0009af100700");
 
+    public static final UUID UUID_CHARACTERISTIC_CHUNKEDTRANSFER_2021_WRITE = UUID.fromString("00000016-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_CHUNKEDTRANSFER_2021_READ = UUID.fromString("00000017-0000-3512-2118-0009af100700");
     public static final UUID UUID_CHARACTERISTIC_CHUNKEDTRANSFER = UUID.fromString("00000020-0000-3512-2118-0009af100700");
 
     public static final int ALERT_LEVEL_NONE = 0;
@@ -222,6 +224,13 @@ public class HuamiService {
     public static final byte COMMAND_SET_PERIODIC_HR_MEASUREMENT_INTERVAL = 0x14;
 
     public static final byte[] COMMAND_TEXT_NOTIFICATION = new byte[] {0x05, 0x01};
+
+    /**
+     * Endpoints for 2021 chunked protocol
+     *
+     */
+    public static final short CHUNKED2021_ENDPOINT_AUTH = 0x82;
+    public static final short CHUNKED2021_ENDPOINT_COMPAT = 0x90;
 
     static {
         MIBAND_DEBUG = new HashMap<>();

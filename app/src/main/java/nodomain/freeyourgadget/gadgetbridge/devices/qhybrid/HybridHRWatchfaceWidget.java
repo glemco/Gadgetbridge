@@ -32,6 +32,7 @@ public class HybridHRWatchfaceWidget {
     private int posX;
     private int posY;
     private int color = 0;
+    private String timezone;
 
     public static int COLOR_WHITE = 0;
     public static int COLOR_BLACK = 1;
@@ -42,6 +43,11 @@ public class HybridHRWatchfaceWidget {
         this.posY = posY;
         this.color = color;
     }
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int color, String timezone) {
+        this(widgetType, posX, posY, color);
+        this.timezone = timezone;
+    }
+
 
     public static LinkedHashMap<String, String> getAvailableWidgetTypes(Context context) {
         LinkedHashMap<String, String> widgetTypes = new LinkedHashMap<>();
@@ -49,6 +55,11 @@ public class HybridHRWatchfaceWidget {
         widgetTypes.put("widgetWeather", context.getString(R.string.watchface_widget_type_weather));
         widgetTypes.put("widgetSteps", context.getString(R.string.watchface_widget_type_steps));
         widgetTypes.put("widgetHR", context.getString(R.string.watchface_widget_type_heart_rate));
+        widgetTypes.put("widgetBattery", context.getString(R.string.watchface_widget_type_battery));
+        widgetTypes.put("widgetCalories", context.getString(R.string.watchface_widget_type_calories));
+        widgetTypes.put("widget2ndTZ", context.getString(R.string.watchface_widget_type_2nd_tz));
+        widgetTypes.put("widgetActiveMins", context.getString(R.string.watchface_widget_type_active_mins));
+//        widgetTypes.put("widgetChanceOfRain", context.getString(R.string.watchface_widget_type_chance_rain));  // Disabled due to missing support in Gadgetbridge
         return widgetTypes;
     }
 
@@ -68,7 +79,6 @@ public class HybridHRWatchfaceWidget {
     public int getPosX() {
         return posX;
     }
-
     public int getPosY() {
         return posY;
     }
@@ -76,12 +86,15 @@ public class HybridHRWatchfaceWidget {
     public void setPosX(int posX) {
         this.posX = posX;
     }
-
     public void setPosY(int posY) {
         this.posY = posY;
     }
 
     public int getColor() {
         return color;
+    }
+
+    public String getTimezone() {
+        return timezone;
     }
 }

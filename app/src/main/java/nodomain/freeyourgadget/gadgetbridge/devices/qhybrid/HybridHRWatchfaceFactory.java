@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TimeZone;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.image.ImageConverter;
 
@@ -63,32 +64,33 @@ public class HybridHRWatchfaceFactory {
         try {
             switch (widgetDesc.getWidgetType()) {
                 case "widgetDate":
-                    widget.put("type", "comp");
-                    widget.put("name", widgetDesc.getWidgetType());
-                    widget.put("goal_ring", false);
-                    widget.put("color", widgetDesc.getColor() == HybridHRWatchfaceWidget.COLOR_WHITE ? "white" : "black");
-                    widget.put("bg", "_00.rle");
-                    break;
                 case "widgetWeather":
-                    widget.put("type", "comp");
-                    widget.put("name", widgetDesc.getWidgetType());
-                    widget.put("goal_ring", false);
-                    widget.put("color", widgetDesc.getColor() == HybridHRWatchfaceWidget.COLOR_WHITE ? "white" : "black");
-                    widget.put("bg", "_01.rle");
-                    break;
                 case "widgetSteps":
-                    widget.put("type", "comp");
-                    widget.put("name", widgetDesc.getWidgetType());
-                    widget.put("goal_ring", false);
-                    widget.put("color", widgetDesc.getColor() == HybridHRWatchfaceWidget.COLOR_WHITE ? "white" : "black");
-                    widget.put("bg", "_02.rle");
-                    break;
                 case "widgetHR":
+                case "widgetBattery":
+                case "widgetCalories":
+                case "widgetActiveMins":
+                case "widgetChanceOfRain":
                     widget.put("type", "comp");
                     widget.put("name", widgetDesc.getWidgetType());
                     widget.put("goal_ring", false);
                     widget.put("color", widgetDesc.getColor() == HybridHRWatchfaceWidget.COLOR_WHITE ? "white" : "black");
-                    widget.put("bg", "_03.rle");
+                    break;
+                case "widget2ndTZ":
+                    widget.put("type", "comp");
+                    widget.put("name", widgetDesc.getWidgetType());
+                    widget.put("goal_ring", false);
+                    widget.put("color", widgetDesc.getColor() == HybridHRWatchfaceWidget.COLOR_WHITE ? "white" : "black");
+                    if (widgetDesc.getTimezone() != null) {
+                        JSONObject data = new JSONObject();
+                        TimeZone tz = TimeZone.getTimeZone(widgetDesc.getTimezone());
+                        String tzShortName = widgetDesc.getTimezone().replaceAll(".*/", "");
+                        int tzOffsetMins = tz.getRawOffset() / 1000 / 60;
+                        data.put("tzName", widgetDesc.getTimezone());
+                        data.put("loc", tzShortName);
+                        data.put("utc", tzOffsetMins);
+                        widget.put("data", data);
+                    }
                     break;
                 default:
                     LOG.warn("Invalid widget name: " + widgetDesc.getWidgetType());
@@ -114,34 +116,57 @@ public class HybridHRWatchfaceFactory {
         }
     }
 
+    private boolean includeWidget(String name) {
+        for (JSONObject widget : this.widgets) {
+            try {
+                if (widget.get("name").equals(name)) {
+                    return true;
+                }
+            } catch (JSONException e) {
+            }
+        }
+        return false;
+    }
+
     public byte[] getWapp(Context context) throws IOException {
         byte[] backgroundBytes = ImageConverter.encodeToRawImage(ImageConverter.get2BitsRAWImageBytes(background));
         InputStream backgroundStream = new ByteArrayInputStream(backgroundBytes);
         LinkedHashMap<String, InputStream> code = new LinkedHashMap<>();
         try {
             code.put(watchfaceName, context.getAssets().open("fossil_hr/openSourceWatchface.bin"));
-            code.put("widgetDate", context.getAssets().open("fossil_hr/widgetDate.bin"));
-            code.put("widgetWeather", context.getAssets().open("fossil_hr/widgetWeather.bin"));
-            code.put("widgetSteps", context.getAssets().open("fossil_hr/widgetSteps.bin"));
-            code.put("widgetHR", context.getAssets().open("fossil_hr/widgetHR.bin"));
+            if (includeWidget("widgetDate")) code.put("widgetDate", context.getAssets().open("fossil_hr/widgetDate.bin"));
+            if (includeWidget("widgetWeather")) code.put("widgetWeather", context.getAssets().open("fossil_hr/widgetWeather.bin"));
+            if (includeWidget("widgetSteps")) code.put("widgetSteps", context.getAssets().open("fossil_hr/widgetSteps.bin"));
+            if (includeWidget("widgetHR")) code.put("widgetHR", context.getAssets().open("fossil_hr/widgetHR.bin"));
+            if (includeWidget("widgetBattery")) code.put("widgetBattery", context.getAssets().open("fossil_hr/widgetBattery.bin"));
+            if (includeWidget("widgetCalories")) code.put("widgetCalories", context.getAssets().open("fossil_hr/widgetCalories.bin"));
+            if (includeWidget("widgetActiveMins")) code.put("widgetActiveMins", context.getAssets().open("fossil_hr/widgetActiveMins.bin"));
+            if (includeWidget("widgetChanceOfRain")) code.put("widgetChanceOfRain", context.getAssets().open("fossil_hr/widgetChanceOfRain.bin"));
+            if (includeWidget("widget2ndTZ")) code.put("widget2ndTZ", context.getAssets().open("fossil_hr/widget2ndTZ.bin"));
         } catch (IOException e) {
             LOG.warn("Unable to read asset file", e);
         }
         LinkedHashMap<String, InputStream> icons = new LinkedHashMap<>();
         try {
             icons.put("background.raw", backgroundStream);
-            icons.put("icWthClearDay", context.getAssets().open("fossil_hr/icWthClearDay.rle"));
-            icons.put("icWthClearNite", context.getAssets().open("fossil_hr/icWthClearNite.rle"));
-            icons.put("icWthCloudy", context.getAssets().open("fossil_hr/icWthCloudy.rle"));
-            icons.put("icWthPartCloudyDay", context.getAssets().open("fossil_hr/icWthPartCloudyDay.rle"));
-            icons.put("icWthPartCloudyNite", context.getAssets().open("fossil_hr/icWthPartCloudyNite.rle"));
-            icons.put("icWthRainy", context.getAssets().open("fossil_hr/icWthRainy.rle"));
-            icons.put("icWthSnowy", context.getAssets().open("fossil_hr/icWthSnowy.rle"));
-            icons.put("icWthStormy", context.getAssets().open("fossil_hr/icWthStormy.rle"));
-            icons.put("icWthWindy", context.getAssets().open("fossil_hr/icWthWindy.rle"));
-            icons.put("icSteps", context.getAssets().open("fossil_hr/icSteps.rle"));
             icons.put("icTrophy", context.getAssets().open("fossil_hr/icTrophy.rle"));
-            icons.put("icHeart", context.getAssets().open("fossil_hr/icHeart.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthClearDay", context.getAssets().open("fossil_hr/icWthClearDay.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthClearNite", context.getAssets().open("fossil_hr/icWthClearNite.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthCloudy", context.getAssets().open("fossil_hr/icWthCloudy.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthPartCloudyDay", context.getAssets().open("fossil_hr/icWthPartCloudyDay.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthPartCloudyNite", context.getAssets().open("fossil_hr/icWthPartCloudyNite.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthRainy", context.getAssets().open("fossil_hr/icWthRainy.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthSnowy", context.getAssets().open("fossil_hr/icWthSnowy.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthStormy", context.getAssets().open("fossil_hr/icWthStormy.rle"));
+            if (includeWidget("widgetWeather")) icons.put("icWthWindy", context.getAssets().open("fossil_hr/icWthWindy.rle"));
+            if (includeWidget("widgetSteps")) icons.put("icSteps", context.getAssets().open("fossil_hr/icSteps.rle"));
+            if (includeWidget("widgetHR")) icons.put("icHeart", context.getAssets().open("fossil_hr/icHeart.rle"));
+            if (includeWidget("widgetBattery")) icons.put("icBattCharging", context.getAssets().open("fossil_hr/icBattCharging.rle"));
+            if (includeWidget("widgetBattery")) icons.put("icBattEmpty", context.getAssets().open("fossil_hr/icBattEmpty.rle"));
+            if (includeWidget("widgetBattery")) icons.put("icBattery", context.getAssets().open("fossil_hr/icBattery.rle"));
+            if (includeWidget("widgetCalories")) icons.put("icCalories", context.getAssets().open("fossil_hr/icCalories.rle"));
+            if (includeWidget("widgetActiveMins")) icons.put("icActiveMins", context.getAssets().open("fossil_hr/icActiveMins.rle"));
+            if (includeWidget("widgetChanceOfRain")) icons.put("icRainChance", context.getAssets().open("fossil_hr/icRainChance.rle"));
         } catch (IOException e) {
             LOG.warn("Unable to read asset file", e);
         }
@@ -156,6 +181,11 @@ public class HybridHRWatchfaceFactory {
         } catch (JSONException e) {
             LOG.warn("Could not generate image_layout", e);
         }
+        try {
+            if (includeWidget("widgetBattery")) layout.put("battery_layout", getBatteryLayout());
+        } catch (JSONException e) {
+            LOG.warn("Could not generate battery_layout", e);
+        }
         LinkedHashMap<String, String> displayName = new LinkedHashMap<>();
         displayName.put("display_name", watchfaceName);
         displayName.put("theme_class", "complications");
@@ -167,6 +197,91 @@ public class HybridHRWatchfaceFactory {
         }
         FossilAppWriter appWriter = new FossilAppWriter(context, "1.2.0.0", code, icons, layout, displayName, config);
         return appWriter.getWapp();
+    }
+
+    private String getBatteryLayout() throws JSONException {
+        JSONArray batteryLayout = new JSONArray();
+
+        JSONObject complicationBackground = new JSONObject();
+        complicationBackground.put("id", 0);
+        complicationBackground.put("type", "complication_background");
+        complicationBackground.put("background", "#background");
+        complicationBackground.put("visible", true);
+        complicationBackground.put("inversion", false);
+        JSONObject goalRing = new JSONObject();
+        goalRing.put("is_enable", "#goal_ring");
+        goalRing.put("end_angle", "#fi");
+        goalRing.put("is_invert", "#$e");
+        complicationBackground.put("goal_ring", goalRing);
+        JSONObject dimension = new JSONObject();
+        dimension.put("type", "rigid");
+        dimension.put("width", "#size.w");
+        dimension.put("height", "#size.h");
+        complicationBackground.put("dimension", dimension);
+        JSONObject placement = new JSONObject();
+        placement.put("type", "absolute");
+        placement.put("left", "#pos.Ue");
+        placement.put("top", "#pos.Qe");
+        complicationBackground.put("placement", placement);
+        batteryLayout.put(complicationBackground);
+
+        JSONObject complicationContent = new JSONObject();
+        complicationContent.put("id", 1);
+        complicationContent.put("parent_id", 0);
+        complicationContent.put("type", "complication_content");
+        complicationContent.put("icon", "icBattery");
+        complicationContent.put("text_low", "#ci");
+        complicationContent.put("visible", true);
+        complicationContent.put("inversion", "#$e");
+        dimension = new JSONObject();
+        dimension.put("type", "rigid");
+        dimension.put("width", 76);
+        dimension.put("height", 76);
+        complicationContent.put("dimension", dimension);
+        placement = new JSONObject();
+        placement.put("type", "relative");
+        complicationContent.put("placement", placement);
+        batteryLayout.put(complicationContent);
+
+        JSONObject chargingStatus = new JSONObject();
+        chargingStatus.put("id", 2);
+        chargingStatus.put("parent_id", 1);
+        chargingStatus.put("type", "solid");
+        chargingStatus.put("color", "#nt");
+        chargingStatus.put("visible", true);
+        chargingStatus.put("inversion", false);
+        dimension = new JSONObject();
+        dimension.put("type", "rigid");
+        dimension.put("width", "#it");
+        dimension.put("height", 6);
+        chargingStatus.put("dimension", dimension);
+        placement = new JSONObject();
+        placement.put("type", "absolute");
+        placement.put("left", 29);
+        placement.put("top", 23);
+        chargingStatus.put("placement", placement);
+        batteryLayout.put(chargingStatus);
+
+        JSONObject image = new JSONObject();
+        image.put("id", 3);
+        image.put("parent_id", 1);
+        image.put("type", "image");
+        image.put("image_name", "icBattCharging");
+        image.put("draw_mode", 1);
+        image.put("visible", "#et");
+        image.put("inversion", false);
+        placement = new JSONObject();
+        placement.put("type", "absolute");
+        placement.put("left", 34);
+        placement.put("top", 21);
+        image.put("placement", placement);
+        dimension = new JSONObject();
+        dimension.put("width", 6);
+        dimension.put("height", 9);
+        image.put("dimension", dimension);
+        batteryLayout.put(image);
+
+        return batteryLayout.toString();
     }
 
     private String getComplicationLayout() throws JSONException {
@@ -290,6 +405,8 @@ public class HybridHRWatchfaceFactory {
         config.put("wrist_flick_duration", settings.getWristFlickDuration());
         config.put("wrist_flick_move_hour", settings.getWristFlickMoveHour());
         config.put("wrist_flick_move_minute", settings.getWristFlickMoveMinute());
+        config.put("powersave_display", settings.getPowersaveDisplay());
+        config.put("powersave_hands", settings.getPowersaveHands());
         configuration.put("config", config);
 
         return configuration.toString();

@@ -1,5 +1,23 @@
 ### Changelog
 
+### 0.59.3
+* Mi Band 6: Properly support firmware 1.0.4.38
+* Mi Band 6: Add Flashlight to menu items
+* ZeTime: Fix corruption on long notifications
+
+### 0.59.2
+* Mi Band 6: Support firmware 1.0.4.38 (experimental, still missing features)
+* InfiniTime: Fix null being displayed as notification title
+
+### 0.59.1
+* Fossil Hybrid HR: Add power saving feature and many new widgets for the official Gadgetbridge watchface (battery, calories, 2nd TZ, chance of rain)
+* Fossil Hybrid HR: Support setting metric/imperial mode
+* Amazfit T-Rex Pro: Try to fix some menu items
+* Huami: Re-enable setting the timezone correctly with included DST (fixes world time)
+* Bangle.js: Add functions for pushing bitmaps
+* Bangle.js: Aadd configurable MTU
+* Add Heart Rate measurement screen, accessible via heart icon in device action icons
+
 ### 0.59.0
 * Initial support for SMA Q2 OSS firmware (Emeryth)
 * Fix broken UM25 support
