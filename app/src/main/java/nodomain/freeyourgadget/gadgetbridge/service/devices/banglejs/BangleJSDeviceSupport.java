@@ -26,6 +26,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -42,6 +43,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
 import java.lang.reflect.Field;
@@ -87,6 +90,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private boolean realtimeHRM = false;
     private boolean realtimeStep = false;
     private int realtimeHRMInterval = 30*60;
+
+    /** All active notifications stored by ID */
+    private static HashMap<Integer, NotificationSpec> notificationsActive = new HashMap<>();
 
     public BangleJSDeviceSupport() {
         super(LOG);
@@ -318,6 +324,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
+        notificationsActive.put(notificationSpec.getId(), notificationSpec);
         try {
             JSONObject o = new JSONObject();
             o.put("t", "notify");
@@ -338,6 +345,29 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
+    public void onModifyNotification(NotificationSpec notificationSpec) {
+        NotificationSpec existing = notificationsActive.get(notificationSpec.getId());
+        notificationsActive.put(notificationSpec.getId(), notificationSpec);
+        if (existing==null) return;
+        try {
+            JSONObject o = new JSONObject();
+            o.put("t", "notify~");
+            o.put("id", notificationSpec.getId());
+            if (!Objects.equals(notificationSpec.title, existing.title))
+                o.put("title", notificationSpec.title);
+            if (!Objects.equals(notificationSpec.subject, existing.subject))
+                o.put("subject", notificationSpec.subject);
+            if (!Objects.equals(notificationSpec.body, existing.body))
+                o.put("body", notificationSpec.body);
+            if (!Objects.equals(notificationSpec.iconB64, existing.iconB64))
+                o.put("img", notificationSpec.iconB64);
+            uartTxJSON("onModifyNotification", o);
+        } catch (JSONException e) {
+            LOG.info("JSONException: " + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
     public void onDeleteNotification(int id) {
         try {
             JSONObject o = new JSONObject();
@@ -347,6 +377,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
+        notificationsActive.remove(id);
     }
 
     @Override
@@ -633,15 +664,14 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 return bitmapDrawable.getBitmap();
             }
         }
-        int w = 1;
-        int h = 8;
+        int w = 24;
+        int h = 24;
         if (drawable.getIntrinsicWidth() > 0 && drawable.getIntrinsicHeight() > 0) {
-
-        } else {
             w = drawable.getIntrinsicWidth();
             h = drawable.getIntrinsicHeight();
-            if (w>64) w=64;
-            if (h>64) h=64;
+            // don't allocate anything too big
+            if (w>48) w=48;
+            if (h>48) h=48;
         }
         Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
 

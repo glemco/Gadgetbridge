@@ -42,6 +42,8 @@ public interface EventHandler {
 
     void onDeleteNotification(int id);
 
+    void onModifyNotification(NotificationSpec notificationSpec);
+
     void onSetTime();
 
     void onSetAlarms(ArrayList<? extends Alarm> alarms);

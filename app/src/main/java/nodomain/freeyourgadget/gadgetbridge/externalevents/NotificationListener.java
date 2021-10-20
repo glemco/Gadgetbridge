@@ -449,13 +449,16 @@ public class NotificationListener extends NotificationListenerService {
             } else {
                 LOG.info("Notification exists already but has changed");
                 notificationsActive.remove(notificationSpec.getId());
+                // NOTE for future developers: this call goes to implementations of DeviceService.onModifyNotification(NotificationSpec), like in GBDeviceService
+                // this does NOT directly go to implementations of DeviceSupport.onModifyNotification(NotificationSpec)!
+                GBApplication.deviceService().onModifyNotification(notificationSpec);
             }
+        } else {
+            // NOTE for future developers: this call goes to implementations of DeviceService.onNotification(NotificationSpec), like in GBDeviceService
+            // this does NOT directly go to implementations of DeviceSupport.onNotification(NotificationSpec)!
+            GBApplication.deviceService().onNotification(notificationSpec);
         }
         notificationsActive.put(notificationSpec.getId(), notificationSpec);
-
-        // NOTE for future developers: this call goes to implementations of DeviceService.onNotification(NotificationSpec), like in GBDeviceService
-        // this does NOT directly go to implementations of DeviceSupport.onNotification(NotificationSpec)!
-        GBApplication.deviceService().onNotification(notificationSpec);
     }
 
     private NotificationFilter getNotificationFilter(String packageName) {

@@ -33,6 +33,7 @@ public interface DeviceService extends EventHandler {
     String ACTION_START = PREFIX + ".action.start";
     String ACTION_CONNECT = PREFIX + ".action.connect";
     String ACTION_NOTIFICATION = PREFIX + ".action.notification";
+    String ACTION_MODIFY_NOTIFICATION = PREFIX + ".action.modify_notification";
     String ACTION_DELETE_NOTIFICATION = PREFIX + ".action.delete_notification";
     String ACTION_CALLSTATE = PREFIX + ".action.callstate";
     String ACTION_SETCANNEDMESSAGES = PREFIX + ".action.setcannedmessages";

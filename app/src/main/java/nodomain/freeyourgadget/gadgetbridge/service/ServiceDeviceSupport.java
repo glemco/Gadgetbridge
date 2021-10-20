@@ -159,6 +159,11 @@ public class ServiceDeviceSupport implements DeviceSupport {
     }
 
     @Override
+    public void onModifyNotification(NotificationSpec notificationSpec) {
+        delegate.onModifyNotification(notificationSpec);
+    }
+
+    @Override
     public void onDeleteNotification(int id) {
         delegate.onDeleteNotification(id);
     }

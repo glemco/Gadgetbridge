@@ -100,6 +100,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_FE
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_FIND_DEVICE;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_HEARTRATE_TEST;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_INSTALL;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_MODIFY_NOTIFICATION;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_NOTIFICATION;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_READ_CONFIGURATION;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_REQUEST_APPINFO;
@@ -399,7 +400,9 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             case ACTION_REQUEST_DEVICEINFO:
                 mGBDevice.sendDeviceUpdateIntent(this);
                 break;
-            case ACTION_NOTIFICATION: {
+
+            case ACTION_NOTIFICATION:
+            case ACTION_MODIFY_NOTIFICATION: {
                 int desiredId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1);
                 NotificationSpec notificationSpec = new NotificationSpec(desiredId);
                 notificationSpec.phoneNumber = intent.getStringExtra(EXTRA_NOTIFICATION_PHONENUMBER);
@@ -436,7 +439,10 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     notificationSpec.cannedReplies = replies.toArray(new String[0]);
                 }
 
-                mDeviceSupport.onNotification(notificationSpec);
+                if (action==ACTION_NOTIFICATION)
+                    mDeviceSupport.onNotification(notificationSpec);
+                if (action==ACTION_MODIFY_NOTIFICATION)
+                    mDeviceSupport.onModifyNotification(notificationSpec);
                 break;
             }
             case ACTION_DELETE_NOTIFICATION: {

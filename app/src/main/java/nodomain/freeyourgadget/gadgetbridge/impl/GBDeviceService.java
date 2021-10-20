@@ -158,6 +158,26 @@ public class GBDeviceService implements DeviceService {
     }
 
     @Override
+    public void onModifyNotification(NotificationSpec notificationSpec) {
+        Intent intent = createIntent().setAction(ACTION_MODIFY_NOTIFICATION)
+                .putExtra(EXTRA_NOTIFICATION_FLAGS, notificationSpec.flags)
+                .putExtra(EXTRA_NOTIFICATION_PHONENUMBER, notificationSpec.phoneNumber)
+                .putExtra(EXTRA_NOTIFICATION_SENDER, coalesce(notificationSpec.sender, getContactDisplayNameByNumber(notificationSpec.phoneNumber)))
+                .putExtra(EXTRA_NOTIFICATION_SUBJECT, notificationSpec.subject)
+                .putExtra(EXTRA_NOTIFICATION_TITLE, notificationSpec.title)
+                .putExtra(EXTRA_NOTIFICATION_BODY, notificationSpec.body)
+                .putExtra(EXTRA_NOTIFICATION_ID, notificationSpec.getId())
+                .putExtra(EXTRA_NOTIFICATION_TYPE, notificationSpec.type)
+                .putExtra(EXTRA_NOTIFICATION_ACTIONS, notificationSpec.attachedActions)
+                .putExtra(EXTRA_NOTIFICATION_SOURCENAME, notificationSpec.sourceName)
+                .putExtra(EXTRA_NOTIFICATION_PEBBLE_COLOR, notificationSpec.pebbleColor)
+                .putExtra(EXTRA_NOTIFICATION_SOURCEAPPID, notificationSpec.sourceAppId)
+                .putExtra(EXTRA_NOTIFICATION_ICONID, notificationSpec.iconId)
+                .putExtra(EXTRA_NOTIFICATION_ICONB64, notificationSpec.iconB64);
+        invokeService(intent);
+    }
+
+    @Override
     public void onDeleteNotification(int id) {
         Intent intent = createIntent().setAction(ACTION_DELETE_NOTIFICATION)
                 .putExtra(EXTRA_NOTIFICATION_ID, id);
