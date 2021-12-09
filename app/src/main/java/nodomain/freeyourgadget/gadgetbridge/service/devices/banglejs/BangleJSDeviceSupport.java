@@ -159,7 +159,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private void handleUartRxLine(String line) {
         LOG.info("UART RX LINE: " + line);
 
-        if (">Uncaught ReferenceError: \"gb\" is not defined".equals(line))
+        if (">Uncaught ReferenceError: \"GB\" is not defined".equals(line))
           GB.toast(getContext(), "Gadgetbridge plugin not installed on Bangle.js", Toast.LENGTH_LONG, GB.ERROR);
         else if (line.charAt(0)=='{') {
             // JSON - we hope!
@@ -683,8 +683,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             w = drawable.getIntrinsicWidth();
             h = drawable.getIntrinsicHeight();
             // don't allocate anything too big
-            if (w>48) w=48;
-            if (h>48) h=48;
+            if (w>24) w=24;
+            if (h>24) h=24;
         }
         Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
 
