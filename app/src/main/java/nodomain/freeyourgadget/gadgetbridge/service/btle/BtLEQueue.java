@@ -70,6 +70,7 @@ public final class BtLEQueue {
     private volatile boolean mCrashed;
     private volatile boolean mAbortTransaction;
     private volatile boolean mAbortServerTransaction;
+    private volatile boolean mPauseTransaction;
 
     private final Context mContext;
     private CountDownLatch mWaitForActionResultLatch;
@@ -111,12 +112,19 @@ public final class BtLEQueue {
                         mAbortServerTransaction = false;
 
                         for (BtLEServerAction action : serverTransaction.getActions()) {
+                            while (mPauseTransaction && !mAbortServerTransaction) {
+                              LOG.info("Pausing transaction");
+                              try {
+                                  Thread.sleep(100);
+                              } catch (Exception e) {}
+                            }
                             if (mAbortServerTransaction) { // got disconnected
                                 LOG.info("Aborting running transaction");
+                                mPauseTransaction = false;
                                 break;
                             }
                             if (LOG.isDebugEnabled()) {
-                                LOG.debug("About to run action: " + action);
+                                LOG.debug("About to run server action: " + action);
                             }
                             if (action.run(mBluetoothGattServer)) {
                                 // check again, maybe due to some condition, action did not need to write, so we can't wait
@@ -145,11 +153,17 @@ public final class BtLEQueue {
                                 LOG.info("Aborting running transaction");
                                 break;
                             }
+                            while (mPauseTransaction && !mAbortTransaction) {
+                              LOG.info("Pausing transaction");
+                              try {
+                                  Thread.sleep(100);
+                              } catch (Exception e) {}
+                            }
                             mWaitCharacteristic = action.getCharacteristic();
                             mWaitForActionResultLatch = new CountDownLatch(1);
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("About to run action: " + action);
-                            }
+                            }                      
                             if (action instanceof GattListenerAction) {
                                 // this special action overwrites the transaction gatt listener (if any), it must
                                 // always be the last action in the transaction
@@ -324,12 +338,17 @@ public final class BtLEQueue {
         if (mAutoReconnect && mBluetoothGatt != null) {
             LOG.info("Enabling automatic ble reconnect...");
             boolean result = mBluetoothGatt.connect();
+            mPauseTransaction = false;
             if (result) {
                 setDeviceConnectionState(State.WAITING_FOR_RECONNECT);
             }
             return result;
         }
         return false;
+    }
+
+    public void setPaused(boolean paused) {
+      mPauseTransaction = paused;
     }
 
     public void dispose() {

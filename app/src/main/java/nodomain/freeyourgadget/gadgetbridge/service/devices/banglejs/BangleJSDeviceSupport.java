@@ -289,8 +289,21 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         if (BangleJSConstants.UUID_CHARACTERISTIC_NORDIC_UART_RX.equals(characteristic.getUuid())) {
             byte[] chars = characteristic.getValue();
             // check to see if we get more data - if so, increase out MTU for sending
-            if (chars.length > mtuSize)
+            if (chars.length > mtuSize) {
+              LOG.info("RX: increate MTU from "+mtuSize+" to " + chars.length);
                 mtuSize = chars.length;
+            }
+            for (int i=0;i<chars.length;i++) {
+              if (chars[i]==19 /* XOFF */) {
+                getQueue().setPaused(true);
+                LOG.info("RX: XOFF");
+              }
+              if (chars[i]==17 /* XON */) {
+                getQueue().setPaused(false);
+                LOG.info("RX: XON");
+              }
+              // TODO: ignore XON/XOFF chars
+            }
             String packetStr = new String(chars);
             LOG.info("RX: " + packetStr);
             receivedLine += packetStr;
