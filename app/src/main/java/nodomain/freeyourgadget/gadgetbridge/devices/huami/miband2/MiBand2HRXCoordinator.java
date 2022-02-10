@@ -1,5 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, João Paulo Barraca
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Dmitry Markin, João Paulo Barraca
 
     This file is part of Gadgetbridge.
 
@@ -90,7 +90,8 @@ public class MiBand2HRXCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_donotdisturb_withauto,
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_rotatewrist_cycleinfo,
-                R.xml.devicesettings_pairingkey
+                R.xml.devicesettings_pairingkey,
+                R.xml.devicesettings_transliteration
         };
     }
 }

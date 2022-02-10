@@ -1,3 +1,19 @@
+/*  Copyright (C) 2019-2021 Daniel Dakhno
+
+    This file is part of Gadgetbridge.
+
+    Gadgetbridge is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Gadgetbridge is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.configuration;
 
 import android.widget.Toast;
@@ -43,7 +59,7 @@ public class ConfigurationGetRequest extends FileEncryptedLookupAndGetRequest im
             }else if(item instanceof ConfigurationPutRequest.BatteryConfigItem){
                 device.setBatteryLevel((short) ((ConfigurationPutRequest.BatteryConfigItem) item).getBatteryPercentage());
                 device.setBatteryVoltage(((ConfigurationPutRequest.BatteryConfigItem) item).getBatteryVoltage() / 1000f);
-                device.setBatteryThresholdPercent((short) 15);
+                device.setBatteryThresholdPercent((short) 10);
 
                 GBDeviceEventBatteryInfo batteryInfo = new GBDeviceEventBatteryInfo();
                 batteryInfo.level = (short) ((ConfigurationPutRequest.BatteryConfigItem) item).getBatteryPercentage();
@@ -54,9 +70,9 @@ public class ConfigurationGetRequest extends FileEncryptedLookupAndGetRequest im
             }
         }
 
-        GB.toast("got config", 0, GB.INFO);
-
         device.sendDeviceUpdateIntent(getAdapter().getContext());
+
+        handleConfiguration(items);
     }
 
     @Override
@@ -67,4 +83,6 @@ public class ConfigurationGetRequest extends FileEncryptedLookupAndGetRequest im
             throw new RuntimeException("strange lookup stuff");
         }
     }
+
+    protected void handleConfiguration(ConfigurationPutRequest.ConfigItem[] items){}
 }

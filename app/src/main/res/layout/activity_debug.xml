@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:grid="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,8 +14,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true">
 
-        <androidx.gridlayout.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:grid="http://schemas.android.com/apk/res-auto"
+        <androidx.gridlayout.widget.GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/activity_vertical_margin"
@@ -166,7 +166,75 @@
                 grid:layout_columnSpan="2"
                 grid:layout_gravity="fill_horizontal"
                 android:text="@string/share_log" />
+            <Button
+                android:id="@+id/showWidgetsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Show all registered app widgets IDs" />
+            <Button
+                android:id="@+id/deleteWidgets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Delete all registered app widgets IDs" />
+            <Button
+                android:id="@+id/showWidgetsPrefs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Show app Widgets Preferences" />
+            <Button
+                android:id="@+id/deleteWidgetsPrefs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Delete app Widgets Preferences" />
+
+            <CheckBox
+                android:id="@+id/activity_list_debug_extra_time_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_marginTop="7dp"
+                android:background="@color/accent"
+                android:buttonTint="@color/btn_dark"
+                android:padding="4dp"
+                android:paddingLeft="10dp"
+                android:text="Activity summary extra date range (takes long to generate when used)"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                grid:layout_columnSpan="2" />
+            <Button
+                android:id="@+id/addDeviceButtonDebug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Add test device manually" />
+
+            <Button
+                android:id="@+id/removeDevicePreferences"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remove device preferences"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal" />
+
+            <Button
+                android:id="@+id/runDebugFunction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Run Debug Function"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal" />
+
         </androidx.gridlayout.widget.GridLayout>
+
     </ScrollView>
 
 </RelativeLayout>

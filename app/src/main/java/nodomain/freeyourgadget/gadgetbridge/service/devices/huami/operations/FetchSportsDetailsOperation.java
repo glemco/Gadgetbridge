@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti
 
     This file is part of Gadgetbridge.
@@ -101,6 +101,12 @@ public class FetchSportsDetailsOperation extends AbstractFetchOperation {
                         break;
                     case ActivityKind.TYPE_WALKING:
                         trackType = getContext().getString(R.string.activity_type_walking);
+                        break;
+                    case ActivityKind.TYPE_HIKING:
+                        trackType = getContext().getString(R.string.activity_type_hiking);
+                        break;
+                    case ActivityKind.TYPE_CLIMBING:
+                        trackType = getContext().getString(R.string.activity_type_climbing);
                         break;
                     case ActivityKind.TYPE_SWIMMING:
                         trackType = getContext().getString(R.string.activity_type_swimming);

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer, Michal Novotny
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Michal Novotny
 
     This file is part of Gadgetbridge.
 
@@ -33,6 +33,26 @@ public class Version implements Comparable<Version> {
         if (!version.matches("[0-9]+(\\.[0-9]+)*"))
             throw new IllegalArgumentException("Invalid version format");
         this.version = version;
+    }
+
+    public boolean smallerOrEqualThan(Version that){
+        return !greaterThan(that);
+    }
+
+    public boolean greaterOrEqualThan(Version that){
+        return !smallerThan(that);
+    }
+
+    public boolean smallerThan(Version that){
+        return compareTo(that) == -1;
+    }
+
+    public boolean greaterThan(Version that){
+        return compareTo(that) == 1;
+    }
+
+    public boolean sameAs(Version that){
+        return compareTo(that) == 0;
     }
 
     @Override public int compareTo(Version that) {

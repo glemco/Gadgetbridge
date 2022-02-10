@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti
 
     This file is part of Gadgetbridge.
@@ -168,7 +168,7 @@ public class DeviceManager {
             @Override
             public int compare(GBDevice lhs, GBDevice rhs) {
                 if (rhs.getStateOrdinal() - lhs.getStateOrdinal() == 0) {
-                    return Collator.getInstance().compare(lhs.getName(), rhs.getName());
+                    return Collator.getInstance().compare(lhs.getAliasOrName(), rhs.getAliasOrName());
                 }
                 return (rhs.getStateOrdinal() - lhs.getStateOrdinal());
             }

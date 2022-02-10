@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
@@ -48,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryJsonSummary;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.FormatUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.ActivitySummariesFilter.ALL_DEVICES;
@@ -221,6 +223,8 @@ public class ActivitySummariesAdapter extends AbstractActivityListingAdapter<Bas
         durationSumView.setText(String.format("%s", DateTimeUtils.formatDurationHoursMinutes((long) durationSum, TimeUnit.MILLISECONDS)));
         caloriesBurntSumView.setText(String.format("%s %s", (long) caloriesBurntSum, context.getString(R.string.calories_unit)));
         distanceSumView.setText(String.format("%s %s", df.format(distanceSum / 1000), context.getString(R.string.km)));
+        distanceSumView.setText(FormatUtils.getFormattedDistanceLabel(distanceSum));
+
         activeSecondsSumView.setText(String.format("%s", DateTimeUtils.formatDurationHoursMinutes((long) activeSecondsSum, TimeUnit.SECONDS)));
         activitiesCountView.setText(String.valueOf(activitiesCount));
         String activityName = context.getString(R.string.activity_summaries_all_activities);
@@ -329,6 +333,11 @@ public class ActivitySummariesAdapter extends AbstractActivityListingAdapter<Bas
     }
 
     @Override
+    protected String getSpeedLabel(BaseActivitySummary item) {
+        return null;
+    }
+
+    @Override
     protected String getSessionCountLabel(BaseActivitySummary item) {
         return "";
     }
@@ -362,6 +371,9 @@ public class ActivitySummariesAdapter extends AbstractActivityListingAdapter<Bas
     protected boolean isSummary(BaseActivitySummary item, int position) {
         return position == 0;
     }
+
+    @Override
+    protected boolean isEmptySession(BaseActivitySummary item, int position) { return false; }
 
     @Override
     protected boolean isEmptySummary(BaseActivitySummary item) {

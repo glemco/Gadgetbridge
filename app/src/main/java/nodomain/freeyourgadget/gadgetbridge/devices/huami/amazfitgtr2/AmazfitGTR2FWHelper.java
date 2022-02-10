@@ -1,5 +1,5 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, pangwalla
 
     This file is part of Gadgetbridge.
 
@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr.AmazfitGTRFirmwareInfo;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr2.AmazfitGTR2FirmwareInfo;
 
 public class AmazfitGTR2FWHelper extends HuamiFWHelper {
 
@@ -33,7 +34,7 @@ public class AmazfitGTR2FWHelper extends HuamiFWHelper {
 
     @Override
     protected void determineFirmwareInfo(byte[] wholeFirmwareBytes) {
-        firmwareInfo = new AmazfitGTRFirmwareInfo(wholeFirmwareBytes);
+        firmwareInfo = new AmazfitGTR2FirmwareInfo(wholeFirmwareBytes);
         if (!firmwareInfo.isHeaderValid()) {
             throw new IllegalArgumentException("Not an Amazfit GTR 2 firmware");
         }

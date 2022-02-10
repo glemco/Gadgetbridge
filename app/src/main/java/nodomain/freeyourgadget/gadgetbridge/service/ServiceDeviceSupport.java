@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniel
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel
     Dakhno, Daniele Gobbetti, José Rebelo, Julien Pivotto, Kasha, Sebastian
     Kranz, Steffen Liebergeld
 
@@ -37,6 +37,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 
 /**
@@ -310,6 +311,14 @@ public class ServiceDeviceSupport implements DeviceSupport {
     }
 
     @Override
+    public void onSetReminders(ArrayList<? extends Reminder> reminders) {
+        if (checkBusy("set reminders")) {
+            return;
+        }
+        delegate.onSetReminders(reminders);
+    }
+
+    @Override
     public void onEnableRealtimeSteps(boolean enable) {
         if (checkBusy("enable realtime steps: " + enable)) {
             return;
@@ -403,5 +412,13 @@ public class ServiceDeviceSupport implements DeviceSupport {
             return;
         }
         delegate.onSetLedColor(color);
+    }
+
+    @Override
+    public void onPowerOff() {
+        if (checkBusy("power off event")) {
+            return;
+        }
+        delegate.onPowerOff();
     }
 }

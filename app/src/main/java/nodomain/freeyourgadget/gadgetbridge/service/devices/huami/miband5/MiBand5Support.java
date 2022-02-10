@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2019-2021 Andreas Shimokawa, Manuel Ruß, odavo32nof
 
     This file is part of Gadgetbridge.
 
@@ -35,19 +35,25 @@ public class MiBand5Support extends MiBand4Support {
 
     @Override
     protected MiBand5Support setDisplayItems(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, false, R.array.pref_miband5_display_items_default);
+        setDisplayItemsNew(builder, false, true, R.array.pref_miband5_display_items_default);
         return this;
     }
 
     @Override
     protected MiBand5Support setShortcuts(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, true, R.array.pref_miband5_shortcuts_default);
+        setDisplayItemsNew(builder, true, true, R.array.pref_miband5_shortcuts_default);
         return this;
     }
 
     @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
         return new MiBand5FWHelper(uri, context);
+    }
+
+
+    @Override
+    public boolean supportsSunriseSunsetWindHumidity() {
+        return true;
     }
 
     @Override

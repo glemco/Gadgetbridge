@@ -50,8 +50,11 @@ public class ActivityKind {
     public static final int TYPE_BASKETBALL = 0x00040000;
     public static final int TYPE_PINGPONG = 0x00080000;
     public static final int TYPE_BADMINTON = 0x00100000;
+    public static final int TYPE_STRENGTH_TRAINING = 0x00200000;
+    public static final int TYPE_HIKING = 0x00400000;
+    public static final int TYPE_CLIMBING = 0x00800000;
 
-    private static final int TYPES_COUNT = 23;
+    private static final int TYPES_COUNT = 26;
 
     public static final int TYPE_SLEEP = TYPE_LIGHT_SLEEP | TYPE_DEEP_SLEEP;
     public static final int TYPE_ALL = TYPE_ACTIVITY | TYPE_SLEEP | TYPE_NOT_WORN;
@@ -76,6 +79,12 @@ public class ActivityKind {
         }
         if ((types & ActivityKind.TYPE_WALKING) != 0) {
             result[i++] = provider.toRawActivityKind(TYPE_WALKING);
+        }
+        if ((types & ActivityKind.TYPE_HIKING) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_HIKING);
+        }
+        if ((types & ActivityKind.TYPE_CLIMBING) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_CLIMBING);
         }
         if ((types & ActivityKind.TYPE_SWIMMING) != 0) {
             result[i++] = provider.toRawActivityKind(TYPE_SWIMMING);
@@ -104,6 +113,25 @@ public class ActivityKind {
         if ((types & ActivityKind.TYPE_YOGA) != 0) {
             result[i++] = provider.toRawActivityKind(TYPE_YOGA);
         }
+        if ((types & ActivityKind.TYPE_ROWING_MACHINE) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_ROWING_MACHINE);
+        }
+        if ((types & ActivityKind.TYPE_CRICKET) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_CRICKET);
+        }
+        if ((types & ActivityKind.TYPE_BASKETBALL) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_BASKETBALL);
+        }
+        if ((types & ActivityKind.TYPE_PINGPONG) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_PINGPONG);
+        }
+        if ((types & ActivityKind.TYPE_BADMINTON) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_BADMINTON);
+        }
+        if ((types & ActivityKind.TYPE_STRENGTH_TRAINING) != 0) {
+            result[i++] = provider.toRawActivityKind(TYPE_STRENGTH_TRAINING);
+        }
+
         return Arrays.copyOf(result, i);
     }
 
@@ -123,6 +151,10 @@ public class ActivityKind {
                 return context.getString(R.string.activity_type_running);
             case TYPE_WALKING:
                 return context.getString(R.string.activity_type_walking);
+            case TYPE_HIKING:
+                return context.getString(R.string.activity_type_hiking);
+            case TYPE_CLIMBING:
+                return context.getString(R.string.activity_type_climbing);
             case TYPE_SWIMMING:
                 return context.getString(R.string.activity_type_swimming);
             case TYPE_CYCLING:
@@ -153,6 +185,8 @@ public class ActivityKind {
                 return context.getString(R.string.activity_type_pingpong);
             case TYPE_BADMINTON:
                 return context.getString(R.string.activity_type_badminton);
+            case TYPE_STRENGTH_TRAINING:
+                return context.getString(R.string.activity_type_strength_training);
             case TYPE_UNKNOWN:
             default:
                 return context.getString(R.string.activity_type_unknown);
@@ -172,6 +206,10 @@ public class ActivityKind {
                 return R.drawable.ic_activity_running;
             case TYPE_WALKING:
                 return R.drawable.ic_activity_walking;
+            case TYPE_HIKING:
+                return R.drawable.ic_activity_hiking;
+            case TYPE_CLIMBING:
+                return R.drawable.ic_activity_climbing;
             case TYPE_CYCLING:
                 return R.drawable.ic_activity_biking;
             case TYPE_TREADMILL:
@@ -189,7 +227,6 @@ public class ActivityKind {
                 return R.drawable.ic_activity_rope_jump;
             case TYPE_YOGA:
                 return R.drawable.ic_activity_yoga;
-
             case TYPE_SOCCER:
                 return R.drawable.ic_activity_soccer;
             case TYPE_ROWING_MACHINE:
@@ -202,6 +239,8 @@ public class ActivityKind {
                 return R.drawable.ic_activity_pingpong;
             case TYPE_BADMINTON:
                 return R.drawable.ic_activity_badmington;
+            case TYPE_STRENGTH_TRAINING:
+                return R.drawable.ic_activity_unknown_small; //FIXME: find icon
 
             case TYPE_NOT_WORN: // fall through
             case TYPE_ACTIVITY: // fall through

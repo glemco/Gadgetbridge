@@ -1,5 +1,6 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, José Rebelo, Matthieu Baerts, Nephiel, vanous
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Dmitry Markin, José Rebelo, Matthieu Baerts, Nephiel, Petr Vaněk,
+    Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -28,20 +29,26 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.entities.AlarmDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.BatteryLevelDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.DeviceAttributesDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getPrefs;
@@ -67,7 +74,12 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
 
     @Override
     public GBDevice createDevice(GBDeviceCandidate candidate) {
-        return new GBDevice(candidate.getDevice().getAddress(), candidate.getName(), null, getDeviceType());
+        GBDevice gbDevice = new GBDevice(candidate.getDevice().getAddress(), candidate.getName(), null, getDeviceType());
+        for (BatteryConfig batteryConfig : getBatteryConfig()) {
+            gbDevice.setBatteryIcon(batteryConfig.getBatteryIcon(), batteryConfig.getBatteryIndex());
+            gbDevice.setBatteryLabel(batteryConfig.getBatteryLabel(), batteryConfig.getBatteryIndex());
+        }
+        return gbDevice;
     }
 
     @Override
@@ -90,6 +102,8 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
             prefs.getPreferences().edit().remove(MiBandConst.PREF_MIBAND_ADDRESS).apply();
         }
 
+        GBApplication.deleteDeviceSpecificSharedPrefs(gbDevice.getAddress());
+
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             DaoSession session = dbHandler.getDaoSession();
             Device device = DBHelper.findDevice(gbDevice, session);
@@ -97,6 +111,10 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
                 deleteDevice(gbDevice, device, session);
                 QueryBuilder<?> qb = session.getDeviceAttributesDao().queryBuilder();
                 qb.where(DeviceAttributesDao.Properties.DeviceId.eq(device.getId())).buildDelete().executeDeleteWithoutDetachingEntities();
+                QueryBuilder<?> batteryLevelQueryBuilder = session.getBatteryLevelDao().queryBuilder();
+                batteryLevelQueryBuilder.where(BatteryLevelDao.Properties.DeviceId.eq(device.getId())).buildDelete().executeDeleteWithoutDetachingEntities();
+                QueryBuilder<?> alarmDeviceQueryBuilder = session.getAlarmDao().queryBuilder();
+                alarmDeviceQueryBuilder.where(AlarmDao.Properties.DeviceId.eq(device.getId())).buildDelete().executeDeleteWithoutDetachingEntities();
                 session.getDeviceDao().delete(device);
             } else {
                 LOG.info("device to delete not found in db: " + gbDevice);
@@ -144,6 +162,37 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public File getAppCacheDir() throws IOException {
+        return null;
+    }
+
+    @Override
+    public String getAppCacheSortFilename() {
+        return null;
+    }
+
+    @Override
+    public String getAppFileExtension() {
+        return null;
+    }
+
+    @Override
+    public boolean supportsAppListFetching() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsAppReordering() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Class<? extends Activity> getWatchfaceDesignerActivity() {
+        return null;
+    }
+
+    @Override
     public int getBondingStyle() {
         return BONDING_STYLE_ASK;
     }
@@ -174,6 +223,16 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public int getMaximumReminderMessageLength() {
+        return 0;
+    }
+
+    @Override
+    public int getReminderSlotCount() {
+        return 0;
+    }
+
+    @Override
     public boolean supportsRgbLedColor() {
         return false;
     }
@@ -194,9 +253,34 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
         return null;
     }
 
+    @Override
+    public DeviceSpecificSettingsCustomizer getDeviceSpecificSettingsCustomizer(GBDevice device) {
+        return null;
+    }
+
+    @Override
+    public String[] getSupportedLanguageSettings(GBDevice device) {
+        return null;
+    }
+
     @Nullable
     @Override
     public Class<? extends Activity> getCalibrationActivity() {
         return null;
+    }
+
+    @Override
+    public int getBatteryCount() {
+        return 1;
+    } //multiple battery support, default is 1, maximum is 3, 0 will disable the battery in UI
+
+    @Override
+    public BatteryConfig[] getBatteryConfig() {
+        return new BatteryConfig[0];
+    }
+
+    @Override
+    public boolean supportsPowerOff() {
+        return false;
     }
 }

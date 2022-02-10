@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniel
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel
     Dakhno, Daniele Gobbetti, José Rebelo
 
     This file is part of Gadgetbridge.
@@ -28,12 +28,20 @@ import android.os.ParcelUuid;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -43,10 +51,12 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
-import nodomain.freeyourgadget.gadgetbridge.model.ItemWithDetails;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.Version;
 
 public class QHybridCoordinator extends AbstractDeviceCoordinator {
+    private static final Logger LOG = LoggerFactory.getLogger(QHybridCoordinator.class);
+
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
@@ -102,7 +112,12 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
     public InstallHandler findInstallHandler(Uri uri, Context context) {
         if (isHybridHR()) {
             FossilHRInstallHandler installHandler = new FossilHRInstallHandler(uri, context);
-            return installHandler.isValid() ? installHandler : null;
+            if (!installHandler.isValid()) {
+                LOG.warn("Not a Fossil Hybrid firmware or app!");
+                return null;
+            } else {
+                return installHandler;
+            }
         }
         FossilInstallHandler installHandler = new FossilInstallHandler(uri, context);
         return installHandler.isValid() ? installHandler : null;
@@ -152,8 +167,42 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppListFetching() {
+        return true;
+    }
+
+    @Override
     public Class<? extends Activity> getAppsManagementActivity() {
-        return isHybridHR() ? HRConfigActivity.class : ConfigActivity.class;
+        return isHybridHR() ? AppManagerActivity.class : ConfigActivity.class;
+    }
+
+    @Override
+    public Class<? extends Activity> getWatchfaceDesignerActivity() {
+        return isHybridHR() ? HybridHRWatchfaceDesignerActivity.class : null;
+    }
+
+    /**
+     * Returns the directory containing the watch app cache.
+     * @throws IOException when the external files directory cannot be accessed
+     */
+    public File getAppCacheDir() throws IOException {
+        return new File(FileUtils.getExternalFilesDir(), "qhybrid-app-cache");
+    }
+
+    /**
+     * Returns a String containing the device app sort order filename.
+     */
+    @Override
+    public String getAppCacheSortFilename() {
+        return "wappcacheorder.txt";
+    }
+
+    /**
+     * Returns a String containing the file extension for watch apps.
+     */
+    @Override
+    public String getAppFileExtension() {
+        return ".wapp";
     }
 
     @Override
@@ -192,9 +241,22 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
+        if (isHybridHR() && getFirmwareVersion() != null && getFirmwareVersion().compareTo(new Version("1.0.2.20")) < 0) {
+            return new int[]{
+                    R.xml.devicesettings_fossilhybridhr_pre_fw20,
+                    R.xml.devicesettings_fossilhybridhr,
+                    R.xml.devicesettings_autoremove_notifications,
+                    R.xml.devicesettings_canned_dismisscall_16,
+                    R.xml.devicesettings_pairingkey,
+                    R.xml.devicesettings_custom_deviceicon,
+                    R.xml.devicesettings_transliteration
+            };
+        }
         if (isHybridHR()) {
             return new int[]{
                     R.xml.devicesettings_fossilhybridhr,
+                    R.xml.devicesettings_autoremove_notifications,
+                    R.xml.devicesettings_canned_dismisscall_16,
                     R.xml.devicesettings_pairingkey,
                     R.xml.devicesettings_custom_deviceicon
             };
@@ -211,5 +273,17 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
             return connectedDevice.getName().startsWith("Hybrid HR");
         }
         return false;
+    }
+
+    private Version getFirmwareVersion() {
+        String firmware = GBApplication.app().getDeviceManager().getSelectedDevice().getFirmwareVersion();
+        if (firmware != null) {
+            Matcher matcher = Pattern.compile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+").matcher(firmware); // DN1.0.2.19r.v5
+            if (matcher.find()) {
+                firmware = matcher.group(0);
+                return new Version(firmware);
+            }
+        }
+        return null;
     }
 }

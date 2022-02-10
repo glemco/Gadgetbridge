@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Christian
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Christian
     Fischer, Daniele Gobbetti, José Rebelo, Michal Novotny, Szymon Tomasz Stefanek
 
     This file is part of Gadgetbridge.
@@ -21,8 +21,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Version;
 
 public final class MiBandConst {
-
-    public static final String PREF_USER_ALIAS = "mi_user_alias";
     public static final String PREF_MIBAND_ADDRESS = "development_miaddr";  // FIXME: should be prefixed mi_
     public static final String PREF_MIBAND_ALARMS = "mi_alarms";
     public static final String PREF_MIBAND_DONT_ACK_TRANSFER = "mi_dont_ack_transfer";
@@ -39,6 +37,7 @@ public final class MiBandConst {
     public static final String PREF_MI2_ROTATE_WRIST_TO_SWITCH_INFO = "rotate_wrist_to_cycle_info";
 	public static final String PREF_MI2_ENABLE_TEXT_NOTIFICATIONS = "mi2_enable_text_notifications";
     public static final String PREF_DO_NOT_DISTURB = "do_not_disturb";
+    public static final String PREF_DO_NOT_DISTURB_LIFT_WRIST = "do_not_disturb_lift_wrist";
     public static final String PREF_DO_NOT_DISTURB_OFF = "off";
     public static final String PREF_DO_NOT_DISTURB_AUTOMATIC = "automatic";
     public static final String PREF_DO_NOT_DISTURB_SCHEDULED = "scheduled";

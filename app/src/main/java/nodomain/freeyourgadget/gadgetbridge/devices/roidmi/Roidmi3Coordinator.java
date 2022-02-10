@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Daniele Gobbetti, João Paulo Barraca, José
+/*  Copyright (C) 2017-2021 Daniele Gobbetti, João Paulo Barraca, José
     Rebelo, tiparega
 
     This file is part of Gadgetbridge.
@@ -31,12 +31,16 @@ public class Roidmi3Coordinator extends RoidmiCoordinator {
 
     @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
+    public DeviceType getSupportedType(final GBDeviceCandidate candidate) {
         try {
-            BluetoothDevice device = candidate.getDevice();
-            String name = device.getName();
+            final BluetoothDevice device = candidate.getDevice();
+            final String name = device.getName();
 
-            if (name != null && name.contains("Roidmi Music Blue C")) {
+            if (name == null) {
+                return DeviceType.UNKNOWN;
+            }
+
+            if (name.contains("Roidmi Music Blue C") || name.contains("Mojietu Music Blue C")) {
                 return DeviceType.ROIDMI3;
             }
         } catch (Exception ex) {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, Taavi Eomäe
 
     This file is part of Gadgetbridge.
@@ -16,6 +16,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.pebble;
+
+import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -54,8 +56,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
-import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
-
 
 public class PebblePairingActivity extends AbstractGBActivity implements BondingInterface {
     private static final Logger LOG = LoggerFactory.getLogger(PebblePairingActivity.class);
@@ -73,7 +73,9 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
         setContentView(R.layout.activity_pebble_pairing);
 
         message = findViewById(R.id.pebble_pair_message);
-        deviceCandidate = getIntent().getParcelableExtra(DeviceCoordinator.EXTRA_DEVICE_CANDIDATE);
+        Intent intent = getIntent();
+        intent.setExtrasClassLoader(GBDeviceCandidate.class.getClassLoader());
+        deviceCandidate = intent.getParcelableExtra(DeviceCoordinator.EXTRA_DEVICE_CANDIDATE);
 
         String macAddress = null;
         if (deviceCandidate != null) {
@@ -114,7 +116,7 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
                 return;
             }
 
-            removeBroadcastReceivers();
+            registerBroadcastReceivers();
             BondingUtil.connectThenComplete(this, device);
             return;
         }
@@ -174,15 +176,15 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
         }
 
         // If it's not a LE Pebble, initiate a connection when bonding is complete
-        if (!BondingUtil.isLePebble(getCurrentTarget()) && success) {
-            BondingUtil.attemptToFirstConnect(getCurrentTarget());
+        if (!BondingUtil.isLePebble(getCurrentTarget().getDevice()) && success) {
+            BondingUtil.attemptToFirstConnect(getCurrentTarget().getDevice());
         }
         finish();
     }
 
     @Override
-    public BluetoothDevice getCurrentTarget() {
-        return this.deviceCandidate.getDevice();
+    public GBDeviceCandidate getCurrentTarget() {
+        return this.deviceCandidate;
     }
 
     @Override
@@ -205,13 +207,13 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
 
     @Override
     protected void onStart() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onStart();
     }
 
     @Override
     protected void onResume() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onResume();
     }
 
@@ -245,7 +247,7 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
         AndroidUtils.safeUnregisterBroadcastReceiver(this, bondingReceiver);
     }
 
-    public void removeBroadcastReceivers() {
+    public void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(pairingReceiver, new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED));
         registerReceiver(bondingReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
     }

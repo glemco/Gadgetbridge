@@ -1,4 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Dmytro
+    Bielik, pangwalla
 
     This file is part of Gadgetbridge.
 
@@ -21,8 +22,11 @@ import android.net.Uri;
 
 import java.io.IOException;
 
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts2.AmazfitGTS2FWHelper;
+import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts.AmazfitGTSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2020;
@@ -30,8 +34,18 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.Upd
 public class AmazfitGTS2Support extends AmazfitGTSSupport {
 
     @Override
+    public boolean supportsSunriseSunsetWindHumidity() {
+        return true;
+    }
+
+    @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
         return new AmazfitGTS2FWHelper(uri, context);
+    }
+
+    @Override
+    public void onSetCallState(CallSpec callSpec) {
+        onSetCallStateNew(callSpec);
     }
 
     @Override
@@ -42,5 +56,11 @@ public class AmazfitGTS2Support extends AmazfitGTSSupport {
     @Override
     public int getActivitySampleSize() {
         return 8;
+    }
+
+    @Override
+    protected AmazfitGTS2Support setDisplayItems(TransactionBuilder builder) {
+        setDisplayItemsNew(builder, false, false, R.array.pref_gtsgtr2_display_items_default);
+        return this;
     }
 }

@@ -1,5 +1,5 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, José Rebelo, Matthieu Baerts, Nephiel, vanous, Erik Bloß
+/*  Copyright (C) 2016-2021 115ek, Andreas Shimokawa, Carsten Pfeiffer,
+    Daniele Gobbetti, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -145,7 +145,8 @@ public class TLW64Coordinator extends AbstractDeviceCoordinator {
         return new int[]{
                 R.xml.devicesettings_liftwrist_display_noshed,
                 R.xml.devicesettings_longsit_noshed,
-                R.xml.devicesettings_timeformat
+                R.xml.devicesettings_timeformat,
+                R.xml.devicesettings_transliteration
         };
     }
 }

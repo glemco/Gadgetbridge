@@ -28,6 +28,8 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -83,17 +85,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
         super.onPostCreate(savedInstanceState);
 
         Prefs prefs = GBApplication.getPrefs();
-
-        Preference pref = findPreference("notifications_generic");
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                Intent enableIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                startActivity(enableIntent);
-                return true;
-            }
-        });
-
-        pref = findPreference("pref_category_activity_personal");
+        Preference pref = findPreference("pref_category_activity_personal");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 Intent enableIntent = new Intent(SettingsActivity.this, AboutUserPreferencesActivity.class);
@@ -134,15 +126,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 Intent enableIntent = new Intent(SettingsActivity.this, ZeTimePreferenceActivity.class);
-                startActivity(enableIntent);
-                return true;
-            }
-        });
-
-        pref = findPreference("pref_key_blacklist");
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                Intent enableIntent = new Intent(SettingsActivity.this, AppBlacklistActivity.class);
                 startActivity(enableIntent);
                 return true;
             }
@@ -203,6 +186,8 @@ public class SettingsActivity extends AbstractSettingsActivity {
 
         });
 
+
+
         pref = findPreference("language");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -237,12 +222,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 return true;
             }
         });
-
-        if (!GBApplication.isRunningMarshmallowOrLater()) {
-            pref = findPreference("notification_filter");
-            PreferenceCategory category = (PreferenceCategory) findPreference("pref_key_notifications");
-            category.removePreference(pref);
-        }
 
         pref = findPreference("location_aquire");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -302,6 +281,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 return true;
             }
         });
+
 
         pref = findPreference(GBPrefs.AUTO_EXPORT_LOCATION);
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -393,6 +373,36 @@ public class SettingsActivity extends AbstractSettingsActivity {
         audioPlayer.setEntries(newEntries);
         audioPlayer.setEntryValues(newValues);
         audioPlayer.setDefaultValue(newValues[0]);
+
+        final Preference theme = (ListPreference) findPreference("pref_key_theme");
+        final Preference amoled_black = findPreference("pref_key_theme_amoled_black");
+
+        String selectedTheme = prefs.getString("pref_key_theme", SettingsActivity.this.getString(R.string.pref_theme_value_system));
+        if (selectedTheme.equals("light"))
+            amoled_black.setEnabled(false);
+        else
+            amoled_black.setEnabled(true);
+
+        theme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newVal) {
+                final String val = newVal.toString();
+                if (val.equals("light"))
+                    amoled_black.setEnabled(false);
+                else
+                    amoled_black.setEnabled(true);
+                return true;
+            }
+        });
+        pref = findPreference("pref_discovery_pairing");
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent enableIntent = new Intent(SettingsActivity.this, DiscoveryPairingPreferenceActivity.class);
+                startActivity(enableIntent);
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -418,7 +428,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
     /*
     Either returns the file path of the selected document, or the display name, or an empty string
      */
-    private String getAutoExportLocationSummary() {
+    public String getAutoExportLocationSummary() {
         String autoExportLocation = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
         if (autoExportLocation == null) {
             return "";

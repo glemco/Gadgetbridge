@@ -1,5 +1,6 @@
-/*  Copyright (C) 2015-2020 Andreas Böhler, Andreas Shimokawa, Carsten
-    Pfeiffer, Daniele Gobbetti, José Rebelo, Sebastian Kranz, Taavi Eomäe
+/*  Copyright (C) 2015-2021 Andreas Böhler, Andreas Shimokawa, Carsten
+    Pfeiffer, Daniele Gobbetti, José Rebelo, Pauli Salmenrinne, Sebastian Kranz,
+    Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -18,7 +19,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.companion.CompanionDeviceManager;
@@ -51,6 +51,9 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.FindPhoneActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AbstractAppManagerFragment;
+import nodomain.freeyourgadget.gadgetbridge.database.DBAccess;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventAppInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
@@ -58,18 +61,23 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallContro
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventDisplayMessage;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFmFrequency;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventLEDColor;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventScreenshot;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
+import nodomain.freeyourgadget.gadgetbridge.entities.BatteryLevel;
+import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.NotificationListener;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.service.receivers.GBCallControlReceiver;
 import nodomain.freeyourgadget.gadgetbridge.service.receivers.GBMusicControlReceiver;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
-import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_ID;
@@ -167,6 +175,12 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
             handleGBDeviceEvent((GBDeviceEventFindPhone) deviceEvent);
         } else if (deviceEvent instanceof GBDeviceEventLEDColor) {
             handleGBDeviceEvent((GBDeviceEventLEDColor) deviceEvent);
+        } else if (deviceEvent instanceof GBDeviceEventUpdateDeviceInfo) {
+            handleGBDeviceEvent((GBDeviceEventUpdateDeviceInfo) deviceEvent);
+        } else if (deviceEvent instanceof GBDeviceEventUpdatePreferences) {
+            handleGBDeviceEvent((GBDeviceEventUpdatePreferences) deviceEvent);
+        } else if (deviceEvent instanceof GBDeviceEventUpdateDeviceState) {
+            handleGBDeviceEvent((GBDeviceEventUpdateDeviceState) deviceEvent);
         } else if (deviceEvent instanceof GBDeviceEventFmFrequency) {
             handleGBDeviceEvent((GBDeviceEventFmFrequency) deviceEvent);
         }
@@ -206,8 +220,6 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
 
         PendingIntent pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID )
                 .setSmallIcon(R.drawable.ic_notification)
                 .setOngoing(false)
@@ -220,11 +232,11 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
 
         CompanionDeviceManager manager = (CompanionDeviceManager) context.getSystemService(Context.COMPANION_DEVICE_SERVICE);
         if (manager.getAssociations().size() > 0) {
-            notificationManager.notify(GB.NOTIFICATION_ID_PHONE_FIND, notification.build());
+            GB.notify(GB.NOTIFICATION_ID_PHONE_FIND, notification.build(), context);
             context.startActivity(intent);
             LOG.debug("CompanionDeviceManager associations were found, starting intent");
         } else {
-            notificationManager.notify(GB.NOTIFICATION_ID_PHONE_FIND, notification.build());
+            GB.notify(GB.NOTIFICATION_ID_PHONE_FIND, notification.build(), context);
             LOG.warn("CompanionDeviceManager associations were not found, can't start intent");
         }
     }
@@ -274,6 +286,32 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
         }
         gbDevice.setExtraInfo("led_color", colorEvent.color);
         gbDevice.sendDeviceUpdateIntent(context);
+    }
+
+    protected void handleGBDeviceEvent(GBDeviceEventUpdateDeviceInfo itemEvent) {
+        if (gbDevice == null) {
+            return;
+        }
+
+        gbDevice.addDeviceInfo(itemEvent.item);
+        gbDevice.sendDeviceUpdateIntent(context);
+    }
+
+    protected void handleGBDeviceEvent(GBDeviceEventUpdatePreferences savePreferencesEvent) {
+        if (gbDevice == null) {
+            return;
+        }
+
+        savePreferencesEvent.update(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+    }
+
+    protected void handleGBDeviceEvent(GBDeviceEventUpdateDeviceState updateDeviceState) {
+        if (gbDevice == null) {
+            return;
+        }
+
+        gbDevice.setState(updateDeviceState.state);
+        gbDevice.sendDeviceUpdateIntent(getContext());
     }
 
     protected void handleGBDeviceEvent(GBDeviceEventFmFrequency frequencyEvent) {
@@ -337,8 +375,7 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
                     .setAutoCancel(true)
                     .build();
 
-            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            nm.notify(NOTIFICATION_ID_SCREENSHOT, notif);
+            GB.notify(NOTIFICATION_ID_SCREENSHOT, notif, context);
         } catch (IOException ex) {
             LOG.error("Error writing screenshot", ex);
         }
@@ -393,9 +430,9 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
     protected void handleGBDeviceEvent(GBDeviceEventBatteryInfo deviceEvent) {
         Context context = getContext();
         LOG.info("Got BATTERY_INFO device event");
-        gbDevice.setBatteryLevel(deviceEvent.level);
+        gbDevice.setBatteryLevel(deviceEvent.level, deviceEvent.batteryIndex);
         gbDevice.setBatteryState(deviceEvent.state);
-        gbDevice.setBatteryVoltage(deviceEvent.voltage);
+        gbDevice.setBatteryVoltage(deviceEvent.voltage, deviceEvent.batteryIndex);
 
         if (deviceEvent.level == GBDevice.BATTERY_UNKNOWN) {
             // no level available, just "high" or "low"
@@ -411,6 +448,8 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
                 GB.removeBatteryNotification(context);
             }
         } else {
+            createStoreTask("Storing battery data", context, deviceEvent).execute();
+
             //show the notification if the battery level is below threshold and only if not connected to charger
             if (deviceEvent.level <= gbDevice.getBatteryThresholdPercent() &&
                     (BatteryState.BATTERY_LOW.equals(deviceEvent.state) ||
@@ -429,6 +468,33 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
         }
 
         gbDevice.sendDeviceUpdateIntent(context);
+    }
+
+
+    private StoreDataTask createStoreTask(String task, Context context, GBDeviceEventBatteryInfo deviceEvent) {
+        return new StoreDataTask(task, context, deviceEvent);
+    }
+
+    public class StoreDataTask extends DBAccess {
+        GBDeviceEventBatteryInfo deviceEvent;
+
+        public StoreDataTask(String task, Context context, GBDeviceEventBatteryInfo deviceEvent) {
+            super(task, context);
+            this.deviceEvent = deviceEvent;
+        }
+
+        @Override
+        protected void doInBackground(DBHandler handler) {
+            DaoSession daoSession = handler.getDaoSession();
+            Device device = DBHelper.getDevice(gbDevice, daoSession);
+            int ts = (int) (System.currentTimeMillis() / 1000);
+            BatteryLevel batteryLevel = new BatteryLevel();
+            batteryLevel.setTimestamp(ts);
+            batteryLevel.setBatteryIndex(deviceEvent.batteryIndex);
+            batteryLevel.setDevice(device);
+            batteryLevel.setLevel(deviceEvent.level);
+            handler.getDaoSession().getBatteryLevelDao().insert(batteryLevel);
+        }
     }
 
     public void handleGBDeviceEvent(GBDeviceEventDisplayMessage message) {

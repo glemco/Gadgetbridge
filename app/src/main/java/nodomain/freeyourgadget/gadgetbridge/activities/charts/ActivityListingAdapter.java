@@ -23,12 +23,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.adapter.AbstractActivityListingAdapter;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySession;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.FormatUtils;
 
 public class ActivityListingAdapter extends AbstractActivityListingAdapter<ActivitySession> {
     public static final String CHART_COLOR_START = "#e74c3c";
@@ -36,10 +39,11 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractWeekChartFragment.class);
     protected final int ANIM_TIME = 250;
     private final int SESSION_SUMMARY = ActivitySession.SESSION_SUMMARY;
+    private final int SESSION_EMPTY = ActivitySession.SESSION_EMPTY;
     ActivityUser activityUser = new ActivityUser();
     int stepsGoal = activityUser.getStepsGoal();
-    int distanceGoalMeters = activityUser.getDistanceMeters();
-    long activeTimeGoalTimeMillis = activityUser.getActiveTimeMinutes() * 60 * 1000L;
+    int distanceGoalMeters = activityUser.getDistanceGoalMeters();
+    long activeTimeGoalTimeMillis = activityUser.getActiveTimeGoalMinutes() * 60 * 1000L;
 
     public ActivityListingAdapter(Context context) {
         super(context);
@@ -244,14 +248,7 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
 
     @Override
     protected String getDistanceLabel(ActivitySession item) {
-        float distance = item.getDistance();
-        String unit = "###m";
-        if (distance > 2000) {
-            distance = distance / 1000;
-            unit = "###.#km";
-        }
-        DecimalFormat df = new DecimalFormat(unit);
-        return df.format(distance);
+        return FormatUtils.getFormattedDistanceLabel(item.getDistance());
     }
 
     @Override
@@ -269,6 +266,22 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
     protected String getDurationLabel(ActivitySession item) {
         long duration = item.getEndTime().getTime() - item.getStartTime().getTime();
         return DateTimeUtils.formatDurationHoursMinutes(duration, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    protected String getSpeedLabel(ActivitySession item) {
+        long duration = item.getEndTime().getTime() - item.getStartTime().getTime();
+        double distanceMeters = item.getDistance();
+
+        double speed = distanceMeters * 1000 / duration;
+        String unit = "###.#km/h";
+        String units = GBApplication.getPrefs().getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, GBApplication.getContext().getString(R.string.p_unit_metric));
+        if (units.equals(GBApplication.getContext().getString(R.string.p_unit_imperial))) {
+            unit = "###.#mi/h";
+            speed = speed * 0.6213712;
+        }
+        DecimalFormat df = new DecimalFormat(unit);
+        return df.format(speed);
     }
 
     @Override
@@ -305,6 +318,12 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
     protected boolean isSummary(ActivitySession item, int position) {
         int sessionType = item.getSessionType();
         return sessionType == SESSION_SUMMARY;
+    }
+
+    @Override
+    protected boolean isEmptySession(ActivitySession item, int position) {
+        int sessionType = item.getSessionType();
+        return sessionType == SESSION_EMPTY;
     }
 
     @Override

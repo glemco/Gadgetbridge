@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, Gordon Williams, José Rebelo
 
     This file is part of Gadgetbridge.
@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import java.util.Collection;
 import java.util.Collections;
 
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -92,8 +93,8 @@ public class BangleJSCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsRealtimeData() {
-        return false;
+    public boolean supportsRealtimeData()  {
+        return true;
     }
 
     @Override
@@ -113,7 +114,7 @@ public class BangleJSCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsActivityTracking() {
-        return false;
+        return true;
     }
 
     @Override
@@ -128,7 +129,7 @@ public class BangleJSCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsHeartRateMeasurement(GBDevice device) {
-        return false;
+        return true;
     }
 
     @Override
@@ -158,11 +159,18 @@ public class BangleJSCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
-        return null;//new BangleJSSampleProvider(device, session);
+        return new BangleJSSampleProvider(device, session);
     }
 
     @Override
     public InstallHandler findInstallHandler(Uri uri, Context context) {
         return null;
     }
+
+    public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
+        return new int[]{
+                R.xml.devicesettings_transliteration
+        };
+    }
+
 }

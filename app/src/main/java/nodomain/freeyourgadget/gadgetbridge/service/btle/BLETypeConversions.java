@@ -1,5 +1,5 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, Lukas Veneziano
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Lukas Veneziano, Maxim Baz
 
     This file is part of Gadgetbridge.
 
@@ -63,7 +63,7 @@ public class BLETypeConversions {
     /**
      * Similar to calendarToRawBytes, but only up to (and including) the MINUTES.
      * @param timestamp
-     * @return
+     * @return byte array of 6 bytes
      */
     public static byte[] shortCalendarToRawBytes(Calendar timestamp) {
         // MiBand2:
@@ -89,7 +89,7 @@ public class BLETypeConversions {
         return rawOffset;
     }
 
-    private static byte dayOfWeekToRawBytes(Calendar cal) {
+    public static byte dayOfWeekToRawBytes(Calendar cal) {
         int calValue = cal.get(Calendar.DAY_OF_WEEK);
         switch (calValue) {
             case Calendar.SUNDAY:
@@ -118,7 +118,9 @@ public class BLETypeConversions {
             );
 
             if (value.length > 7) {
-                TimeZone timeZone = TimeZone.getDefault();
+                /* when we get a timezone offset via BLE, we cannot know which timeszone this is (only its offset), so
+                   set to UTC which does not use DST to prevent bugs when setting the raw offset below */
+                TimeZone timeZone = TimeZone.getTimeZone("UTC");
                 timeZone.setRawOffset(value[7] * 15 * 60 * 1000);
                 timestamp.setTimeZone(timeZone);
             }
@@ -217,21 +219,24 @@ public class BLETypeConversions {
      * @return sint8 value from -48..+56
      */
     public static byte mapTimeZone(TimeZone timeZone) {
-        return mapTimeZone(timeZone, TZ_FLAG_NONE);
+        int offsetMillis = timeZone.getRawOffset();
+        int utcOffsetInQuarterHours = (offsetMillis / (1000 * 60 * 15));
+        return (byte) utcOffsetInQuarterHours;
     }
 
     /**
      * https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.time_zone.xml
-     * @param timeZone
+     *
+     * @param calendar
      * @return sint8 value from -48..+56
      */
-    public static byte mapTimeZone(TimeZone timeZone, int timezoneFlags) {
-        int offsetMillis = timeZone.getRawOffset();
-        if (false && timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
-            offsetMillis += timeZone.getDSTSavings();
+    public static byte mapTimeZone(Calendar calendar, int timezoneFlags) {
+        int offsetMillis = calendar.getTimeZone().getRawOffset();
+        if (timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
+            offsetMillis = calendar.getTimeZone().getOffset(calendar.getTimeInMillis());
         }
-        int utcOffsetInHours =  (offsetMillis / (1000 * 60 * 60));
-        return (byte) (utcOffsetInHours * 4);
+        int utcOffsetInQuarterHours = (offsetMillis / (1000 * 60 * 15));
+        return (byte) utcOffsetInQuarterHours;
     }
 
     /**

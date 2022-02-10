@@ -95,7 +95,7 @@
     <string name="pref_title_canned_replies">Risposte</string>
     <string name="pref_title_canned_reply_suffix">Suffisso applicato alle risposte automatiche</string>
     <string name="pref_title_canned_messages_dismisscall">Rifiuto chiamata</string>
-    <string name="pref_title_canned_messages_set">Invia al Pebble</string>
+    <string name="pref_title_canned_messages_set">Invia al dispositivo</string>
     <string name="pref_header_development">Opzioni sviluppatore</string>
     <string name="pref_title_development_miaddr">Indirizzo Mi Band</string>
     <string name="pref_title_pebble_settings">Impostazioni Pebble</string>
@@ -112,7 +112,7 @@
     <string name="pref_summary_sunrise_sunset">Mostra gli orari calcolati per l\'alba e il tramonto sulla timeline</string>
     <string name="pref_title_enable_calendar_sync">Sincronizza calendario</string>
     <string name="pref_title_autoremove_notifications">Rimuovi automaticamente le notifiche</string>
-    <string name="pref_summary_autoremove_notifications">Le notifiche vengono rimosse automaticamente dal Pebble dopo averle nascoste sul dispositivo Android</string>
+    <string name="pref_summary_autoremove_notifications">Le notifiche vengono rimosse automaticamente dal dispositivo dopo averle nascoste sul telefono</string>
     <string name="pref_title_pebble_privacy_mode">Impostazioni privacy</string>
     <string name="pref_pebble_privacy_mode_off">Notifiche normali</string>
     <string name="pref_pebble_privacy_mode_content">Sposta il testo delle notifiche fuori dallo schermo</string>
@@ -166,7 +166,11 @@
 \n
 \n
 \nQuesto firmware è per la versione HW: %s</string>
-    <string name="app_install_info">Si sta per installare la app:\n\n\n%1$s Versione %2$s di %3$s\n</string>
+    <string name="app_install_info">Stai per installare l\'app:
+\n
+\n%1$s
+\nVersione %2$s di %3$s
+\n</string>
     <string name="n_a">N/A</string>
     <string name="initialized">inizializzato</string>
     <string name="appversion_by_creator">%1$s di %2$s</string>
@@ -346,16 +350,23 @@
     <string name="live_activity_heart_rate">Battito cardiaco</string>
     <string name="pref_title_pebble_health_store_raw">Memorizza i record grezzi nel database</string>
     <string name="pref_summary_pebble_health_store_raw">Salva i dati \"as is\", aumentando l\'utilizzo del database in modo da permettere interrogazioni successive.</string>
-    <string name="action_db_management">Gestione del database</string>
-    <string name="title_activity_db_management">Gestione del database</string>
-    <string name="activity_db_management_import_export_explanation">Le operazioni sul database utilizzano il percorso qui sotto. \nQuesto percorso è accessibile ad altre applicazioni ed al tuo computer. \nDopo l\'esportazione il database si troverà qui (oppure copia qui il database che desideri importare):</string>
+    <string name="action_db_management">Gestione dei dati</string>
+    <string name="title_activity_db_management">Gestione dei dati</string>
+    <string name="activity_db_management_import_export_explanation">Le operazioni di importazione/esportazione utilizzano questo percorso (vedi sotto) a una cartella sul tuo dispositivo. Questa cartella è accessibile da altre applicazioni Android e dal tuo computer. Nota che questa cartella e tutti i file in essa contenuti vengono eliminati quando disinstalli Gadgetbridge. Tra i dati sono inclusi:
+\nExport_preference - impostazioni globali
+\nExport_preference_MAC - impostazioni specifiche del dispositivo
+\nGadgetbridge - database del dispositivo e delle attività
+\nGadgetbridge_data - database esportato in una data particolare
+\n*.gpx - registrazioni del GPS
+\n*.log - file di log
+\nLa posizione dei file esportati (o quella da cui vuoi importare i file) è la seguente:</string>
     <string name="activity_db_management_merge_old_title">Elimina database nel vecchio formato</string>
     <string name="dbmanagementactivvity_cannot_access_export_path">Impossibile accedere al path esterno. Per cortesia contatta gli sviluppatori del progetto.</string>
     <string name="dbmanagementactivity_exported_to">Esportato su: %1$s</string>
     <string name="dbmanagementactivity_error_exporting_db">Errore esportando il DB: %1$s</string>
     <string name="dbmanagementactivity_error_exporting_shared">"Errore nell\'esportazione delle preferenze: %1$s"</string>
     <string name="dbmanagementactivity_import_data_title">Importare i dati?</string>
-    <string name="dbmanagementactivity_overwrite_database_confirmation">Vuoi davvero sovrascrivere il database attuale? Tutte le tue attività saranno perse.</string>
+    <string name="dbmanagementactivity_overwrite_database_confirmation">Vuoi davvero sovrascrivere i dati attuali\? Tutti i dati delle tue attività e delle preferenze saranno sovrascritti.</string>
     <string name="dbmanagementactivity_import_successful">Importazione avvenuta con successo.</string>
     <string name="dbmanagementactivity_error_importing_db">Errore importando il DB: %1$s</string>
     <string name="dbmanagementactivity_error_importing_shared">"Errore nell\'importazione della preferenza: %1$s"</string>
@@ -483,7 +494,7 @@
     <string name="devicetype_no1_f1">No.1 F1</string>
     <string name="devicetype_teclast_h30">Teclast H30</string>
     <string name="choose_auto_export_location">Seleziona percorso di esportazione</string>
-    <string name="notification_channel_name">Notifiche Gadgetbridge</string>
+    <string name="notification_channel_name">Generale</string>
     <string name="devicetype_xwatch">XWatch</string>
     <string name="on">Acceso</string>
     <string name="blacklist_all_for_notifications">Blocca tutte le notifiche</string>
@@ -523,7 +534,7 @@
     <string name="menuitem_activity">Attività</string>
     <string name="menuitem_weather">Meteo</string>
     <string name="menuitem_alarm">Allarmi</string>
-    <string name="menuitem_timer">Timer</string>
+    <string name="menuitem_timer">Temporizzatore</string>
     <string name="menuitem_compass">Bussola</string>
     <string name="menuitem_settings">Impostazioni</string>
     <string name="menuitem_alipay">Alipay</string>
@@ -722,12 +733,12 @@
     <string name="pref_summary_use_custom_font">Attiva se il tuo dispositivo ha un firmware personalizzato che supporta gli emoji</string>
     <string name="activity_db_management_autoexport_explanation">Il percorso di esportazione automatica del database è stato impostato su:</string>
     <string name="activity_db_management_autoexport_label">Esportazione automatica</string>
-    <string name="activity_DB_ExportButton">Esporta DB</string>
-    <string name="activity_DB_import_button">Importa DB</string>
+    <string name="activity_DB_ExportButton">Esporta dati</string>
+    <string name="activity_DB_import_button">Importa dati</string>
     <string name="activity_DB_test_export_button">Esegui esportazione automatica ora</string>
     <string name="activity_DB_test_export_message">Esportazione database in corso…</string>
     <string name="activity_DB_delete_legacy_button">Elimina db precedente</string>
-    <string name="activity_DB_empty_button">DB vuoto</string>
+    <string name="activity_DB_empty_button">Database vuoto</string>
     <string name="activity_db_management_empty_DB">Database vuoto</string>
     <string name="activity_db_management_exportimport_label">Esportazione e importazione</string>
     <string name="activity_db_management_empty_db_warning">Attenzione! Premendo questo pulsante si cancella il database e si riparte da zero.</string>
@@ -789,14 +800,14 @@
 \nNota: non devi installare il file .res se è uguale a quello installato in precedenza.
 \n
 \nPROCEDI A TUO RISCHIO E PERICOLO!</string>
-    <string name="fw_upgrade_notice_amazfitgtr">Stai per installare il firmware% s sul tuo Amazfit GTR.
+    <string name="fw_upgrade_notice_amazfitgtr">Stai per installare il firmware %s sul tuo Amazfit GTR.
 \n
 \nAssicurati di installare il file .fw, quindi il file .res e infine il file .gps. L\'orologio si riavvierà dopo aver installato il file .fw.
 \n
 \nNota: non è necessario installare .res e .gps se questi file sono esattamente gli stessi installati in precedenza.
 \n
 \nPROCEDI A TUO RISCHIO!</string>
-    <string name="fw_upgrade_notice_amazfitgts">Stai per installare il firmware% s sul tuo Amazfit GTS.
+    <string name="fw_upgrade_notice_amazfitgts">Stai per installare il firmware %s sul tuo Amazfit GTS.
 \n
 \nAssicurati di installare il file .fw, quindi il file .res e infine il file .gps. L\'orologio si riavvierà dopo aver installato il file .fw.
 \n
@@ -836,7 +847,7 @@
     <string name="hr_appname_wellness">Benessere</string>
     <string name="qhybrid_use_activity_hand_as_notification_counter">utilizzare la mano di attività come contatore di notifica</string>
     <string name="qhybrid_overwrite_buttons">sovrascrivere i pulsanti</string>
-    <string name="notification_channel_high_priority_name">Notifiche di Gadgetbridge ad alta priorità</string>
+    <string name="notification_channel_high_priority_name">Alta priorità</string>
     <string name="find_my_phone_notification">Trova il mio telefono</string>
     <string name="pref_title_vibration_strength">Resistenza alle vibrazioni</string>
     <string name="pref_title_relax_firmware_checks">Attiva questo se vuoi flashare un firmware non destinato al tuo dispositivo (a proprio rischio e pericolo)</string>
@@ -873,7 +884,7 @@
     <string name="about_additional_device_support">Supporto a dispositivi aggiuntivi</string>
     <string name="about_contributors">Contributori</string>
     <string name="about_core_team_title">Team principale (ordinati in base al primo contributo di codice)</string>
-    <string name="about_description">Un\'alternativa gratuita e senza cloud per le applicazioni Android a sorgente chiusa del tuo gadget.</string>
+    <string name="about_description">Un\'alternativa gratuita, libera e senza cloud alle applicazioni Android a sorgente chiusa del tuo dispositivo.</string>
     <string name="about_activity_title">Su Gadgetbridge</string>
     <string name="about_title">Informazioni</string>
     <string name="hr_widget_last_notification">Ultima notifica</string>
@@ -986,7 +997,7 @@
     <string name="activity_type_yoga">Yoga</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
     <string name="activity_type_badminton">Volano</string>
-    <string name="activity_type_pingpong">Ping Pong</string>
+    <string name="activity_type_pingpong">Ping pong</string>
     <string name="Strokes">Bracciate</string>
     <string name="averageStrokesPerSecond">Bracciate medie</string>
     <string name="averageStrokeDistance">Distanza media bracciata</string>
@@ -1066,8 +1077,9 @@
     <string name="lefun_prefs_hydration_reminder_interval_title">Intervallo di promemoria per l\'acqua (in minuti)</string>
     <string name="lefun_prefs_hydration_reminder_summary">La band vibrerà per ricordarti di bere dell\'acqua</string>
     <string name="lefun_prefs_hydration_reminder_title">Promemoria per l\'acqua</string>
-    <string name="charts_min_max_heartrate_popup">Valore del battito cardiaco più basso: %1$d
-\nValore del battito cardiaco più alco: %2$d</string>
+    <string name="charts_min_max_heartrate_popup">Frequenza cardiaca più bassa: %1$d
+\nFrequenza cardiaca più alta: %2$d
+\nIntensità del movimento: %3$s</string>
     <string name="firmware_update_progress">Caricamento in corso
 \n%1d%% a %.2fkbps (media %.2fkbps)
 \nParte %1d di %1d</string>
@@ -1085,4 +1097,168 @@
     <string name="chart_get_active_and_synchronize">Fai qualche attività e sincronizza il dispositivo.</string>
     <string name="chart_no_active_data">Nessuna attività rilevata.</string>
     <string name="find_lost_device_message">Cercare %1$s\?</string>
+    <string name="devicetype_lefun">Lefun</string>
+    <string name="devicetype_casiogbx100">Casio GBX-100</string>
+    <string name="devicetype_amazfit_gts2">Amazfit GTS 2</string>
+    <string name="devicetype_amazfit_gtr2">Amazfit GTR 2</string>
+    <string name="devicetype_amazfit_bipu">Amazfit Bip U</string>
+    <string name="activity_type_elliptical_trainer">Allenatore ellittico</string>
+    <string name="movement_intensity">Intensità del movimento</string>
+    <string name="activity_list_summary_activities">Attività</string>
+    <string name="activity_list_summary_intensity">Movimento
+\nIntensità</string>
+    <string name="activity_list_summary_active_time">Tempo attivo</string>
+    <string name="activity_list_summary_distance">Distanza</string>
+    <string name="activity_list_summary_active_steps">Passi attivi</string>
+    <string name="prefs_charts_tabs_summary">Schede grafico visibili</string>
+    <string name="prefs_charts_tabs">Schede dei grafici</string>
+    <string name="menuitem_pomodoro">Tecnica Pomodoro</string>
+    <string name="menuitem_sleep">Sonno</string>
+    <string name="menuitem_goal">Obiettivo attività fisica</string>
+    <string name="menuitem_alexa">Alexa</string>
+    <string name="menuitem_takephoto">Acquisisci foto</string>
+    <string name="menuitem_mutephone">Silenzia cellulare</string>
+    <string name="menuitem_findphone">Trova cellulare</string>
+    <string name="menuitem_spo2">Ossigenazione sangue</string>
+    <string name="pref_summary_connected_advertisement">Mantieni visibile via Bluetooth anche quando connesso</string>
+    <string name="pref_title_connected_advertisement">Visibile mentre connessi</string>
+    <string name="prefs_autoremove_message">Chiudi automaticamente le notifiche SMS</string>
+    <string name="prefs_fake_ring_duration">Suoneria continua fittizia</string>
+    <string name="prefs_operating_sounds">Suoni di operazione</string>
+    <string name="prefs_key_vibration">Vibrazione chiave</string>
+    <string name="prefs_autolight">Luce automatica</string>
+    <string name="qhybrid_calibration_align_hint">Usa i tasti in basso per allineare le lancette dell\'orologio alle ore 12:00.</string>
+    <string name="devicetype_nut_mini">Nut mini</string>
+    <string name="prefs_events_forwarding_summary">Utilizza gli eventi del dispositivo per avviare azioni e broadcast di Android</string>
+    <string name="seconds_m">sec/m</string>
+    <string name="descentSeconds">Discendente</string>
+    <string name="swolfIndex">Indice SWOLF</string>
+    <string name="pref_title_lower_button_function_double">Pulsante inferiore, doppio</string>
+    <string name="pref_title_middle_button_function_double">Pulsante centrale, doppio</string>
+    <string name="pref_title_upper_button_function_double">Pulsante superiore, doppio</string>
+    <string name="pref_title_lower_button_function_long">Pulsante inferiore, prolungato</string>
+    <string name="pref_title_middle_button_function_long">Pulsante centrale, prolungato</string>
+    <string name="pref_title_upper_button_function_long">Pulsante superiore, prolungato</string>
+    <string name="pref_title_lower_button_function_short">Pulsante inferiore, breve</string>
+    <string name="pref_title_middle_button_function_short">Pulsante centrale, breve</string>
+    <string name="pref_title_upper_button_function_short">Pulsante superiore, breve</string>
+    <string name="menuitem_stopwatch">Cronometro</string>
+    <string name="menuitem_dnd">Non Dis.</string>
+    <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
+    <string name="discovery_entered_invalid_authkey">La chiave di autenticazione segreta che hai inserito non è valida! Tieni premuto sul dispositivo per modificarla.</string>
+    <string name="fw_upgrade_notice_amazfitvergel">Stai per installare il firmware %s sul tuo Amazfit Verge Lite.
+\n
+\nAssicurati di installare prima il file .fw, poi il file .res e infine il file .gps. Il tuo orologio verrà riavviato dopo l\'installazione del file .fw.
+\n
+\nNota: Non è necessario installare i file .res e .gps se questi sono gli stessi di quelli installati in precedenza.
+\n
+\nPROCEDI A TUO RISCHIO!</string>
+    <string name="devicetype_amazfit_gtr2e">Amazfit GTR 2e</string>
+    <string name="fossil_hr_warning_firmware_too_new">Alcune funzioni sono disabilitate perché il firmware dell\'orologio è troppo recente</string>
+    <string name="qhybrid_title_calibration">Calibrazione</string>
+    <string name="qhybrid_title_apps_management">Gestione delle applicazioni</string>
+    <string name="qhybrid_title_file_management">Gestione dei file</string>
+    <string name="qhybrid_title_background_image">Immagine di sfondo</string>
+    <string name="qhybrid_title_apps">Applicazioni</string>
+    <string name="qhybrid_title_watchface_apps">Applicazioni e watchface</string>
+    <string name="fossil_hr_auth_failed">Autenticazione non andata a buon fine, funzionalità limitate</string>
+    <string name="fossil_hr_unavailable_unauthed">Non disponibile nella modalità senza autenticazione</string>
+    <string name="fossil_hr_synced_activity_data">Dati delle attività sincronizzati</string>
+    <string name="fossil_hr_commute_processing">Esecuzione della richiesta in corso...</string>
+    <string name="mi">mi</string>
+    <string name="minutes_mi">min/mi</string>
+    <string name="mi_h">mi/h</string>
+    <string name="ft">ft</string>
+    <string name="widget_settings_select_device_title">Seleziona dispositivo</string>
+    <string name="menuitem_temperature">Temperatura corporea</string>
+    <string name="menuitem_widgets">Widget</string>
+    <string name="menuitem_events">Eventi</string>
+    <string name="devicetype_waspos">Wasp-os</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="devicetype_zepp_e">Zepp E</string>
+    <string name="devicetype_amazfit_x">Amazfit X</string>
+    <string name="devicetype_amazfit_gts2e">Amazfit GTS 2e</string>
+    <string name="devicetype_amazfit_gts2_mini">Amazfit GTS 2 Mini</string>
+    <string name="devicetype_amazfit_bipupro">Amazfit Bip U Pro</string>
+    <string name="devicetype_amazfit_neo">Amazfit Neo</string>
+    <string name="activity_type_strength_training">Allenamento di forza</string>
+    <string name="dbmanagementactivity_export_finished">Eliminazione completata</string>
+    <string name="activity_db_management_clean_export_directory_text">I file esportati nella cartella di importazione/esportazione sono accessibili da qualsiasi app sul tuo dispositivo. Se vuoi puoi eliminare questi file dopo la sincronizzazione o il backup. Assicurati di avere un backup dei file prima di eliminarli. I file GPX, le sottocartelle e i file del database esportati automaticamente (se presenti) non saranno eliminati. Il percorso della cartella di esportazione/importazione è la seguente:</string>
+    <string name="activity_DB_clean_export_directory_warning_message">Vuoi davvero eliminare i file dalla cartella di importazione/esportazione\?</string>
+    <string name="activity_DB_clean_export_directory_warning_title">Vuoi eliminare i file dalla cartella di importazione/esportazione\?</string>
+    <string name="activity_db_management_clean_export_directory_label">Elimina i file nella cartella di importazione/esportazione</string>
+    <string name="activity_DB_ShowContentButton">Mostra i contenuti della cartella di importazione/esportazione</string>
+    <string name="activity_data_management_directory_content_title">Esporta/Importa i contenuti della cartella</string>
+    <string name="dbmanagementactivity_export_confirmation">Vuoi davvero esportare i dati\? I dati delle attività esportati precedentemente (se presenti) e le preferenza verranno sovrascritte.</string>
+    <string name="dbmanagementactivity_export_data_title">Vuoi esportare i dati\?</string>
+    <string name="dbmanagementactivity_error_cleaning_export_directory">Si è verificato un errore durante l\'eliminazione dei file dalla cartella di esportazione %1$s</string>
+    <string name="prefs_sounds_summary">Configura quando vuoi che il dispositivo emetta un suono</string>
+    <string name="prefs_sounds">Suoni</string>
+    <string name="show_ongoing_activity">Mostra la finestra dell\'attività in corso</string>
+    <string name="dialog_hide">Nascondi</string>
+    <string name="fw_upgrade_notice_amazfitneo">Stai per installare il firmware %s sul tuo Amazfit Neo.
+\n
+\nIl tuo bracciale si riavvierà dopo aver installato il file .fw.
+\n
+\nPROCEDI A TUO RISCHIO E PERICOLO!</string>
+    <string name="fw_upgrade_notice_amazfitx">Stai per installare il firmware %s sul tuo Amazfit X.
+\n
+\nAssicurati di installare prima il file .fw e poi quello .res. Il bracciale si riavvierà dopo aver installato il file .fw.
+\n
+\nNota: Non c\'è bisogno di installare il file .res se è usuale a quello installato in precedenza.
+\n
+\nPROCEDI A TUO RISCHIO E PERICOLO!</string>
+    <string name="calendar_year">Anno</string>
+    <string name="calendar_six_months">6 mesi</string>
+    <string name="calendar_three_months">3 mesi</string>
+    <string name="calendar_month">Mese</string>
+    <string name="calendar_two_weeks">Due settimane</string>
+    <string name="calendar_week">Settimana</string>
+    <string name="calendar_day">Giorno</string>
+    <string name="battery_level">Livello della batteria</string>
+    <string name="battery_detail_activity_title">Informazioni sulla batteria</string>
+    <string name="watchface_install_info">Stai per installare la watchface seguente:
+\n
+\n%1$s
+\nVersione %2$s di %3$s
+\n</string>
+    <string name="pref_theme_black_background">Utilizza lo sfondo nero nel tema scuro</string>
+    <string name="fw_upgrade_notice_miband6">Stai per installare il firmware %s sulla tua Mi Band 6.
+\n
+\nAssicurati di installare prima il file .fw e dopo il file .res. L\'orologio si riavvierà al termine del caricamento del file .fw.
+\n
+\nNota: non devi installare il file .res se è uguale a quello installato in precedenza.
+\n
+\nPROCEDI A TUO RISCHIO E PERICOLO!</string>
+    <string name="watchface_setting_title_power_saving">Risparmio energetico</string>
+    <string name="activity_summary_detail_select_gpx_track">Seleziona traccia GPX</string>
+    <string name="set">Imposta</string>
+    <string name="blood_pressure">Pressione sanguigna</string>
+    <string name="getting_heart_rate">Misurazione in corso</string>
+    <string name="heart_rate_result">Risultato della misurazione</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="pref_title_huami_force_new_protocol">Nuovo protocollo di autenticazione</string>
+    <string name="pref_summary_huami_force_new_protocol">Abilita se il tuo dispositivo non si riesce più a connettere dopo un aggiornamento del firmware</string>
+    <string name="pref_title_notification_use_as_deny">Nega le notifiche dalle applicazioni selezionate</string>
+    <string name="title_activity_notification_management">Impostazioni Notifiche</string>
+    <string name="pref_message_privacy_mode_complete">Nascondi contenuto</string>
+    <string name="menuitem_barometer">Barometro</string>
+    <string name="menuitem_flashlight">Torcia</string>
+    <string name="gpx_receiver_overwrite_some_files">Alcuni file(s) esistono già. Sovrascrivere\?</string>
+    <string name="pref_header_notification_application_settings">Impostazioni per applicazione</string>
+    <string name="uncheck_all_applications">Deseleziona tutte le applicazioni</string>
+    <string name="button_watchface_select_image">Cambia immagine di sfondo</string>
+    <string name="pref_applications_settings">Lista applicazioni</string>
+    <string name="pref_title_notification_use_as_allow">Permetti le notifiche dalle applicazioni selezionate</string>
+    <string name="pref_title_physical_buttons">Pulsanti fisici</string>
+    <string name="qhybrid_calibration_counterclockwise">Senso contro-orario</string>
+    <string name="qhybrid_summary_file_management">Carica e scarica files</string>
+    <string name="devicetype_amazfit_trex_pro">Amazfit T-Rex Pro</string>
+    <string name="watchface_dialog_title_add_widget">Aggiungi widget</string>
+    <string name="qhybrid_calibration_clockwise">Senso orario</string>
+    <string name="pref_summary_developer_settings">Impostazioni e funzionalità utilizzate da sviluppatori</string>
+    <string name="qhybrid_pref_summary_external_intents">Permette ad altre app di caricare/sovrascrivere files</string>
+    <string name="pref_title_developer_settings">Impostazioni sviluppatore</string>
+    <string name="button_watchface_add_widget">Aggiungi widget</string>
+    <string name="watchface_toast_settings_incomplete">Impostazioni incomplete, widget non aggiunto</string>
 </resources>

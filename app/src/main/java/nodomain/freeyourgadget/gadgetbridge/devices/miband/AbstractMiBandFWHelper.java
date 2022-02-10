@@ -1,5 +1,5 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -54,7 +54,7 @@ public abstract class AbstractMiBandFWHelper {
         }
 
         try (InputStream in = new BufferedInputStream(uriHelper.openInputStream())) {
-            this.fw = FileUtils.readAll(in, 1024 * 2048); // 2.0 MB
+            this.fw = FileUtils.readAll(in, 1024 * 1024 * 8); // 8.0 MB
             determineFirmwareInfo(fw);
         } catch (IOException ex) {
             throw ex; // pass through

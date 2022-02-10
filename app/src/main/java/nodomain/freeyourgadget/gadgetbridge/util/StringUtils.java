@@ -1,5 +1,6 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, João Paulo Barraca, Nephiel, Roi Greenberg
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, João Paulo Barraca, Nephiel, Roi Greenberg, Taavi Eomäe,
+    Zhong Jianxin
 
     This file is part of Gadgetbridge.
 
@@ -130,5 +131,25 @@ public class StringUtils {
 
     public static String bytesToHex(byte[] array) {
         return GB.hexdump(array, 0, -1);
+    }
+
+    /**
+     * Creates a shortened version of an Android package name by using only the first
+     * character of every non-last part of the package name.
+     * Example: "nodomain.freeyourgadget.gadgetbridge" is shortened to "n.f.gadgetbridge"
+     * @param packageName the original package name
+     * @return the shortened package name
+     */
+    public static String shortenPackageName(String packageName) {
+        String[] parts = packageName.split("\\.");
+        StringBuilder result = new StringBuilder();
+        for (int index=0; index < parts.length; index++) {
+            if (index == parts.length - 1) {
+                result.append(parts[index]);
+                break;
+            }
+            result.append(parts[index].charAt(0)).append(".");
+        }
+        return result.toString();
     }
 }

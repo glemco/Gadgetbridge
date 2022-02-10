@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Daniele Gobbetti, João
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Daniele Gobbetti, João
     Paulo Barraca, José Rebelo, tiparega
 
     This file is part of Gadgetbridge.
@@ -76,11 +76,12 @@ public class AmazfitBipLiteCoordinator extends AmazfitBipCoordinator {
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_disconnectnotification,
                 R.xml.devicesettings_sync_calendar,
-                R.xml.devicesettings_expose_hr_thirdparty,
+                R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_buttonactions_with_longpress,
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_pairingkey,
                 R.xml.devicesettings_relax_firmware_checks,
+                R.xml.devicesettings_transliteration
         };
     }
 }

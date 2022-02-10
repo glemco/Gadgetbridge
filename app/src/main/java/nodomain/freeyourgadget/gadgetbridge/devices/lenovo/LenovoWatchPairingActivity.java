@@ -1,4 +1,5 @@
-/*  Copyright (C) 2018-2020 Daniele Gobbetti, maxirnilian, Taavi Eomäe
+/*  Copyright (C) 2018-2021 Daniele Gobbetti, mamucho, maxirnilian, mkusnierz,
+    Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -16,7 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.lenovo;
 
-import android.bluetooth.BluetoothDevice;
+import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,8 +43,6 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BondingInterface;
 import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
-
-import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
 
 public class LenovoWatchPairingActivity extends AbstractGBActivity implements BondingInterface {
     private static final Logger LOG = LoggerFactory.getLogger(LenovoWatchPairingActivity.class);
@@ -94,7 +94,7 @@ public class LenovoWatchPairingActivity extends AbstractGBActivity implements Bo
     private void startPairing(GBDeviceCandidate deviceCandidate) {
         message.setText(getString(R.string.pairing, deviceCandidate));
 
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
 
         BondingUtil.connectThenComplete(this, deviceCandidate);
     }
@@ -106,19 +106,19 @@ public class LenovoWatchPairingActivity extends AbstractGBActivity implements Bo
     }
 
     @Override
-    public BluetoothDevice getCurrentTarget() {
-        return this.deviceCandidate.getDevice();
+    public GBDeviceCandidate getCurrentTarget() {
+        return this.deviceCandidate;
     }
 
     @Override
     protected void onResume() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        removeBroadcastReceivers();
+        registerBroadcastReceivers();
         super.onStart();
     }
 
@@ -145,7 +145,7 @@ public class LenovoWatchPairingActivity extends AbstractGBActivity implements Bo
         AndroidUtils.safeUnregisterBroadcastReceiver(LocalBroadcastManager.getInstance(this), pairingReceiver);
     }
 
-    public void removeBroadcastReceivers() {
+    public void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(pairingReceiver, new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED));
     }
 

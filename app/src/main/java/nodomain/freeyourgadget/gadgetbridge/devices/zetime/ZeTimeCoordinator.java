@@ -1,5 +1,5 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, José Rebelo, Kranz, Sebastian Kranz
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, José Rebelo, Sebastian Kranz
 
     This file is part of Gadgetbridge.
 
@@ -167,6 +167,7 @@ public class ZeTimeCoordinator extends AbstractDeviceCoordinator {
                 R.xml.devicesettings_timeformat,
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_transliteration
         };
     }
 }

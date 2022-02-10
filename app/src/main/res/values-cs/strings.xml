@@ -92,7 +92,7 @@
     <string name="pref_title_canned_replies">Odpovědi</string>
     <string name="pref_title_canned_reply_suffix">Běžná přípona</string>
     <string name="pref_title_canned_messages_dismisscall">Zamítnutí volání</string>
-    <string name="pref_title_canned_messages_set">Aktualizovat na Pebble</string>
+    <string name="pref_title_canned_messages_set">Aktualizovat na zařízení</string>
     <string name="pref_header_development">Vývojářská nastavení</string>
     <string name="pref_title_development_miaddr">Adresa Mi Band</string>
     <string name="pref_title_pebble_settings">Nastaveni Pebble</string>
@@ -108,7 +108,7 @@
     <string name="pref_title_sunrise_sunset">Východ a západ slunce</string>
     <string name="pref_summary_sunrise_sunset">Zasílat časy východu a západu slunce dle aktuální polohy do časové osy Pebble</string>
     <string name="pref_title_autoremove_notifications">Automaticky odstraňovat skryté notifikace</string>
-    <string name="pref_summary_autoremove_notifications">Notifikace budou z Pebble odstraněny automaticky, pokud byly skryty na zařízení s Androidem</string>
+    <string name="pref_summary_autoremove_notifications">Notifikace budou ze zařízení odstraněny automaticky po označení jako přečtené na telefonu</string>
     <string name="pref_title_pebble_privacy_mode">Soukromý režim</string>
     <string name="pref_pebble_privacy_mode_off">Běžné notifikace</string>
     <string name="pref_pebble_privacy_mode_content">Posunout text notifikace mimo displej</string>
@@ -162,7 +162,11 @@
 \n
 \n
 \nTento firmvér je pro revizi HW: %s</string>
-    <string name="app_install_info">Instalujete aplikaci:\n\n\n%1$s Verze %2$s od %3$s\n</string>
+    <string name="app_install_info">Instalujete aplikaci:
+\n
+\n%1$s
+\nVerze %2$s od %3$s
+\n</string>
     <string name="n_a">Nedostupné</string>
     <string name="initialized">Spuštěno</string>
     <string name="appversion_by_creator">%1$s od %2$s</string>
@@ -321,17 +325,22 @@
     <string name="live_activity_heart_rate">Srdeční tep</string>
     <string name="pref_title_pebble_health_store_raw">Uložit hrubý záznam do databáze</string>
     <string name="pref_summary_pebble_health_store_raw">Ukládá data v původní podobě, takže je databáze větší, ale umožňuje to pozdější vyhodnocení.</string>
-    <string name="action_db_management">Správa databáze</string>
-    <string name="title_activity_db_management">Správa databáze</string>
-    <string name="activity_db_management_import_export_explanation">Operace s databází použijí následující cestu v zařízení. 
-\nTato cesta je dostupná pro ostatní aplikace Androidu a váš počítač. 
-\nExportovanou databázi (nebo místo pro importovanou databázi) naleznete zde:</string>
+    <string name="action_db_management">Správa dat</string>
+    <string name="title_activity_db_management">Správa dat</string>
+    <string name="activity_db_management_import_export_explanation">Operace s databází použijí následující cestu (viz níže) ke složce v zařízení. Tato složka je dostupná pro ostatní aplikace Androidu a váš počítač. Nezapomeňte, že tato složka a její obsah jsou vymazány při odinstalaci Gadgetbridge. Soubory obsahují:
+\n Export_preference - globální nastavení
+\n Export_preference_MAC - nastavení specifická pro zařízení
+\n Gadgetbridge - databáze zařízení a aktivit
+\n Gadgetbridge_date - databáze exportovaní ke datu
+\n *.gpx - GPS záznamy
+\n *.log - log soubory
+\nExportovaná data (nebo místo pro import dat) naleznete zde:</string>
     <string name="activity_db_management_merge_old_title">Smazat původní databázi</string>
     <string name="dbmanagementactivvity_cannot_access_export_path">Nelze přistoupit na zadanou cestu. Kontaktujte vývojáře.</string>
     <string name="dbmanagementactivity_exported_to">Exportováno do: %1$s</string>
     <string name="dbmanagementactivity_error_exporting_db">Chyba při exportu DB: %1$s</string>
     <string name="dbmanagementactivity_import_data_title">Importovat data?</string>
-    <string name="dbmanagementactivity_overwrite_database_confirmation">Opravdu chcete přepsat aktuální databázi\? Všechna uložená data aktivit budou ztracena.</string>
+    <string name="dbmanagementactivity_overwrite_database_confirmation">Opravdu chcete přepsat aktuální data\? Všechna uložená data aktivit a nastavení budou přepsána.</string>
     <string name="dbmanagementactivity_import_successful">Importováno.</string>
     <string name="dbmanagementactivity_error_importing_db">Chyba při importu DB: %1$s</string>
     <string name="dbmanagementactivity_delete_activity_data_title">Smazat data o aktivitách?</string>
@@ -484,7 +493,7 @@
     <string name="devicetype_teclast_h30">Teclast H30</string>
     <string name="devicetype_xwatch">XWatch</string>
     <string name="choose_auto_export_location">Vyberte umístění exportu</string>
-    <string name="notification_channel_name">Gadgetbridge notifikace</string>
+    <string name="notification_channel_name">Obecné</string>
     <string name="pref_title_pebble_gatt_clientonly">pouze GATT klient</string>
     <string name="pref_summary_pebble_gatt_clientonly">Pebble 2 experimentální nastavení, zkuste máte-li problémy se spojením</string>
     <string name="on">Zapnuto</string>
@@ -505,7 +514,7 @@
     <string name="menuitem_shortcut_alipay">Alipay (Zástupce)</string>
     <string name="menuitem_shortcut_weather">Počasí (Zástupce)</string>
     <string name="menuitem_status">Stav</string>
-    <string name="menuitem_activity">Aktivita</string>
+    <string name="menuitem_activity">Historie Aktivit</string>
     <string name="menuitem_weather">Počasí</string>
     <string name="menuitem_alarm">Budík</string>
     <string name="menuitem_timer">Časovač</string>
@@ -723,8 +732,8 @@
     <string name="pref_summary_use_custom_font">Vaše zařízení má vlastní font s podporou emoji</string>
     <string name="activity_db_management_autoexport_explanation">Cesta autoexportu databáze je nastaveno na:</string>
     <string name="activity_db_management_autoexport_label">Automatický export</string>
-    <string name="activity_DB_ExportButton">Exportovat Databázi</string>
-    <string name="activity_DB_import_button">Importovat Databázi</string>
+    <string name="activity_DB_ExportButton">Exportovat Data</string>
+    <string name="activity_DB_import_button">Importovat Data</string>
     <string name="activity_DB_test_export_button">Spustit AutoExport Teď</string>
     <string name="activity_DB_test_export_message">Exportuji databázi…</string>
     <string name="activity_DB_delete_legacy_button">Vymazat starou databázi</string>
@@ -758,7 +767,7 @@
     <string name="prefs_find_phone_summary">Použijte náramek/hodinky k prozvonění telefonu.</string>
     <string name="prefs_find_phone_duration">Délka zvonění ve vteřinách</string>
     <string name="maximum_duration">Délka</string>
-    <string name="discovery_need_to_enter_authkey">Toto zařízení vyžaduje tajný klíč, podržte dlouze na jménu zařízení pro jeho vložení. pro více detailů čtěte wiki.</string>
+    <string name="discovery_need_to_enter_authkey">Toto zařízení vyžaduje tajný klíč, podržte dlouze na jménu zařízení pro jeho vložení. Pro více detailů čtěte wiki.</string>
     <string name="fw_upgrade_notice_amazfitbip_lite">Chystáte se nainstalovat firmvér %s na vašem Amazfit Bip Lite.
 \n
 \nProsím nezapomeňte nainstalovat soubor .fw, a poté soubor .res . Vaše hodinky se po instalaci souboru .fw restartují.
@@ -832,7 +841,7 @@
     <string name="pref_title_force_white_color_scheme">Vynutit barevné schéma Černá na bílé</string>
     <string name="pref_summary_force_white_color_scheme">Užitečné, pokud máte hodinky s tmavými ručičkami</string>
     <string name="find_my_phone_notification">Najít telefon</string>
-    <string name="notification_channel_high_priority_name">Gadgetbridge oznámení s vysokou prioritou</string>
+    <string name="notification_channel_high_priority_name">Vysoká priorita</string>
     <string name="pref_title_custom_deviceicon">Zobrazit v oznámení ikonu připojeného zařízení</string>
     <string name="pref_summary_custom_deviceicon">Zobrazit ikonu konkrétního připojeného zařízení v oznámení Androidu namísto ikony Gadgetbridge</string>
     <string name="hr_appname_wellness">Wellness</string>
@@ -979,7 +988,7 @@
     <string name="companiondevice_pairing">Párování systémem Doprovodného Zařízení</string>
     <string name="require_location_provider">Poloha musí být povolena</string>
     <string name="menuitem_stress">Stres</string>
-    <string name="menuitem_cycles">Cykly</string>
+    <string name="menuitem_cycles">Cyklus</string>
     <string name="menuitem_breathing">Dýchání</string>
     <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
     <string name="devicetype_tlw64">TLW64</string>
@@ -1091,7 +1100,7 @@
 \nNejvyšší tep: %2$d
 \nIntenzita pohybu: %3$s</string>
     <string name="find_lost_device_message">Vyhledat %1$s\?</string>
-    <string name="qhybrid_calibration_align_hint">zarovnat ručičky na 12:00</string>
+    <string name="qhybrid_calibration_align_hint">Pomocí tlačítek níže srovnejte ručičky na 12:00.</string>
     <string name="gps_track">GPS záznam</string>
     <string name="about_version">Verze %s</string>
     <string name="pref_title_lower_button_function_double">Spodní tlačítko: dvojstisk</string>
@@ -1121,4 +1130,440 @@
     <string name="activity_list_summary_active_steps">Aktivní kroky</string>
     <string name="devicetype_casiogbx100">Casio GBX-100</string>
     <string name="devicetype_amazfit_gts2">Amazfit GTS 2</string>
+    <string name="devicetype_amazfit_bipu">Amazfit Bip U</string>
+    <string name="prefs_charts_tabs_summary">Viditelné karty grafů</string>
+    <string name="prefs_charts_tabs">Karty grafů</string>
+    <string name="prefs_operating_sounds">Zvuky akcí</string>
+    <string name="menuitem_pomodoro">Pomodoro Časovač</string>
+    <string name="pref_summary_connected_advertisement">Zařízení bude viditelné přes Bluetooth i když je připojeno</string>
+    <string name="prefs_autoremove_message">Automaticky odstraňovat SMS oznámení</string>
+    <string name="prefs_fake_ring_duration">Falešné nepřetržité zvonění</string>
+    <string name="prefs_key_vibration">Vibrace kláves</string>
+    <string name="prefs_autolight">Automatické podsvícení</string>
+    <string name="menuitem_sleep">Spánek</string>
+    <string name="menuitem_goal">Cíl aktivit</string>
+    <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
+    <string name="discovery_entered_invalid_authkey">Zadaný autorizační klíč je neplatný! Podržte dlouze na jménu zařízení pro jeho editaci.</string>
+    <string name="pref_title_connected_advertisement">Viditelné když připojeno</string>
+    <string name="fw_upgrade_notice_amazfitvergel">Chystáte se nainstalovat firmvér %s na vašem Amazfit Verge Lite.
+\n
+\nProsím nezapomeňte nainstalovat soubor .fw, potom soubor .res a nakonec soubor .gps. Vaše hodinky se po instalaci souboru .fw restartují.
+\n
+\nPoznámka: Nemusíte instalovat .res a .gps, pokud jsou tyto soubory přesně stejné jako ty, které byly nainstalovány dříve.
+\n
+\nPOKRAČUJTE TO NA VLASTNÍ NEBEZPEČÍ!</string>
+    <string name="activity_DB_ShowContentButton">Zobrazit obsah složky pro export/import</string>
+    <string name="activity_data_management_directory_content_title">Obsah složky export/import</string>
+    <string name="widget_settings_select_device_title">Vyberte zařízení</string>
+    <string name="devicetype_amazfit_bipupro">Amazfit Bip U Pro</string>
+    <string name="dbmanagementactivity_export_confirmation">Opravdu exportovat data\? Předešle exportovaná data aktivit a nastavení budou přepsána.</string>
+    <string name="dbmanagementactivity_export_data_title">Exportovat Data\?</string>
+    <string name="dbmanagementactivity_export_finished">Mazání dokončeno</string>
+    <string name="activity_db_management_clean_export_directory_text">Soubory exportované do Export/Import složky jsou dostupné kterékoli aplikaci vašeho zařízení. Pravděpodobně je po exportu a následné záloze nebo synchronizaci budete chtít vymazat. Před vymazáním se ujistěte, že máte záložní kopii. GPX záznamy, pod-složky a soubor auto-exportu databáze (existují-li) nebudou vymazány. Cesta k Export/Import složce je:</string>
+    <string name="activity_DB_clean_export_directory_warning_message">Opravdu odstranit soubory z Export/Import složky\?</string>
+    <string name="activity_DB_clean_export_directory_warning_title">Chcete odstranit soubory z Export/Import složky\?</string>
+    <string name="activity_db_management_clean_export_directory_label">Odstranění souborů ze složky Export/Import</string>
+    <string name="dbmanagementactivity_error_cleaning_export_directory">Došlo k chybě při mazání souborů ze složky exportu %1$s</string>
+    <string name="fw_upgrade_notice_amazfitx">Chystáte se nainstalovat firmvér %s na váš Amazfit X.
+\n
+\nProsím nezapomeňte nainstalovat soubor .fw a až potom soubor .res. Váš náramek se po instalaci souboru .fw restartuje.
+\n
+\nPoznámka: Nemusíte instalovat .res, pokud je tento soubor přesně stejný jako ten, který byl nainstalovaný dříve.
+\n
+\nPOKRAČUJTE NA VLASTNÍ NEBEZPEČÍ!</string>
+    <string name="fossil_hr_auth_failed">Ověření selhalo</string>
+    <string name="fossil_hr_unavailable_unauthed">Není dostupné v neověřeném módu</string>
+    <string name="fossil_hr_synced_activity_data">Data aktivit synchronizována</string>
+    <string name="fossil_hr_commute_processing">Zpracovávání požadavku...</string>
+    <string name="mi">mi</string>
+    <string name="minutes_mi">min/mi</string>
+    <string name="mi_h">mi/h</string>
+    <string name="ft">st</string>
+    <string name="devicetype_waspos">Wasp-os</string>
+    <string name="devicetype_zepp_e">Zepp E</string>
+    <string name="devicetype_amazfit_x">Amazfit X</string>
+    <string name="devicetype_amazfit_gts2e">Amazfit GTS 2e</string>
+    <string name="devicetype_amazfit_gts2_mini">Amazfit GTS 2 Mini</string>
+    <string name="devicetype_amazfit_gtr2e">Amazfit GTR 2e</string>
+    <string name="devicetype_amazfit_neo">Amazfit Neo</string>
+    <string name="activity_type_strength_training">Posilování</string>
+    <string name="show_ongoing_activity">Zobrazovat informaci o probíhající aktivitě</string>
+    <string name="dialog_hide">Skrýt</string>
+    <string name="calendar_year">Rok</string>
+    <string name="calendar_six_months">Půl roku</string>
+    <string name="calendar_three_months">3 měsíce</string>
+    <string name="calendar_month">Měsíc</string>
+    <string name="calendar_two_weeks">Dva týdny</string>
+    <string name="calendar_week">Týden</string>
+    <string name="calendar_day">Den</string>
+    <string name="battery_level">Úroveň nabití</string>
+    <string name="battery_detail_activity_title">Informace o baterii</string>
+    <string name="qhybrid_title_calibration">Kalibrace</string>
+    <string name="qhybrid_title_apps_management">Správa aplikací</string>
+    <string name="qhybrid_title_file_management">Správa souborů</string>
+    <string name="qhybrid_title_background_image">Obrázek na pozadí</string>
+    <string name="qhybrid_title_apps">Aplikace</string>
+    <string name="qhybrid_title_watchface_apps">Ciferníky a aplikace</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="fw_upgrade_notice_amazfitneo">Chystáte se nainstalovat firmvér %s na váš Amazfit Neo.
+\n
+\nVaše hodinky se po instalaci souboru .fw restartují.
+\n
+\nPOKRAČUJTE TO NA VLASTNÍ NEBEZPEČÍ!</string>
+    <string name="fossil_hr_warning_firmware_too_new">Některé funkce jsou vypnuté, protože firmware hodinek je příliš nový</string>
+    <string name="prefs_sounds_summary">Nakonfigurujte, kdy bude zařízení pípat</string>
+    <string name="prefs_sounds">Zvuky</string>
+    <string name="menuitem_temperature">Teplota</string>
+    <string name="menuitem_widgets">Widgety</string>
+    <string name="menuitem_events">Události</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Konfigurační obrazovka ciferníku pro hodinky s firmwarem verze DN1.0.2.19r a nižším</string>
+    <string name="qhybrid_calibration_100_steps">100 kroků</string>
+    <string name="qhybrid_calibration_10_steps">10 kroků</string>
+    <string name="qhybrid_calibration_1_step">1 krok</string>
+    <string name="qhybrid_calibration_clockwise">Po směru hodinových ručiček</string>
+    <string name="qhybrid_calibration_counterclockwise">Proti směru hodinových ručiček</string>
+    <string name="fossil_hr_new_action">Nová akce</string>
+    <string name="fossil_hr_new_action_cancel">zrušit</string>
+    <string name="fossil_hr_edit_action">Upravit akci</string>
+    <string name="fossil_hr_edit_action_delete">smazat</string>
+    <string name="fossil_hr_commute_actions_explanation">Zde nakonfigurované akce se zobrazí v aplikaci Commute na hodinkách. Informace o tom, jak zacházet se záměry vytvořenými těmito akcemi, najdete na wiki.</string>
+    <string name="pref_summary_canned_messages_dismisscall">Odmítněte hovory z hodinek pomocí SMS zprávy</string>
+    <string name="pref_summary_canned_messages_set">Odeslání níže nakonfigurovaných zpráv do zařízení</string>
+    <string name="qhybrid_summary_calibration">Kalibrace ručiček hodinek</string>
+    <string name="qhybrid_summary_file_management">Nahrávání a stahování souborů</string>
+    <string name="pref_summary_physical_buttons">Nastavte funkce fyzických tlačítek na hodinkách</string>
+    <string name="pref_title_physical_buttons">Fyzická tlačítka</string>
+    <string name="qhybrid_title_watchface">Nastavení ciferníku</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="kind_agps_bundle">AGPS Balíček</string>
+    <string name="watchface_install_info">Instalujete ciferník:
+\n
+\n%1$s
+\nVerze %2$s by %3$s
+\n</string>
+    <string name="fw_upgrade_notice_miband6">Chystáte se nainstalovat firmvér %s do vašeho Mi Band 6.
+\n
+\nProsím, ujistěte se, že jste nainstalovali soubor .fw a potom soubor .res. Váš pásek se po instalaci souboru .fw restartuje.
+\n
+\nPoznámka: Nemusíte instalovat soubor .res, pokud je stejný jako nainstalován dříve.
+\n
+\nPOKRAČUJTE NA VLASTNÍ NEBEZPEČÍ!</string>
+    <string name="devicetype_amazfit_trex_pro">Amazfit T-Rex Pro</string>
+    <string name="qhybrid_pref_summary_external_intents">Povolit ostatním Android aplikacím nahrát/přepsat soubory</string>
+    <string name="qhybrid_pref_title_external_intents">Povolit nebezpečné externí intenty</string>
+    <string name="pref_summary_developer_settings">Nastavení a funkce pro vývojáře</string>
+    <string name="pref_title_developer_settings">Vývojářská nastavení</string>
+    <string name="qhybrid_pref_summary_actions">Akce pro aplikaci Commute</string>
+    <string name="qhybrid_pref_title_actions">Akce</string>
+    <string name="menuitem_barometer">Barometr</string>
+    <string name="notification_channel_low_battery_name">Nízký stav baterie</string>
+    <string name="notification_channel_transfer_name">Přenos dat</string>
+    <string name="pref_theme_black_background">Použít černé pozadí v Tmavém Téma</string>
+    <string name="gpx_receiver_overwrite_some_files">Některé soubory již existují. Přepsat\?</string>
+    <string name="gpx_receiver_files_received">GPX soubor(ů) přijato:</string>
+    <string name="gpx_receiver_activity_title">GPX Přijímač Gadgetbridge</string>
+    <string name="activity_summary_detail_editing_gpx_track">Editace linkování GPX trasy</string>
+    <string name="activity_summary_detail_clear_gpx_track">Odlinkovat GPX trasu</string>
+    <string name="activity_summary_detail_select_gpx_track">Vybrat GPX trasu</string>
+    <string name="set">Nastavit</string>
+    <string name="watchface_setting_wrist_flick_duration">Doba trvání (v ms):</string>
+    <string name="watchface_setting_wrist_flick_minute">Minutová ručička (-360 až 360):</string>
+    <string name="watchface_setting_wrist_flick_hour">Hodinová ručička (-360 až 360):</string>
+    <string name="watchface_setting_wrist_flick_move_relative">Pohyb ručiček vzhledem k času:</string>
+    <string name="watchface_setting_desc_wrist_flick">(pro úplné vypnutí povolte relativní pohyb a nastavte všechny hodnoty na 0)</string>
+    <string name="watchface_setting_title_wrist_flick">Švihnutí zápěstím</string>
+    <string name="watchface_setting_display_refresh_partial">Částečné obnovení (v minutách):</string>
+    <string name="watchface_setting_display_refresh_full">Úplné obnovení (v minutách):</string>
+    <string name="watchface_setting_title_display_refresh_timeout">Časový limit obnovení displeje</string>
+    <string name="watchface_dialog_title_settings">Nastavení ciferníku</string>
+    <string name="watchface_dialog_widget_color_black">Černá</string>
+    <string name="watchface_dialog_widget_color_white">Bílá</string>
+    <string name="watchface_dialog_widget_color">Barva:</string>
+    <string name="qhybrid_title_watchface_designer">Návrhář ciferníku</string>
+    <string name="watchface_dialog_widget_preset_right">Vpravo</string>
+    <string name="watchface_dialog_widget_preset_left">Vlevo</string>
+    <string name="watchface_dialog_widget_preset_bottom">Dole</string>
+    <string name="watchface_dialog_widget_preset_top">Nahoře</string>
+    <string name="watchface_dialog_widget_presets">Předvolby pozice:</string>
+    <string name="watchface_dialog_widget_y_coordinate">Souřadnice Y (max 240):</string>
+    <string name="watchface_dialog_widget_x_coordinate">Souřadnice X (max. 240):</string>
+    <string name="watchface_dialog_widget_type">Typ:</string>
+    <string name="appmanager_app_edit">Upravit</string>
+    <string name="button_watchface_save_apply">Uložit a použít</string>
+    <string name="button_watchface_preview">Náhled na hodinkách</string>
+    <string name="watchface_widget_type_heart_rate">Srdeční tep</string>
+    <string name="watchface_widget_type_steps">Kroky</string>
+    <string name="watchface_widget_type_weather">Počasí</string>
+    <string name="watchface_widget_type_date">Datum</string>
+    <string name="watchface_dialog_title_add_widget">Přidat widget</string>
+    <string name="watchface_toast_settings_incomplete">Nastavení není kompletní, widget nebyl přidán</string>
+    <string name="watchface_dialog_title_set_name">Jméno ciferníku</string>
+    <string name="button_watchface_settings">Nastavení ciferníku</string>
+    <string name="button_watchface_add_widget">Přidat widget</string>
+    <string name="button_watchface_select_image">Změnit obrázek pozadí</string>
+    <string name="button_watchface_edit_name">Upravit název</string>
+    <string name="watchface_setting_power_saving_hands">Zakázat pohyb ručiček při sejmutí z ruky</string>
+    <string name="watchface_setting_power_saving_display">Zakázat aktualizace displeje při sejmutí z ruky</string>
+    <string name="watchface_setting_title_power_saving">Úsporný mód</string>
+    <string name="watchface_widget_type_chance_rain">Šance deště</string>
+    <string name="watchface_widget_type_active_mins">Aktivní minuty</string>
+    <string name="watchface_widget_type_2nd_tz">Druhá časová zóna</string>
+    <string name="watchface_widget_type_calories">Kalorie</string>
+    <string name="watchface_widget_type_battery">Baterie</string>
+    <string name="watchface_upload_failed">Nahrání ciferníku se nezdařilo. Prosím zkuste to znovu.</string>
+    <string name="watchface_cache_confirm_overwrite">Ve vyrovnávací paměti již existuje ciferník s tímto názvem. Chcete jej přepsat\?</string>
+    <string name="devicetype_smaq2oss">SMA-Q2 OSS</string>
+    <string name="heart_rate_result">Výsledky měření</string>
+    <string name="getting_heart_rate">Probíhá měření</string>
+    <string name="blood_pressure">Krevní tlak</string>
+    <string name="menuitem_flashlight">Svítilna</string>
+    <string name="pref_summary_huami_force_new_protocol">Povolit, pokud se zařízení po aktualizaci firmwaru nepřipojuje</string>
+    <string name="pref_title_huami_force_new_protocol">Nový Protokol Ověřování</string>
+    <string name="pref_title_ping_tone">Melodie při hledání telefonu</string>
+    <string name="prefs_autoheartrate_interval">Četnost měření</string>
+    <string name="prefs_autoheartrate_sleep">Měření během spánku</string>
+    <string name="prefs_autoheartrate_measurement">Automatické měření srdečního tepu</string>
+    <string name="prefs_autoheartrate_summary">Pravidelné měření srdeční frekvence během dne a také ve spánku</string>
+    <string name="prefs_autoheartrate">Automatická měření srdeční frekvence</string>
+    <string name="enable_notifications_summary">Upozornění na hovory, zprávy a další</string>
+    <string name="enable_vibrations_summary">Vibrace pro hovory, zprávy, oznámení a další funkce</string>
+    <string name="prefs_notifications_enable">Povolit oznámení</string>
+    <string name="prefs_vibration_enable">Povolit vibrace</string>
+    <string name="prefs_sleep_time_summary">Určuje časy, kdy se registruje spánek</string>
+    <string name="prefs_sleep_time_label">Definujte hodiny spánku</string>
+    <string name="prefs_sleep_time">Čas spánku</string>
+    <string name="devicetype_fitpro">FitPro</string>
+    <string name="devicetype_nothingear1">Nothing Ear (1)</string>
+    <string name="nothing_prefs_inear_summary">Přehrávat/Pauzovat dle detekce nošení</string>
+    <string name="nothing_prefs_audiomode_title">Audio mód</string>
+    <string name="nothing_prefs_inear_title">Detekce nošení</string>
+    <string name="pref_title_notification_use_as">Použít seznam aplikací k...</string>
+    <string name="pref_title_notification_use_as_deny">Zakázaní oznámení z vybraných aplikací</string>
+    <string name="title_activity_notification_management">Nastavení oznámení</string>
+    <string name="check_all_applications">Označit všechny aplikace</string>
+    <string name="uncheck_all_applications">Odznačit všechny aplikace</string>
+    <string name="pref_header_notification_application_settings">Nastavení jednotlivých aplikací</string>
+    <string name="pref_title_notification_use_as_allow">Povolení oznámení z vybraných aplikací</string>
+    <string name="pref_title_message_privacy_mode">Nastavení soukromí pro oznámení</string>
+    <string name="pref_message_privacy_mode_off">Zobrazit text v oznámení</string>
+    <string name="pref_message_privacy_mode_complete">Skrýt text v oznámení</string>
+    <string name="pref_applications_settings">Seznam aplikací</string>
+    <string name="toast_app_must_be_selected">Aplikace musí být označena, aby ji bylo možno konfigurovat</string>
+    <string name="toast_app_must_not_be_selected">Aplikace nesmí být označena, aby ji bylo možno konfigurovat</string>
+    <string name="prefs_equalizer_preset">Předvolba ekvalizéru</string>
+    <string name="pref_title_equalizer_bass_boost">Zesílení basů</string>
+    <string name="pref_title_equalizer_soft">Měkký</string>
+    <string name="pref_title_equalizer_trebble">Zesílení výšek</string>
+    <string name="devicetype_galaxybuds">Galaxy Buds</string>
+    <string name="prefs_dolby_summary">Předvolba Dolby pro ekvalizér</string>
+    <string name="prefs_game_mode">Herní mód</string>
+    <string name="prefs_game_mode_summary">Pouze pokud váš telefon podporuje herní režim</string>
+    <string name="prefs_touch_lock">Zámek Dotyku</string>
+    <string name="prefs_touch_lock_summary">Zakázání dotykových událostí</string>
+    <string name="prefs_ambient_volume_summary">pref_galaxy_buds_ambient_volume</string>
+    <string name="prefs_ambient_voice_summary">Aby hlas vynikl</string>
+    <string name="pref_title_equalizer_clear">Jasný</string>
+    <string name="prefs_ambient_sound">Okolní zvuk</string>
+    <string name="prefs_left">Levé</string>
+    <string name="prefs_galaxy_touch_options">Možnosti dotykového ovládání</string>
+    <string name="pref_title_equalizer_dynamic">Dynamický</string>
+    <string name="prefs_dolby_mode">Režim Dolby</string>
+    <string name="prefs_right">Pravé</string>
+    <string name="prefs_equalizer">Ekvalizér</string>
+    <string name="prefs_equalizer_summary">Povolení nebo zakázání ekvalizéru</string>
+    <string name="prefs_ambient_volume">Hlasitost okolí</string>
+    <string name="prefs_ambient_voice_focus">Zaměření hlasu</string>
+    <string name="prefs_ambient_mode">Režim zvuku okolí</string>
+    <string name="prefs_galaxy_buds_experimental">Experimentální</string>
+    <string name="battery_case">Bateriové pouzdro</string>
+    <string name="left_earbud">Levé sluchátko</string>
+    <string name="right_earbud">Pravé sluchátko</string>
+    <string name="sony_sound_position_off">Vypnuto</string>
+    <string name="sony_sound_position_front">Vpředu</string>
+    <string name="sony_surround_mode">Režim Surround</string>
+    <string name="pref_header_other">Ostatní</string>
+    <string name="device_card_activity_card_title_summary">Zvolte které informace budou zobrazeny na kartě zařízení</string>
+    <string name="prefs_activity_in_device_card_title_summary">Zobrazit aktuální kroky, vzdálenost nebo spánek na kartě zařízení</string>
+    <string name="prefs_activity_in_device_card_sleep_title_summary">Zobrazit dobu spánku</string>
+    <string name="prefs_activity_in_device_card_steps_title_summary">Zobrazovat celkové kroky</string>
+    <string name="devicetype_sony_wh_1000xm3">Sony WH-1000XM3</string>
+    <string name="devicetype_galaxybuds_live">Galaxy Buds Live</string>
+    <string name="pref_title_equalizer_normal">Normální</string>
+    <string name="prefs_active_noise_cancelling">Aktivní potlačení hluku</string>
+    <string name="prefs_active_noise_cancelling_summary">Blokování zvuků okolí</string>
+    <string name="prefs_pressure_relief">Odlehčení tlaku se zvukem okolí</string>
+    <string name="pressure_relief_summary">Zabraňte pocitu tlaku v uších při nepoužívání aktivního potlačení hluku</string>
+    <string name="pref_header_sony_ambient_sound_control">Nastavení zvuku okolí</string>
+    <string name="sony_ambient_sound">Režim</string>
+    <string name="sony_ambient_sound_off">Vypnuto</string>
+    <string name="sony_ambient_sound_noise_cancelling">Potlačení hluku</string>
+    <string name="sony_ambient_sound_wind_noise_reduction">Redukce hluku větru</string>
+    <string name="sony_ambient_sound_ambient_sound">Zvuky okolí</string>
+    <string name="sony_ambient_sound_focus_voice">Upřednostnění hlasu</string>
+    <string name="sony_ambient_sound_level">Hladina okolního zvuku</string>
+    <string name="sony_sound_position_front_left">Vpředu vlevo</string>
+    <string name="sony_sound_position_front_right">Vpředu vpravo</string>
+    <string name="sony_sound_position">Pozice zvuku</string>
+    <string name="sony_sound_position_rear_left">Vzadu vlevo</string>
+    <string name="sony_sound_position_rear_right">Vzadu vpravo</string>
+    <string name="sony_surround_mode_off">Vypnuto</string>
+    <string name="sony_surround_mode_arena">Aréna</string>
+    <string name="sony_surround_mode_club">Klub</string>
+    <string name="sony_surround_mode_outdoor_stage">Venkovní pódium</string>
+    <string name="sony_surround_mode_concert_hall">Koncertní síň</string>
+    <string name="sony_surround_position_mutually_exclusive">Varování: Nastavení polohy zvuku / prostorového režimu se vzájemně vylučují.</string>
+    <string name="sony_warn_sbc_codec">Varování: Tato nastavení fungují pouze pro zvukový kodek SBC.</string>
+    <string name="sony_equalizer">Ekvalizér</string>
+    <string name="sony_equalizer_preset_off">Vypnuto</string>
+    <string name="sony_equalizer_preset_bright">Jasný</string>
+    <string name="sony_equalizer_preset_excited">Vzrušený</string>
+    <string name="sony_equalizer_preset_mellow">Měkký</string>
+    <string name="sony_equalizer_preset_relaxed">Uvolněný</string>
+    <string name="sony_equalizer_preset_vocal">Vokální</string>
+    <string name="sony_equalizer_preset_treble_boost">Zesílení výšek</string>
+    <string name="sony_equalizer_preset_bass_boost">Zesílení basů</string>
+    <string name="sony_equalizer_preset_speech">Řeč</string>
+    <string name="sony_equalizer_preset_manual">Manuální</string>
+    <string name="sony_equalizer_band_2500">2.5k</string>
+    <string name="sony_equalizer_band_6300">6.3k</string>
+    <string name="sony_equalizer_band_16000">16k</string>
+    <string name="sony_equalizer_clear_bass">Jasné basy</string>
+    <string name="sony_dsee_hx">DSEE HX</string>
+    <string name="sony_touch_sensor">Nastavení dotykového ovládání</string>
+    <string name="sony_notification_voice_guide">Oznámení a hlasový průvodce</string>
+    <string name="sony_automatic_power_off">Automatické vypnutí</string>
+    <string name="sony_automatic_power_off_off">Nevypínat</string>
+    <string name="sony_automatic_power_off_5_min">5 minut</string>
+    <string name="sony_automatic_power_off_30_min">30 minut</string>
+    <string name="sony_automatic_power_off_1_hour">1 hodina</string>
+    <string name="sony_automatic_power_off_3_hour">3 hodiny</string>
+    <string name="watchface_widget_type_custom">Vlastní widget</string>
+    <string name="pref_header_equalizer">Equalizér</string>
+    <string name="device_card_activity_card_title">Informace o aktivitě na kartě zařízení</string>
+    <string name="prefs_activity_in_device_card_sleep_title">Spánek</string>
+    <string name="prefs_activity_in_device_card_distance_title_summary">Vzdálenost je vypočítána z kroků a délky kroku (nastavte v Nastavení - Vaše údaje)</string>
+    <string name="pref_header_system">Systém</string>
+    <string name="prefs_activity_in_device_card_title">Zobrazit informace o aktivitě na kartě zařízení</string>
+    <string name="sony_equalizer_band_1000">1k</string>
+    <string name="sony_equalizer_preset_custom_1">Vlastní 1</string>
+    <string name="sony_equalizer_preset_custom_2">Vlastní 2</string>
+    <string name="pref_header_sony_equalizer_preset_custom_1">Vlastní předvolba 1</string>
+    <string name="sony_equalizer_band_400">400</string>
+    <string name="pref_header_sony_equalizer_preset_manual">Ruční předvolba</string>
+    <string name="pref_header_sony_equalizer_preset_custom_2">Vlastní předvolba 2</string>
+    <string name="sony_automatic_power_off_when_taken_off">Při sundání</string>
+    <string name="title_activity_set_reminders">Upravit připomenutí</string>
+    <string name="controlcenter_start_configure_reminders">Upravit připomenutí</string>
+    <string name="reminder_time_once">%1$s, Jednou</string>
+    <string name="reminder_time_every_week">%1$s, Týdně</string>
+    <string name="reminder_time_every_day">%1$s, Denně</string>
+    <string name="reminder_time_every_month">%1$s, Měsíčně</string>
+    <string name="reminder_every_month">Měsíčně</string>
+    <string name="reminder_every_year">Ročně</string>
+    <string name="reminder_delete_confirm_title">Smazat připomenutí</string>
+    <string name="reminder_delete_confirm_description">Opravdu chcete smazat připomenutí\?</string>
+    <string name="reminder_no_free_slots_title">Nejsou volná místa</string>
+    <string name="reminder_no_free_slots_description">Zařízení nemá volná místa pro další připomenutí (celková místa: %1$s)</string>
+    <string name="title_activity_reminder_details">Detaily připomenutí</string>
+    <string name="miband_prefs_reserve_reminder_calendar">Rezervovaná místa připomenutí pro nadcházející události kalendáře</string>
+    <string name="qhybrid_title_on_device_confirmation">Povolit potvrzení párování na zařízení</string>
+    <string name="prefs_fm_preset_instructions">Dlouhým podržením tlačítka uložte předvolbu</string>
+    <string name="reminder_every_day">Denně</string>
+    <string name="reminder_message">Text</string>
+    <string name="reminder_repeat">Opakování</string>
+    <string name="reminder_time">Čas</string>
+    <string name="reminder_date">Datum</string>
+    <string name="reminder_time_every_year">%1$s, Ročně</string>
+    <string name="reminder_once">Jednou</string>
+    <string name="reminder_every_week">Týdně</string>
+    <string name="prefs_reserve_reminder_calendar_summary">Počet kalendářových událostí k synchronizaci</string>
+    <string name="watchface_dialog_widget_timeout_show_circle">Zobrazit orámování po časovém limitu:</string>
+    <string name="qhybrid_summary_on_device_confirmation">Potvrzení párování na zařízení může být otravné. Jejich vypnutím můžete přijít o funkčnost.</string>
+    <string name="prefs_fm_presets_presets">Předvolby</string>
+    <string name="watchface_dialog_widget_timezone">Časová zóna:</string>
+    <string name="watchface_dialog_widget_update_timeout">Časový limit aktualizace v minutách:</string>
+    <string name="watchface_dialog_widget_timeout_hide_text">Skrytí textu při vypršení časového limitu:</string>
+    <string name="averageAltitude">Průměr</string>
+    <string name="minSpeed">Minimum</string>
+    <string name="maxStride">Max krok</string>
+    <string name="minStride">Min krok</string>
+    <string name="averageCadence">Průměrný rytmus</string>
+    <string name="maxCadence">Max rytmus</string>
+    <string name="spm">kroky/min</string>
+    <string name="mi2_prefs_do_not_disturb_lift_wrist">Zapnout displej při zvednutí během režimu Nerušit</string>
+    <string name="minHR">Min Tepová frekvence</string>
+    <string name="maxHR">Max Tepová frekvence</string>
+    <string name="minCadence">Min rytmus</string>
+    <string name="pref_header_sony_equalizer_bands">Rozsahy</string>
+    <string name="sony_audio_upsampling">Převzorkování zvuku</string>
+    <string name="activity_prefs_discovery_pairing">Možnosti vyhledávání a párování</string>
+    <string name="sony_button_mode_ambient_sound_control">Nastavení zvuku okolí</string>
+    <string name="sony_button_mode_playback_control">Nastavení přehrávání</string>
+    <string name="sony_button_mode_volume_control">Ovládání hlasitosti</string>
+    <string name="controlcenter_power_off_confirm_title">Vypnout</string>
+    <string name="controlcenter_power_off">Vypnutí</string>
+    <string name="controlcenter_power_off_confirm_description">Opravdu chcete zařízení vypnout\?</string>
+    <string name="add_test_device">Přidat testovací zařízení</string>
+    <string name="devicetype_sony_wf_sp800n">Sony WF-SP800N</string>
+    <string name="discover_unsupported_devices">Vyhledávat nepodporovaná zařízení</string>
+    <string name="discover_unsupported_devices_description">Povolením této volby budou vyhledávána i nepodporovaná zařízení. Kliknutí zkopíruje jméno a MAC adresu zařízení do schránky. Podržení spustí dialog `Přidat testovací zařízení`.</string>
+    <string name="sony_pause_when_taken_off">Pozastavení přehrávání při sundání sluchátek</string>
+    <string name="sony_button_mode_left">Režim tlačítka (vlevo)</string>
+    <string name="sony_button_mode_off">Vypnout</string>
+    <string name="sony_button_mode_right">Režim tlačítka (vpravo)</string>
+    <string name="devicetype_bose_qc35">Bose QC35</string>
+    <string name="devicetype_vesc">VESC</string>
+    <string name="activity_type_hiking">Turistika</string>
+    <string name="ascentDistance">Vzdálenost do kopce</string>
+    <string name="descentDistance">Vzdálenost z kopce</string>
+    <string name="activity_type_climbing">Lezení</string>
+    <string name="devicetype_domyos_t540">Domyos T540</string>
+    <string name="pref_media_rewind">Přeskočit zpět</string>
+    <string name="about_hash">Zápis (commit) %s</string>
+    <string name="pref_media_pause">Zapauzování</string>
+    <string name="pref_media_playpause">Přepnout přehrávání</string>
+    <string name="pref_device_action_broadcast">Odeslat vysílání (broadcast)</string>
+    <string name="pref_button_action_disabled">Deaktivováno</string>
+    <string name="pref_media_previous">Předchozí skladba</string>
+    <string name="distance_format_kilometers">###.#km</string>
+    <string name="pref_media_next">Další skladba</string>
+    <string name="distance_format_miles">###.#mi</string>
+    <string name="distance_format_feet">###st</string>
+    <string name="pref_media_play">Přehrávání médií</string>
+    <string name="pref_media_forward">Přeskočit vpřed</string>
+    <string name="distance_format_meters">###m</string>
+    <string name="pref_media_volumeup">Zvýšit hlasitost</string>
+    <string name="pref_media_volumedown">Snížit hlasitost</string>
+    <string name="prefs_activity_recognition">Nastavení rozpoznávání aktivit</string>
+    <string name="fossil_hr_button_config_info">Některá tlačítka nelze konfigurovat, protože jejich funkce jsou pevně zakódovány ve firmwaru hodinek.
+\n
+\nUpozornění: Dlouhým stisknutím horního tlačítka při nainstalovaném ciferníku hodinek z oficiální aplikace Fossil se přepíná i zobrazení/skrytí widgetů.</string>
+    <string name="menuitem_menu">Nabídka</string>
+    <string name="devicetype_sony_wh_1000xm4">Sony WH-1000XM4</string>
+    <string name="discovery_bluetooth_scan">Skenování Bluetooth:</string>
+    <string name="sony_speak_to_chat_sensitivity">Citlivost detekce hlasu</string>
+    <string name="sony_speak_to_chat_sensitivity_auto">Automatická</string>
+    <string name="sony_speak_to_chat_sensitivity_high">Vysoká</string>
+    <string name="sony_speak_to_chat_sensitivity_low">Nízká</string>
+    <string name="sony_speak_to_chat_focus_on_voice">Zaměření na hlas</string>
+    <string name="sony_speak_to_chat_timeout">Časový limit</string>
+    <string name="sony_speak_to_chat_timeout_off">Vypnuto</string>
+    <string name="sony_speak_to_chat_timeout_short">Krátký (15s)</string>
+    <string name="sony_speak_to_chat_timeout_standard">Standardní (30s)</string>
+    <string name="sony_speak_to_chat_timeout_long">Dlouhý (1m)</string>
+    <string name="sony_connect_two_devices">Připojení ke 2 zařízením současně</string>
+    <string name="pref_activity_recognize_running">rozpoznat běh</string>
+    <string name="pref_activity_recognize_biking">rozpoznat cyklistiku</string>
+    <string name="pref_activity_recognize_walking">rozpoznat chůzi</string>
+    <string name="pref_activity_recognition_mode_none">nic</string>
+    <string name="pref_activity_recognition_mode_auto">automaticky</string>
+    <string name="watchface_dialog_widget_width">Šířka:</string>
+    <string name="device_unsupported">NEPODPOROVÁNO</string>
+    <string name="discovery_bluetooth_le_scan">Bluetooth LE skenování:</string>
+    <string name="sony_speak_to_chat">Mluvení s lidmi</string>
+    <string name="pref_activity_recognize_rowing">rozpoznat veslování</string>
+    <string name="pref_activity_recognition_mode_ask">dotázat se</string>
+    <string name="devicetype_sonyswr12">Sony SWR12</string>
+    <string name="audio_codec">Zvukový kodek</string>
+    <string name="pref_header_sony_device_info">Informace o zařízení</string>
 </resources>

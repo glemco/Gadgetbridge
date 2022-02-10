@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Cre3per,
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Cre3per,
     Daniele Gobbetti, José Rebelo, Petr Kadlec, protomors
 
     This file is part of Gadgetbridge.
@@ -272,7 +272,8 @@ public class MakibesHR3Coordinator extends AbstractDeviceCoordinator {
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_disconnectnotification,
                 R.xml.devicesettings_donotdisturb_no_auto,
-                R.xml.devicesettings_find_phone
+                R.xml.devicesettings_find_phone,
+                R.xml.devicesettings_transliteration
         };
     }
 }

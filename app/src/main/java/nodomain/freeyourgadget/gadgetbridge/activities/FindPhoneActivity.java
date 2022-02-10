@@ -17,7 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,8 +38,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
+import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 
 
 public class FindPhoneActivity extends AbstractGBActivity {
@@ -86,8 +88,7 @@ public class FindPhoneActivity extends AbstractGBActivity {
             }
         });
 
-        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel( GB.NOTIFICATION_ID_PHONE_FIND );
+        GB.removeNotification(GB.NOTIFICATION_ID_PHONE_FIND, this);
 
         vibrate();
         playRingtone();
@@ -114,7 +115,7 @@ public class FindPhoneActivity extends AbstractGBActivity {
         }
         mp = new MediaPlayer();
 
-        Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        Uri ringtoneUri = Uri.parse(GBApplication.getPrefs().getString(GBPrefs.PING_TONE, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString()));
 
         try {
             mp.setDataSource(this, ringtoneUri);

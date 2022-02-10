@@ -46,17 +46,29 @@ public class WidgetAlarmsActivity extends Activity implements View.OnClickListen
         super.onCreate(savedInstanceState);
 
         Context appContext = this.getApplicationContext();
+        GBDevice selectedDevice;
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            selectedDevice = extras.getParcelable(GBDevice.EXTRA_DEVICE);
+        } else {
+            GB.toast(this,
+                    "Error no device",
+                    Toast.LENGTH_LONG, GB.ERROR);
+            return;
+        }
+
         if (appContext instanceof GBApplication) {
             GBApplication gbApp = (GBApplication) appContext;
-            GBDevice selectedDevice = gbApp.getDeviceManager().getSelectedDevice();
+
             if (selectedDevice == null || !selectedDevice.isInitialized()) {
                 GB.toast(this,
                         this.getString(R.string.not_connected),
-                        Toast.LENGTH_LONG, GB.WARN);
+                        Toast.LENGTH_LONG, GB.INFO);
 
             } else {
                 setContentView(R.layout.widget_alarms_activity_list);
-                int userSleepDuration = new ActivityUser().getSleepDuration();
+                int userSleepDuration = new ActivityUser().getSleepDurationGoal();
                 textView = findViewById(R.id.alarm5);
                 if (userSleepDuration > 0) {
                     Resources res = getResources();
@@ -105,7 +117,7 @@ public class WidgetAlarmsActivity extends Activity implements View.OnClickListen
         if (duration > 0) {
             calendar.add(Calendar.MINUTE, duration);
         } else {
-            int userSleepDuration = new ActivityUser().getSleepDuration();
+            int userSleepDuration = new ActivityUser().getSleepDurationGoal();
             // add preferred sleep duration
             if (userSleepDuration > 0) {
                 calendar.add(Calendar.HOUR_OF_DAY, userSleepDuration);

@@ -1,5 +1,5 @@
-/*  Copyright (C) 2018-2020 Andreas Böhler, Sebastian Kranz
-    based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
+/*  Copyright (C) 2016-2021 Andreas Böhler, Andreas Shimokawa, Carsten
+    Pfeiffer, Sebastian Kranz
 
     This file is part of Gadgetbridge.
 
@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,10 +40,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioConstants;
+import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioGBX100SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Constants;
+import nodomain.freeyourgadget.gadgetbridge.entities.CasioGBX100ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
+import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -53,12 +61,20 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.FetchStepCountDataOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.GetConfigurationOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.InitOperationGBX100;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.SetConfigurationOperation;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOLIGHT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOREMOVE_MESSAGE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FAKE_RING_DURATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FIND_PHONE_ENABLED;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEY_VIBRATION;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_OPERATING_SOUNDS;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_WEARLOCATION;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_ACTIVETIME_MINUTES;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_DISTANCE_METERS;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_GENDER;
@@ -67,31 +83,22 @@ import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_WEIGHT_KG;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_YEAR_OF_BIRTH;
 
-public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class CasioGBX100DeviceSupport extends CasioSupport implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final Logger LOG = LoggerFactory.getLogger(CasioGBX100DeviceSupport.class);
 
-    private boolean mFirstConnect = false;
+
     private boolean mGetConfigurationPending = false;
-    private ArrayList<Integer> mSyncedNotificationIDs = new ArrayList<>();
-    private int mLastCallId = 0;
+    private boolean mRingNotificationPending = false;
+    private final ArrayList<Integer> mSyncedNotificationIDs = new ArrayList<>();
+    private int mLastCallId = new AtomicInteger((int) (System.currentTimeMillis()/1000)).incrementAndGet();
+    private int mFakeRingDurationCounter = 0;
     private final Handler mFindPhoneHandler = new Handler();
+    private final Handler mFakeRingDurationHandler = new Handler();
+    private final Handler mAutoRemoveMessageHandler = new Handler();
 
     public CasioGBX100DeviceSupport() {
         super(LOG);
 
-        addSupportedService(CasioConstants.WATCH_FEATURES_SERVICE_UUID);
-    }
-
-    @Override
-    public boolean connectFirstTime() {
-        mFirstConnect = true;
-        return connect();
-    }
-
-    public void setInitialized() {
-        mFirstConnect = false;
-        gbDevice.setState(GBDevice.State.INITIALIZED);
-        gbDevice.sendDeviceUpdateIntent(getContext());
     }
 
     @Override
@@ -106,11 +113,19 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
         getDevice().setFirmwareVersion("N/A");
         getDevice().setFirmwareVersion2("N/A");
 
-        SharedPreferences preferences = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress());
-        preferences.registerOnSharedPreferenceChangeListener(this);
+
+        //preferences.registerOnSharedPreferenceChangeListener(this);
 
         SharedPreferences prefs = GBApplication.getPrefs().getPreferences();
         prefs.registerOnSharedPreferenceChangeListener(this);
+
+        if(mFirstConnect) {
+            SharedPreferences preferences = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress());
+            SharedPreferences.Editor editor = preferences.edit();
+
+            editor.putString(DeviceSettingsPreferenceConst.PREFS_DEVICE_CHARTS_TABS, "activity,activitylist,stepsweek");
+            editor.apply();
+        }
 
         return builder;
     }
@@ -126,6 +141,67 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
             return true;
 
         return super.onCharacteristicRead(gatt, characteristic, status);
+    }
+
+    public CasioGBX100ActivitySample getSumWithinRange(int timestamp_from, int timestamp_to) {
+        int steps = 0;
+        int calories = 0;
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+
+            User user = DBHelper.getUser(dbHandler.getDaoSession());
+            Device device = DBHelper.getDevice(this.getDevice(), dbHandler.getDaoSession());
+
+            CasioGBX100SampleProvider provider = new CasioGBX100SampleProvider(this.getDevice(), dbHandler.getDaoSession());
+            List<CasioGBX100ActivitySample> samples = provider.getActivitySamples(timestamp_from, timestamp_to);
+            for(CasioGBX100ActivitySample sample : samples) {
+                if(sample.getDevice().equals(device) &&
+                        sample.getUser().equals(user)) {
+                    steps += sample.getSteps();
+                    calories += sample.getCalories();
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error fetching activity data.");
+        }
+
+        CasioGBX100ActivitySample ret = new CasioGBX100ActivitySample();
+        ret.setCalories(calories);
+        ret.setSteps(steps);
+        LOG.debug("Fetched for today: " + calories + " cals and " + steps + " steps.");
+        return ret;
+    }
+
+    private void addGBActivitySamples(ArrayList<CasioGBX100ActivitySample> samples) {
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+
+            User user = DBHelper.getUser(dbHandler.getDaoSession());
+            Device device = DBHelper.getDevice(this.getDevice(), dbHandler.getDaoSession());
+
+            CasioGBX100SampleProvider provider = new CasioGBX100SampleProvider(this.getDevice(), dbHandler.getDaoSession());
+
+            for (CasioGBX100ActivitySample sample : samples) {
+                sample.setDevice(device);
+                sample.setUser(user);
+                sample.setProvider(provider);
+
+                provider.addGBActivitySample(sample);
+            }
+
+        } catch (Exception ex) {
+            // Why is this a toast? The user doesn't care about the error.
+            GB.toast(getContext(), "Error saving samples: " + ex.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+            GB.updateTransferNotification(null, "Data transfer failed", false, 0, getContext());
+
+            LOG.error(ex.getMessage());
+        }
+    }
+
+    public void stepCountDataFetched(int totalCount, int totalCalories, ArrayList<CasioGBX100ActivitySample> data) {
+        LOG.info("Got the following step count data: ");
+        LOG.info("Total Count: " + totalCount);
+        LOG.info("Total Calories: " + totalCalories);
+
+        addGBActivitySamples(data);
     }
 
     @Override
@@ -144,16 +220,22 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                     onReverseFindDevice(false);
                 }
                 return true;
+            } else if(data[0] == CasioConstants.characteristicToByte.get("CASIO_CURRENT_TIME_MANAGER")) {
+                if(data[1] == 0x00) {
+                    try {
+                        TransactionBuilder builder = performInitialized("writeCurrentTime");
+                        writeCurrentTime(builder);
+                        builder.queue(getQueue());
+                    } catch (IOException e) {
+                        LOG.warn("writing current time failed: " + e.getMessage());
+                    }
+                }
             }
+
         }
 
         LOG.info("Unhandled characteristic change: " + characteristicUUID + " code: " + String.format("0x%1x ...", data[0]));
         return super.onCharacteristicChanged(gatt, characteristic);
-    }
-
-    @Override
-    public boolean useAutoConnect() {
-        return true;
     }
 
     public void syncProfile() {
@@ -186,21 +268,22 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
         arr[5] = (byte) 0x01; // Set to 0x00 to not vibrate/ring for this notification
         arr[6] = icon;
         // These bytes contain a timestamp, not yet decoded / implemented
-        /*arr[7] = (byte) 0x32;
-        arr[8] = (byte) 0x30;
-        arr[9] = (byte) 0x32;
-        arr[10] = (byte) 0x30;
-        arr[11] = (byte) 0x31;
-        arr[12] = (byte) 0x31;
-        arr[13] = (byte) 0x31;
-        arr[14] = (byte) 0x33;
-        arr[15] = (byte) 0x54;
-        arr[16] = (byte) 0x30;
-        arr[17] = (byte) 0x39;
-        arr[18] = (byte) 0x33;
-        arr[19] = (byte) 0x31;
-        arr[20] = (byte) 0x35;
-        arr[21] = (byte) 0x33;*/
+        // ASCII Codes:
+        /*arr[7] = (byte) 0x32; // 2
+        arr[8] = (byte) 0x30;   // 0
+        arr[9] = (byte) 0x32;   // 2
+        arr[10] = (byte) 0x30;  // 0
+        arr[11] = (byte) 0x31;  // 1
+        arr[12] = (byte) 0x31;  // 1
+        arr[13] = (byte) 0x31;  // 1
+        arr[14] = (byte) 0x33;  // 3
+        arr[15] = (byte) 0x54;  // T
+        arr[16] = (byte) 0x30;  // 0
+        arr[17] = (byte) 0x39;  // 9
+        arr[18] = (byte) 0x33;  // 3
+        arr[19] = (byte) 0x31;  // 1
+        arr[20] = (byte) 0x35;  // 5
+        arr[21] = (byte) 0x33;*/// 3
         byte[] copy = Arrays.copyOf(arr, arr.length + 2);
         copy[copy.length-2] = 0;
         copy[copy.length-1] = 0;
@@ -247,8 +330,9 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     }
 
     @Override
-    public void onNotification(NotificationSpec notificationSpec) {
+    public void onNotification(final NotificationSpec notificationSpec) {
         byte icon;
+        boolean autoremove = false;
         switch (notificationSpec.type.getGenericType()) {
             case "generic_calendar":
                 icon = CasioConstants.CATEGORY_SCHEDULE_AND_ALARM;
@@ -256,13 +340,26 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
             case "generic_email":
                 icon = CasioConstants.CATEGORY_EMAIL;
                 break;
+            case "generic_sms":
+                icon = CasioConstants.CATEGORY_SNS;
+                SharedPreferences sharedPreferences = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
+                autoremove = sharedPreferences.getBoolean(PREF_AUTOREMOVE_MESSAGE, false);
+                break;
             default:
                 icon = CasioConstants.CATEGORY_SNS;
                 break;
         }
         LOG.info("onNotification id=" + notificationSpec.getId());
         showNotification(icon, notificationSpec.sender, notificationSpec.title, notificationSpec.body, notificationSpec.getId(), false);
-        mSyncedNotificationIDs.add(new Integer(notificationSpec.getId()));
+        mSyncedNotificationIDs.add(notificationSpec.getId());
+        if(autoremove) {
+            mAutoRemoveMessageHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onDeleteNotification(notificationSpec.getId());
+                }
+            }, CasioConstants.CASIO_AUTOREMOVE_MESSAGE_DELAY);
+        }
         // The watch only holds up to 10 notifications. However, the user might have deleted
         // some notifications in the meantime, so to be sure, we keep the last 100 IDs.
         if(mSyncedNotificationIDs.size() > 100) {
@@ -273,7 +370,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     @Override
     public void onDeleteNotification(int id) {
         LOG.info("onDeleteNofication id=" + id);
-        Integer idInt = new Integer(id);
+        Integer idInt = id;
         if(mSyncedNotificationIDs.contains(idInt)) {
             showNotification(CasioConstants.CATEGORY_OTHER, null, null, null, id, true);
             mSyncedNotificationIDs.remove(idInt);
@@ -300,7 +397,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                     int iDuration;
 
                     try {
-                        iDuration = Integer.valueOf(duration);
+                        iDuration = Integer.parseInt(duration);
                     } catch (Exception ex) {
                         LOG.warn(ex.getMessage());
                         iDuration = 60;
@@ -327,23 +424,9 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     public void writeCurrentTime(TransactionBuilder builder) {
         byte[] arr = new byte[11];
-        Calendar cal = Calendar.getInstance();
-
-        int year = cal.get(Calendar.YEAR);
         arr[0] = CasioConstants.characteristicToByte.get("CASIO_CURRENT_TIME");
-        arr[1] = (byte)((year >>> 0) & 0xff);
-        arr[2] = (byte)((year >>> 8) & 0xff);
-        arr[3] = (byte)(1 + cal.get(Calendar.MONTH));
-        arr[4] = (byte)cal.get(Calendar.DAY_OF_MONTH);
-        arr[5] = (byte)cal.get(Calendar.HOUR_OF_DAY);
-        arr[6] = (byte)cal.get(Calendar.MINUTE);
-        arr[7] = (byte)(1 + cal.get(Calendar.SECOND));
-        byte dayOfWk = (byte)(cal.get(Calendar.DAY_OF_WEEK) - 1);
-        if(dayOfWk == 0)
-            dayOfWk = 7;
-        arr[8] = dayOfWk;
-        arr[9] = (byte)(int) TimeUnit.MILLISECONDS.toSeconds(256 * cal.get(Calendar.MILLISECOND));
-        arr[10] = 1; // or 0?
+        byte[] tmp = prepareCurrentTime();
+        System.arraycopy(tmp, 0, arr, 1, 10);
 
         writeAllFeatures(builder, arr);
     }
@@ -358,7 +441,41 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
+        byte[] data1 = new byte[5];
+        byte[] data2 = new byte[17];
 
+        if(!isConnected())
+            return;
+
+        data1[0] = CasioConstants.characteristicToByte.get("CASIO_SETTING_FOR_ALM");
+        data2[0] = CasioConstants.characteristicToByte.get("CASIO_SETTING_FOR_ALM2");
+
+        for(int i=0; i<alarms.size(); i++)
+        {
+            byte[] settings = new byte[4];
+            Alarm alm = alarms.get(i);
+            if(alm.getEnabled()) {
+                settings[0] = 0x40;
+            } else {
+                settings[0] = 0;
+            }
+            settings[1] = 0x40;
+            settings[2] = (byte)alm.getHour();
+            settings[3] = (byte)alm.getMinute();
+            if(i == 0) {
+                System.arraycopy(settings, 0, data1, 1, settings.length);
+            } else {
+                System.arraycopy(settings, 0, data2, 1 + (i-1)*4, settings.length);
+            }
+        }
+        try {
+            TransactionBuilder builder = performInitialized("setAlarm");
+            writeAllFeatures(builder, data1);
+            writeAllFeatures(builder, data2);
+            builder.queue(getQueue());
+        } catch(IOException e) {
+            LOG.error("Error setting alarm: " + e.getMessage());
+        }
     }
 
     @Override
@@ -374,128 +491,49 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     }
 
     @Override
-    public void onSetCallState(CallSpec callSpec) {
+    public void onSetCallState(final CallSpec callSpec) {
         switch (callSpec.command) {
             case CallSpec.CALL_INCOMING:
-                final AtomicInteger c = new AtomicInteger((int) (System.currentTimeMillis()/1000));
-                mLastCallId = c.incrementAndGet();
                 showNotification(CasioConstants.CATEGORY_INCOMING_CALL, "Phone", callSpec.name, callSpec.number, mLastCallId, false);
+                SharedPreferences sharedPreferences = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
+                boolean fakeRingDuration = sharedPreferences.getBoolean(PREF_FAKE_RING_DURATION, false);
+                if(fakeRingDuration && mFakeRingDurationCounter < CasioConstants.CASIO_FAKE_RING_RETRIES) {
+                    mFakeRingDurationCounter++;
+                    mFakeRingDurationHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showNotification(CasioConstants.CATEGORY_INCOMING_CALL, null, null, null, mLastCallId, true);
+                            onSetCallState(callSpec);
+                        }
+                    }, CasioConstants.CASIO_FAKE_RING_SLEEP_DURATION);
+                } else {
+                    mFakeRingDurationCounter = 0;
+                }
+                mRingNotificationPending = true;
                 break;
-            case CallSpec.CALL_END:
-                showNotification(CasioConstants.CATEGORY_INCOMING_CALL, null, null, null, mLastCallId, true);
             default:
-                LOG.info("not sending CallSpec since only CALL_INCOMING is handled");
-                break;
+                if(mRingNotificationPending) {
+                    mFakeRingDurationHandler.removeCallbacksAndMessages(null);
+                    mFakeRingDurationCounter = 0;
+                    showNotification(CasioConstants.CATEGORY_INCOMING_CALL, null, null, null, mLastCallId, true);
+                    mLastCallId = new AtomicInteger((int) (System.currentTimeMillis() / 1000)).incrementAndGet();
+                }
         }
     }
 
     @Override
-    public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
-
-    }
-
-    @Override
-    public void onSetMusicState(MusicStateSpec stateSpec) {
-
-    }
-
-    @Override
-    public void onSetMusicInfo(MusicSpec musicSpec) {
-
-    }
-
-    @Override
-    public void onEnableRealtimeSteps(boolean enable) {
-    }
-
-    @Override
-    public void onInstallApp(Uri uri) {
-
-    }
-
-    @Override
-    public void onAppInfoReq() {
-
-    }
-
-    @Override
-    public void onAppStart(UUID uuid, boolean start) {
-
-    }
-
-    @Override
-    public void onAppDelete(UUID uuid) {
-
-    }
-
-    @Override
-    public void onAppConfiguration(UUID appUuid, String config, Integer id) {
-
-    }
-
-    @Override
-    public void onAppReorder(UUID[] uuids) {
-
-    }
-
-    @Override
     public void onFetchRecordedData(int dataTypes) {
-
-    }
-
-    @Override
-    public void onReset(int flags) {
-
-    }
-
-    @Override
-    public void onHeartRateTest() {
-
-    }
-
-    @Override
-    public void onEnableRealtimeHeartRateMeasurement(boolean enable) {
-
-    }
-
-    @Override
-    public void onFindDevice(boolean start) {
-
-    }
-
-    @Override
-    public void onSetConstantVibration(int integer) {
-
-    }
-
-    @Override
-    public void onScreenshotReq() {
-
-    }
-
-    @Override
-    public void onEnableHeartRateSleepSupport(boolean enable) {
-
-    }
-
-    @Override
-    public void onSetHeartRateMeasurementInterval(int seconds) {
-
-    }
-
-    @Override
-    public void onAddCalendarEvent(CalendarEventSpec calendarEventSpec) {
-
-    }
-
-    @Override
-    public void onDeleteCalendarEvent(byte type, long id) {
-
+        try {
+            new FetchStepCountDataOperation(this).perform();
+        } catch(IOException e) {
+            GB.toast(getContext(), "Error fetching data", Toast.LENGTH_SHORT, GB.ERROR, e);
+        }
     }
 
     @Override
     public void onSendConfiguration(String config) {
         LOG.info("onSendConfiguration" + config);
+        onSharedPreferenceChanged(null, config);
     }
 
     public void onGetConfigurationFinished() {
@@ -519,12 +557,16 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onTestNewFunction() {
-
-    }
-
-    @Override
-    public void onSendWeather(WeatherSpec weatherSpec) {
-
+        byte[] data = new byte[2];
+        data[0] = (byte)0x2e;
+        data[1] = (byte)0x03;
+        try {
+            TransactionBuilder builder = performInitialized("onTestNewFunction");
+            writeAllFeaturesRequest(builder, data);
+            builder.queue(getQueue());
+        } catch(IOException e) {
+            LOG.error("Error setting alarm: " + e.getMessage());
+        }
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -540,27 +582,49 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
             return;
         }
         try {
-            if (key.equals(DeviceSettingsPreferenceConst.PREF_WEARLOCATION)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WRIST).perform();
-            } else if(key.equals(PREF_USER_STEPS_GOAL)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_STEP_GOAL).perform();
-            } else if(key.equals(PREF_USER_ACTIVETIME_MINUTES)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_ACTIVITY_GOAL).perform();
-            } else if(key.equals(PREF_USER_DISTANCE_METERS)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_DISTANCE_GOAL).perform();
-            } else if(key.equals(PREF_USER_GENDER)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_GENDER).perform();
-            } else if(key.equals(PREF_USER_HEIGHT_CM)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_HEIGHT).perform();
-            } else if(key.equals(PREF_USER_WEIGHT_KG)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WEIGHT).perform();
-            } else if(key.equals(PREF_USER_YEAR_OF_BIRTH)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_BIRTHDAY).perform();
-            } else if (key.equals(PREF_FIND_PHONE_ENABLED) ||
-                    key.equals(MakibesHR3Constants.PREF_FIND_PHONE_DURATION)) {
-                // No action, we check the shared preferences when the device tries to ring the phone.
-            } else {
-                return;
+            switch (key) {
+                case DeviceSettingsPreferenceConst.PREF_WEARLOCATION:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WRIST).perform();
+                    break;
+                case PREF_USER_STEPS_GOAL:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_STEP_GOAL).perform();
+                    break;
+                case PREF_USER_ACTIVETIME_MINUTES:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_ACTIVITY_GOAL).perform();
+                    break;
+                case PREF_USER_DISTANCE_METERS:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_DISTANCE_GOAL).perform();
+                    break;
+                case PREF_USER_GENDER:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_GENDER).perform();
+                    break;
+                case PREF_USER_HEIGHT_CM:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_HEIGHT).perform();
+                    break;
+                case PREF_USER_WEIGHT_KG:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WEIGHT).perform();
+                    break;
+                case PREF_USER_YEAR_OF_BIRTH:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_BIRTHDAY).perform();
+                    break;
+                case PREF_TIMEFORMAT:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_TIMEFORMAT).perform();
+                    break;
+                case PREF_KEY_VIBRATION:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_KEY_VIBRATION).perform();
+                    break;
+                case PREF_AUTOLIGHT:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_AUTOLIGHT).perform();
+                    break;
+                case PREF_OPERATING_SOUNDS:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_OPERATING_SOUNDS).perform();
+                    break;
+                case PREF_FAKE_RING_DURATION:
+                case PREF_FIND_PHONE_ENABLED:
+                case MakibesHR3Constants.PREF_FIND_PHONE_DURATION:
+                    // No action, we check the shared preferences when the device tries to ring the phone.
+                    break;
+                default:
             }
         } catch (IOException e) {
             LOG.info("Error sending configuration change to watch");

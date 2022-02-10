@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, José Rebelo, Nephiel
 
     This file is part of Gadgetbridge.
@@ -41,6 +41,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.DateTimeDisplay;
@@ -255,6 +256,11 @@ public abstract class HuamiCoordinator extends AbstractDeviceCoordinator {
         return prefs.getBoolean(HuamiConst.PREF_EXPOSE_HR_THIRDPARTY, false);
     }
 
+    public static boolean getBtConnectedAdvertising(String deviceAddress) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
+        return prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_BT_CONNECTED_ADVERTISEMENT, false);
+    }
+
     protected static Date getTimePreference(String key, String defaultValue, String deviceAddress) {
         Prefs prefs;
 
@@ -303,6 +309,12 @@ public abstract class HuamiCoordinator extends AbstractDeviceCoordinator {
         return DoNotDisturb.OFF;
     }
 
+    public static boolean getDoNotDisturbLiftWrist(String deviceAddress) {
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(deviceAddress);
+
+        return prefs.getBoolean(MiBandConst.PREF_DO_NOT_DISTURB_LIFT_WRIST, false);
+    }
+
     @Override
     public boolean supportsScreenshots() {
         return false;
@@ -321,5 +333,15 @@ public abstract class HuamiCoordinator extends AbstractDeviceCoordinator {
     @Override
     public boolean supportsAlarmSnoozing() {
         return true;
+    }
+
+    @Override
+    public int getMaximumReminderMessageLength() {
+        return 16;
+    }
+
+    @Override
+    public int getReminderSlotCount() {
+        return 22; // At least, Mi Fit still allows more
     }
 }

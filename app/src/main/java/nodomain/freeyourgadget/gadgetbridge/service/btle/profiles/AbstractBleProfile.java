@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Carsten Pfeiffer, Daniele Gobbetti
+/*  Copyright (C) 2016-2021 Carsten Pfeiffer, Daniele Gobbetti, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -106,6 +106,9 @@ public abstract class AbstractBleProfile<T extends AbstractBTLEDeviceSupport> ex
 
     protected BtLEQueue getQueue() {
         return mSupport.getQueue();
+    }
+
+    public void enableNotify(TransactionBuilder builder, boolean enable) {
     }
 
 }

@@ -2,12 +2,15 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceScreen
+        android:icon="@drawable/ic_phone_msg"
         android:key="screen_canned_messages_dismisscall"
         android:persistent="false"
-        android:title="@string/pref_title_canned_messages_dismisscall">
+        android:title="@string/pref_title_canned_messages_dismisscall"
+        android:summary="@string/pref_summary_canned_messages_dismisscall">
         <Preference
             android:key="canned_messages_dismisscall_send"
-            android:title="@string/pref_title_canned_messages_set" />
+            android:title="@string/pref_title_canned_messages_set"
+            android:summary="@string/pref_summary_canned_messages_set"/>
         <EditTextPreference
             android:key="canned_message_dismisscall_1"
             android:maxLength="64"

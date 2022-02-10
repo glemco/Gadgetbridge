@@ -1,5 +1,6 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, Martin, Matthieu Baerts, Normano64, Pavel Elagin, Taavi Eomäe
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, Martin, Matthieu Baerts, Normano64, odavo32nof, Pauli Salmenrinne,
+    Pavel Elagin, Petr Vaněk, Saul Nunez, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -19,10 +20,8 @@ package nodomain.freeyourgadget.gadgetbridge;
 
 import android.annotation.TargetApi;
 import android.app.Application;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.NotificationManager.Policy;
-import android.app.UiModeManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +58,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.database.DBOpenHelper;
@@ -83,13 +83,16 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.AMAZFITBIP;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.AMAZFITCOR;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.AMAZFITCOR2;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.GALAXY_BUDS;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND2;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND3;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.PEBBLE;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.fromKey;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID;
-import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_ID;
+import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_ID_ERROR;
+
+import androidx.multidex.MultiDex;
 
 /**
  * Main Application class that initializes and provides access to certain things like
@@ -106,9 +109,7 @@ public class GBApplication extends Application {
     private static SharedPreferences sharedPrefs;
     private static final String PREFS_VERSION = "shared_preferences_version";
     //if preferences have to be migrated, increment the following and add the migration logic in migratePrefs below; see http://stackoverflow.com/questions/16397848/how-can-i-migrate-android-preferences-with-a-new-version
-    private static final int CURRENT_PREFS_VERSION = 8;
-
-    private static final int ERROR_IN_GADGETBRIDGE_NOTIFICATION = 42;
+    private static final int CURRENT_PREFS_VERSION = 10;
 
     private static LimitedQueue mIDSenderLookup = new LimitedQueue(16);
     private static Prefs prefs;
@@ -147,11 +148,18 @@ public class GBApplication extends Application {
         Intent quitIntent = new Intent(GBApplication.ACTION_QUIT);
         LocalBroadcastManager.getInstance(context).sendBroadcast(quitIntent);
         GBApplication.deviceService().quit();
+        System.exit(0);
     }
 
     public GBApplication() {
         context = this;
         // don't do anything here, add it to onCreate instead
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     public static Logging getLogging() {
@@ -204,35 +212,19 @@ public class GBApplication extends Application {
 
         if (isRunningMarshmallowOrLater()) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            //the following will ensure the notification manager is kept alive
             if (isRunningOreoOrLater()) {
-                NotificationChannel channel = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID);
-                if (channel == null) {
-                    channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                            getString(R.string.notification_channel_name),
-                            NotificationManager.IMPORTANCE_LOW);
-                    notificationManager.createNotificationChannel(channel);
-                }
-
-                NotificationChannel channelHighPr = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID);
-                if (channelHighPr == null) {
-                    channelHighPr = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID,
-                            getString(R.string.notification_channel_high_priority_name),
-                            NotificationManager.IMPORTANCE_HIGH);
-                    notificationManager.createNotificationChannel(channelHighPr);
-                }
-
                 bluetoothStateChangeReceiver = new BluetoothStateChangeReceiver();
                 registerReceiver(bluetoothStateChangeReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
             }
             try {
+                //the following will ensure the notification manager is kept alive
                 startService(new Intent(this, NotificationCollectorMonitorService.class));
             } catch (IllegalStateException e) {
                 String message = e.toString();
                 if (message == null) {
                     message = getString(R.string._unknown_);
                 }
-                notificationManager.notify(ERROR_IN_GADGETBRIDGE_NOTIFICATION,
+                GB.notify(NOTIFICATION_ID_ERROR,
                         new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID)
                                 .setSmallIcon(R.drawable.gadgetbridge_img)
                                 .setContentTitle(getString(R.string.error_background_service))
@@ -240,7 +232,7 @@ public class GBApplication extends Application {
                                 .setStyle(new NotificationCompat.BigTextStyle()
                                         .bigText(getString(R.string.error_background_service_reason) + "\"" + message + "\""))
                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                .build());
+                                .build(), context);
             }
         }
     }
@@ -370,6 +362,11 @@ public class GBApplication extends Application {
     public static boolean isRunningOreoOrLater() {
         return VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
+
+    public static boolean isRunningTenOrLater() {
+        return VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    }
+
 
     public static boolean isRunningPieOrLater() {
         return VERSION.SDK_INT >= Build.VERSION_CODES.P;
@@ -940,7 +937,37 @@ public class GBApplication extends Application {
                 }
             }
         }
+        if (oldVersion < 9) {
+            try (DBHandler db = acquireDB()) {
+                DaoSession daoSession = db.getDaoSession();
+                List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
+                migrateBooleanPrefToPerDevicePref("transliteration", false, "pref_transliteration_enabled", (ArrayList)activeDevices);
+                Log.w(TAG, "migrating transliteration settings");
+            } catch (Exception e) {
+                Log.w(TAG, "error acquiring DB lock and migrating prefs");
+            }
+        }
+        if (oldVersion < 10) {
+            //migrate the string version of pref_galaxy_buds_ambient_volume to int due to transition to SeekBarPreference
+            try (DBHandler db = acquireDB()) {
+                DaoSession daoSession = db.getDaoSession();
+                List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
+                for (Device dbDevice : activeDevices) {
+                    SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+                    SharedPreferences.Editor deviceSharedPrefsEdit = deviceSharedPrefs.edit();
+                    DeviceType deviceType = fromKey(dbDevice.getType());
 
+                    if (deviceType == GALAXY_BUDS) {
+                        GB.log("migrating Galaxy Buds volume", GB.INFO, null);
+                        String volume = deviceSharedPrefs.getString(DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_AMBIENT_VOLUME, "1");
+                        deviceSharedPrefsEdit.putInt(DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_AMBIENT_VOLUME, Integer.parseInt(volume));
+                    }
+                    deviceSharedPrefsEdit.apply();
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "error acquiring DB lock");
+            }
+        }
         editor.putString(PREFS_VERSION, Integer.toString(CURRENT_PREFS_VERSION));
         editor.apply();
     }
@@ -951,6 +978,14 @@ public class GBApplication extends Application {
         }
         return context.getSharedPreferences("devicesettings_" + deviceIdentifier, Context.MODE_PRIVATE);
     }
+
+    public static void deleteDeviceSpecificSharedPrefs(String deviceIdentifier) {
+        if (deviceIdentifier == null || deviceIdentifier.isEmpty()) {
+            return;
+        }
+        context.getSharedPreferences("devicesettings_" + deviceIdentifier, Context.MODE_PRIVATE).edit().clear().apply();
+    }
+
 
     public static void setLanguage(String lang) {
         if (lang.equals("default")) {
@@ -975,12 +1010,18 @@ public class GBApplication extends Application {
 
     public static boolean isDarkThemeEnabled() {
         String selectedTheme = prefs.getString("pref_key_theme", context.getString(R.string.pref_theme_value_system));
+        Resources resources = context.getResources();
 
-        UiModeManager umm = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                selectedTheme.equals(context.getString(R.string.pref_theme_value_system))) {
+            return (resources.getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        } else {
+            return selectedTheme.equals(context.getString(R.string.pref_theme_value_dark));
+        }
+    }
 
-        return selectedTheme.equals(context.getString(R.string.pref_theme_value_dark)) ||
-                (selectedTheme.equals(context.getString(R.string.pref_theme_value_system))
-                        && (umm.getNightMode() == UiModeManager.MODE_NIGHT_YES));
+    public static boolean isAmoledBlackEnabled() {
+        return prefs.getBoolean("pref_key_theme_amoled_black", false);
     }
 
     public static int getTextColor(Context context) {

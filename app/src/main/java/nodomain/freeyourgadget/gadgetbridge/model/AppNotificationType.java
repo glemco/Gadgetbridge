@@ -78,8 +78,10 @@ public class AppNotificationType extends HashMap<String, NotificationType> {
         // Telegram
         put("org.telegram.messenger", NotificationType.TELEGRAM);
         put("org.telegram.messenger.beta", NotificationType.TELEGRAM);
+        put("org.telegram.messenger.web", NotificationType.TELEGRAM);
         put("org.telegram.plus", NotificationType.TELEGRAM); // "Plus Messenger"
         put("org.thunderdog.challegram", NotificationType.TELEGRAM);
+        put("nekox.messenger", NotificationType.TELEGRAM);
 
         // Threema
         put("ch.threema.app", NotificationType.THREEMA);
@@ -169,6 +171,9 @@ public class AppNotificationType extends HashMap<String, NotificationType> {
 
         // Etar
         put("ws.xsoh.etar", NotificationType.GENERIC_CALENDAR);
+
+        // Discord
+        put("com.discord", NotificationType.DISCORD);
     }
 
 }

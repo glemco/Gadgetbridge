@@ -1,5 +1,5 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, João Paulo Barraca, Nephiel, vanous
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+    Gobbetti, João Paulo Barraca, Nephiel, Petr Vaněk, Zhong Jianxin
 
     This file is part of Gadgetbridge.
 
@@ -91,10 +91,13 @@ public class AmazfitBipSCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_custom_emoji_font,
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_reserve_reminders_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
+                R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_high_mtu,
                 R.xml.devicesettings_device_actions,
-                R.xml.devicesettings_pairingkey
+                R.xml.devicesettings_pairingkey,
+                R.xml.devicesettings_transliteration
         };
     }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2020 Andreas Shimokawa, Gordon Williams
+/*  Copyright (C) 2019-2021 Andreas Shimokawa, Gordon Williams
 
     This file is part of Gadgetbridge.
 
@@ -19,8 +19,17 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Base64;
 import android.widget.Toast;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,23 +41,31 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
 import java.lang.reflect.Field;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants;
+import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
@@ -59,12 +76,18 @@ import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
+import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.*;
+
 public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSDeviceSupport.class);
     private BluetoothGattCharacteristic rxCharacteristic = null;
     private BluetoothGattCharacteristic txCharacteristic = null;
+    private int mtuSize = 20;
 
     private String receivedLine = "";
+    private boolean realtimeHRM = false;
+    private boolean realtimeStep = false;
+    private int realtimeHRMInterval = 30*60;
 
     public BangleJSDeviceSupport() {
         super(LOG);
@@ -77,6 +100,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
         gbDevice.setState(GBDevice.State.INITIALIZING);
         gbDevice.sendDeviceUpdateIntent(getContext());
+        gbDevice.setBatteryThresholdPercent((short) 30);
 
         rxCharacteristic = getCharacteristic(BangleJSConstants.UUID_CHARACTERISTIC_NORDIC_UART_RX);
         txCharacteristic = getCharacteristic(BangleJSConstants.UUID_CHARACTERISTIC_NORDIC_UART_TX);
@@ -87,13 +111,16 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
         Prefs prefs = GBApplication.getPrefs();
         if (prefs.getBoolean("datetime_synconconnect", true))
-          setTime(builder);
+          transmitTime(builder);
         //sendSettings(builder);
 
         // get version
 
         gbDevice.setState(GBDevice.State.INITIALIZED);
         gbDevice.sendDeviceUpdateIntent(getContext());
+
+        getDevice().setFirmwareVersion("N/A");
+        getDevice().setFirmwareVersion2("N/A");
 
         LOG.info("Initialization Done");
 
@@ -105,9 +132,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         LOG.info("UART TX: " + str);
         byte[] bytes;
         bytes = str.getBytes(StandardCharsets.ISO_8859_1);
-        for (int i=0;i<bytes.length;i+=20) {
+        for (int i=0;i<bytes.length;i+=mtuSize) {
             int l = bytes.length-i;
-            if (l>20) l=20;
+            if (l>mtuSize) l=mtuSize;
             byte[] packet = new byte[l];
             System.arraycopy(bytes, i, packet, 0, l);
             builder.write(txCharacteristic, packet);
@@ -128,9 +155,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private void handleUartRxLine(String line) {
         LOG.info("UART RX LINE: " + line);
 
-        if (">Uncaught ReferenceError: \"gb\" is not defined".equals(line))
+        if (">Uncaught ReferenceError: \"GB\" is not defined".equals(line))
           GB.toast(getContext(), "Gadgetbridge plugin not installed on Bangle.js", Toast.LENGTH_LONG, GB.ERROR);
-        else if (line.charAt(0)=='{') {
+        else if (line.length() > 0 && line.charAt(0)=='{') {
             // JSON - we hope!
             try {
                 JSONObject json = new JSONObject(line);
@@ -152,24 +179,24 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             case "error":
                 GB.toast(getContext(), "Bangle.js: " + json.getString("msg"), Toast.LENGTH_LONG, GB.ERROR);
                 break;
+            case "ver": {
+                if (json.has("fw1"))
+                    getDevice().setFirmwareVersion(json.getString("fw1"));
+                if (json.has("fw2"))
+                    getDevice().setFirmwareVersion2(json.getString("fw2"));
+            } break;
             case "status": {
-                Context context = getContext();
+                GBDeviceEventBatteryInfo batteryInfo = new GBDeviceEventBatteryInfo();
                 if (json.has("bat")) {
                     int b = json.getInt("bat");
-                    if (b<0) b=0;
-                    if (b>100) b=100;
-                    gbDevice.setBatteryLevel((short)b);
-                    if (b < 30) {
-                        gbDevice.setBatteryState(BatteryState.BATTERY_LOW);
-                        GB.updateBatteryNotification(context.getString(R.string.notif_battery_low_percent, gbDevice.getName(), String.valueOf(b)), "", context);
-                    } else {
-                        gbDevice.setBatteryState(BatteryState.BATTERY_NORMAL);
-                        GB.removeBatteryNotification(context);
-                    }
+                    if (b < 0) b = 0;
+                    if (b > 100) b = 100;
+                    batteryInfo.level = b;
+                    batteryInfo.state = BatteryState.BATTERY_NORMAL;
                 }
                 if (json.has("volt"))
-                    gbDevice.setBatteryVoltage((float)json.getDouble("volt"));
-                gbDevice.sendDeviceUpdateIntent(context);
+                    batteryInfo.voltage = (float) json.getDouble("volt");
+                handleGBDeviceEvent(batteryInfo);
             } break;
             case "findPhone": {
                 boolean start = json.has("n") && json.getBoolean("n");
@@ -199,21 +226,47 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     deviceEvtNotificationControl.reply = json.getString("msg");
                 evaluateGBDeviceEvent(deviceEvtNotificationControl);
             } break;
-            /*case "activity": {
+            case "act": {
                 BangleJSActivitySample sample = new BangleJSActivitySample();
                 sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
-                sample.setHeartRate(json.getInteger("hrm"));
+                int hrm = 0;
+                int steps = 0;
+                if (json.has("hrm")) hrm = json.getInt("hrm");
+                if (json.has("stp")) steps = json.getInt("stp");
+                int activity = BangleJSSampleProvider.TYPE_ACTIVITY;
+                /*if (json.has("act")) {
+                    String actName = "TYPE_" + json.getString("act").toUpperCase();
+                    try {
+                        Field f = ActivityKind.class.getField(actName);
+                        try {
+                            activity = f.getInt(null);
+                        } catch (IllegalAccessException e) {
+                            LOG.info("JSON activity '"+actName+"' not readable");
+                        }
+                    } catch (NoSuchFieldException e) {
+                        LOG.info("JSON activity '"+actName+"' not found");
+                    }
+                }*/
+                sample.setRawKind(activity);
+                sample.setHeartRate(hrm);
+                sample.setSteps(steps);
                 try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                    Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
+                    Long userId = getUser(dbHandler.getDaoSession()).getId();
                     Long deviceId = DBHelper.getDevice(getDevice(), dbHandler.getDaoSession()).getId();
                     BangleJSSampleProvider provider = new BangleJSSampleProvider(getDevice(), dbHandler.getDaoSession());
                     sample.setDeviceId(deviceId);
                     sample.setUserId(userId);
                     provider.addGBActivitySample(sample);
                 } catch (Exception ex) {
-                    LOG.warn("Error saving current heart rate: " + ex.getLocalizedMessage());
+                    LOG.warn("Error saving activity: " + ex.getLocalizedMessage());
                 }
-            } break;*/
+                // push realtime data
+                if (realtimeHRM || realtimeStep) {
+                    Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
+                            .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
+                    LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+                }
+            } break;
         }
     }
 
@@ -225,6 +278,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
         if (BangleJSConstants.UUID_CHARACTERISTIC_NORDIC_UART_RX.equals(characteristic.getUuid())) {
             byte[] chars = characteristic.getValue();
+            // check to see if we get more data - if so, increase out MTU for sending
+            if (chars.length > mtuSize)
+                mtuSize = chars.length;
             String packetStr = new String(chars);
             LOG.info("RX: " + packetStr);
             receivedLine += packetStr;
@@ -239,7 +295,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
 
-    void setTime(TransactionBuilder builder) {
+    void transmitTime(TransactionBuilder builder) {
       long ts = System.currentTimeMillis();
       float tz = SimpleTimeZone.getDefault().getOffset(ts) / (1000 * 60 * 60.0f);
       // set time
@@ -290,7 +346,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     public void onSetTime() {
         try {
             TransactionBuilder builder = performInitialized("setTime");
-            setTime(builder);
+            transmitTime(builder);
             builder.queue(getQueue());
         } catch (Exception e) {
             GB.toast(getContext(), "Error setting time: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
@@ -352,8 +408,11 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         try {
             JSONObject o = new JSONObject();
             o.put("t", "musicstate");
+            int musicState = stateSpec.state;
             String[] musicStates = {"play", "pause", "stop", ""};
-            o.put("state", musicStates[stateSpec.state]);
+            if (musicState<0) musicState=3;
+            if (musicState>=musicStates.length) musicState = musicStates.length-1;
+            o.put("state", musicStates[musicState]);
             o.put("position", stateSpec.position);
             o.put("shuffle", stateSpec.shuffle);
             o.put("repeat", stateSpec.repeat);
@@ -380,9 +439,24 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
+    private void transmitActivityStatus() {
+        try {
+            JSONObject o = new JSONObject();
+            o.put("t", "act");
+            o.put("hrm", realtimeHRM);
+            o.put("stp", realtimeStep);
+            o.put("int", realtimeHRMInterval);
+            uartTxJSON("onEnableRealtimeSteps", o);
+        } catch (JSONException e) {
+            LOG.info("JSONException: " + e.getLocalizedMessage());
+        }
+    }
+
     @Override
     public void onEnableRealtimeSteps(boolean enable) {
-
+        if (enable == realtimeHRM) return;
+        realtimeStep = enable;
+        transmitActivityStatus();
     }
 
     @Override
@@ -432,7 +506,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onEnableRealtimeHeartRateMeasurement(boolean enable) {
-
+        if (enable == realtimeHRM) return;
+        realtimeHRM = enable;
+        transmitActivityStatus();
     }
 
     @Override
@@ -471,7 +547,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onSetHeartRateMeasurementInterval(int seconds) {
-
+        realtimeHRMInterval = seconds;
+        transmitActivityStatus();
     }
 
     @Override
@@ -506,6 +583,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("t", "weather");
             o.put("temp", weatherSpec.currentTemp);
             o.put("hum", weatherSpec.currentHumidity);
+            o.put("code", weatherSpec.currentConditionCode);
             o.put("txt", weatherSpec.currentCondition);
             o.put("wind", weatherSpec.windSpeed);
             o.put("wdir", weatherSpec.windDirection);
@@ -514,5 +592,69 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
+    }
+
+    /** Convert an Android bitmap to a base64 string for use in Espruino.
+     * Currently only 1bpp, no scaling */
+    public static String bitmapToEspruino(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        byte bmp[] = new byte[((height * width + 7) >> 3) + 3];
+        int n = 0, c = 0, cn = 0;
+        bmp[n++] = (byte)width;
+        bmp[n++] = (byte)height;
+        bmp[n++] = 1;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                boolean pixel = (bitmap.getPixel(x, y) & 255) > 128;
+                c = (c << 1) | (pixel?1:0);
+                cn++;
+                if (cn == 8) {
+                    bmp[n++] = (byte)c;
+                    cn = 0;
+                    c = 0;
+                }
+            }
+        }
+        if (cn > 0) bmp[n++] = (byte)c;
+        //LOG.info("BMP: " + width + "x"+height+" n "+n);
+        // Convert to base64
+        return Base64.encodeToString(bmp, Base64.DEFAULT).replaceAll("\n","");
+    }
+
+    /** Convert a drawable to a bitmap, for use with bitmapToEspruino */
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        final int maxWidth = 32;
+        final int maxHeight = 32;
+        /* Return bitmap directly but only if it's small enough. It could be
+        we have a bitmap but it's just too big to send direct to the bangle */
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bmp = bitmapDrawable.getBitmap();
+            if (bmp != null && bmp.getWidth()<=maxWidth && bmp.getHeight()<=maxHeight)
+                return bmp;
+        }
+        /* Otherwise render this to a bitmap ourselves.. work out size */
+        int w = maxWidth;
+        int h = maxHeight;
+        if (drawable.getIntrinsicWidth() > 0 && drawable.getIntrinsicHeight() > 0) {
+            w = drawable.getIntrinsicWidth();
+            h = drawable.getIntrinsicHeight();
+            // don't allocate anything too big, but keep the ratio
+            if (w>maxWidth) {
+                h = h * maxWidth / w;
+                w = maxWidth;
+            }
+            if (h>maxHeight) {
+                w = w * maxHeight / h;
+                h = maxHeight;
+            }
+        }
+        /* render */
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

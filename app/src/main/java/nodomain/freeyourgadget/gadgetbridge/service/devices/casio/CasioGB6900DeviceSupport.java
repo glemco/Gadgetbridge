@@ -1,5 +1,4 @@
-/*  Copyright (C) 2018-2020 Andreas Böhler, Sebastian Kranz
-    based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
+/*  Copyright (C) 2018-2021 Andreas Böhler, Sebastian Kranz, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -56,12 +55,13 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.InitOperationGB6900;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.SetAlarmOperation;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DISCONNECTNOTIF_NOSHED;
 
-public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
+public class CasioGB6900DeviceSupport extends CasioSupport {
     private static final Logger LOG = LoggerFactory.getLogger(CasioGB6900DeviceSupport.class);
 
     private final ArrayList<BluetoothGattCharacteristic> mCasioCharacteristics = new ArrayList<BluetoothGattCharacteristic>();
@@ -70,7 +70,6 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
     private MusicStateSpec mBufferMusicStateSpec = null;
     private BluetoothGatt mBtGatt = null;
     private CasioConstants.Model mModel = CasioConstants.Model.MODEL_CASIO_GENERIC;
-    private boolean mFirstConnect = false;
 
     private static final int mCasioSleepTime = 50;
 
@@ -82,7 +81,6 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
         addSupportedService(CasioConstants.CASIO_IMMEDIATE_ALERT_SERVICE_UUID);
         addSupportedService(CasioConstants.CURRENT_TIME_SERVICE_UUID);
         addSupportedService(CasioConstants.WATCH_CTRL_SERVICE_UUID);
-        addSupportedService(CasioConstants.WATCH_FEATURES_SERVICE_UUID);
         addSupportedService(CasioConstants.CASIO_PHONE_ALERT_STATUS_SERVICE);
         addSupportedService(CasioConstants.MORE_ALERT_SERVICE_UUID);
         addSupportedService(CasioConstants.TX_POWER_SERVICE_UUID);
@@ -141,8 +139,7 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
         LOG.info("Initializing");
 
         if(mFirstConnect) {
-            gbDevice.setState(GBDevice.State.INITIALIZED);
-            gbDevice.sendDeviceUpdateIntent(getContext());
+            setInitialized();
             getDevice().setFirmwareVersion("N/A");
             getDevice().setFirmwareVersion2("N/A");
             return builder;
@@ -154,19 +151,21 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
             mModel = CasioConstants.Model.MODEL_CASIO_5600B;
         } else if(name.contains("6900B")) {
             mModel = CasioConstants.Model.MODEL_CASIO_6900B;
+        } else if(name.contains("STB-1000")) {
+            mModel = CasioConstants.Model.MODEL_CASIO_STB1000;
         } else {
             mModel = CasioConstants.Model.MODEL_CASIO_GENERIC;
         }
 
-        try {
-            new InitOperationGB6900(this, builder).perform();
-        } catch (IOException e) {
-            GB.toast(getContext(), "Initializing Casio watch failed", Toast.LENGTH_SHORT, GB.ERROR, e);
+        // We skip configuring BLE settings for the STB-1000 since it powers off
+        // BLE on the watch.
+        if(mModel != CasioConstants.Model.MODEL_CASIO_STB1000) {
+            try {
+                new InitOperationGB6900(this, builder).perform();
+            } catch (IOException e) {
+                GB.toast(getContext(), "Initializing Casio watch failed", Toast.LENGTH_SHORT, GB.ERROR, e);
+            }
         }
-        /*
-        gbDevice.setState(GBDevice.State.INITIALIZING);
-        gbDevice.sendDeviceUpdateIntent(getContext());
-        */
 
         getDevice().setFirmwareVersion("N/A");
         getDevice().setFirmwareVersion2("N/A");
@@ -237,23 +236,7 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void writeCasioCurrentTime(TransactionBuilder builder) {
-        byte[] arr = new byte[10];
-        Calendar cal = Calendar.getInstance();
-
-        int year = cal.get(Calendar.YEAR);
-        arr[0] = (byte)((year >>> 0) & 0xff);
-        arr[1] = (byte)((year >>> 8) & 0xff);
-        arr[2] = (byte)(1 + cal.get(Calendar.MONTH));
-        arr[3] = (byte)cal.get(Calendar.DAY_OF_MONTH);
-        arr[4] = (byte)cal.get(Calendar.HOUR_OF_DAY);
-        arr[5] = (byte)cal.get(Calendar.MINUTE);
-        arr[6] = (byte)(1 + cal.get(Calendar.SECOND));
-        byte dayOfWk = (byte)(cal.get(Calendar.DAY_OF_WEEK) - 1);
-        if(dayOfWk == 0)
-            dayOfWk = 7;
-        arr[7] = dayOfWk;
-        arr[8] = (byte)(int) TimeUnit.MILLISECONDS.toSeconds(256 * cal.get(Calendar.MILLISECOND));
-        arr[9] = 1; // or 0?
+        byte[] arr = prepareCurrentTime();
 
         BluetoothGattCharacteristic charact = getCharacteristic(CasioConstants.CURRENT_TIME_CHARACTERISTIC_UUID);
         if(charact != null) {
@@ -487,22 +470,17 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public boolean useAutoConnect() {
-        return true;
-    }
-
-    @Override
     public void onNotification(NotificationSpec notificationSpec) {
         String notificationTitle = StringUtils.getFirstOf(notificationSpec.sender, notificationSpec.title);
         byte icon;
-        switch (notificationSpec.type) {
-            case GENERIC_SMS:
+        switch (notificationSpec.type.getGenericType()) {
+            case "generic_sms":
                 icon = CasioConstants.SMS_NOTIFICATION_ID;
                 break;
-            case GENERIC_CALENDAR:
+            case "generic_calendar":
                 icon = CasioConstants.CALENDAR_NOTIFICATION_ID;
                 break;
-            case GENERIC_EMAIL:
+            case "generic_email":
                 icon = CasioConstants.MAIL_NOTIFICATION_ID;
                 break;
             default:
@@ -513,39 +491,14 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onDeleteNotification(int id) {
-
-    }
-
-    @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
-        int alarmOffset = 4;
-        byte[] data = new byte[20];
-
         if(!isConnected())
             return;
 
-        for(int i=0; i<alarms.size(); i++)
-        {
-            Alarm alm = alarms.get(i);
-            if(alm.getEnabled()) {
-                data[i * alarmOffset] = 0x40;
-            } else {
-                data[i * alarmOffset] = 0;
-            }
-            if(alm.getRepetition(Alarm.ALARM_ONCE)) {
-                data[i * alarmOffset] |= 0x20;
-            }
-            data[i * alarmOffset + 1] = 0;
-            data[i * alarmOffset + 2] = (byte)alm.getHour();
-            data[i * alarmOffset + 3] = (byte)alm.getMinute();
-        }
         try {
-            TransactionBuilder builder = performInitialized("setAlarm");
-            builder.write(getCharacteristic(CasioConstants.CASIO_SETTING_FOR_ALM_CHARACTERISTIC_UUID), data);
-            builder.queue(getQueue());
-        } catch(IOException e) {
-            LOG.error("Error setting alarm: " + e.getMessage());
+            new SetAlarmOperation(this, alarms).perform();
+        } catch (IOException e) {
+            LOG.error("Setting alarm failed: " + e.getMessage());
         }
     }
 
@@ -574,11 +527,6 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
                 LOG.info("not sending CallSpec since only CALL_INCOMING is handled");
                 break;
         }
-    }
-
-    @Override
-    public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
-
     }
 
     @Override
@@ -631,60 +579,6 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onEnableRealtimeSteps(boolean enable) {
-    }
-
-    @Override
-    public void onInstallApp(Uri uri) {
-
-    }
-
-    @Override
-    public void onAppInfoReq() {
-
-    }
-
-    @Override
-    public void onAppStart(UUID uuid, boolean start) {
-
-    }
-
-    @Override
-    public void onAppDelete(UUID uuid) {
-
-    }
-
-    @Override
-    public void onAppConfiguration(UUID appUuid, String config, Integer id) {
-
-    }
-
-    @Override
-    public void onAppReorder(UUID[] uuids) {
-
-    }
-
-    @Override
-    public void onFetchRecordedData(int dataTypes) {
-
-    }
-
-    @Override
-    public void onReset(int flags) {
-
-    }
-
-    @Override
-    public void onHeartRateTest() {
-
-    }
-
-    @Override
-    public void onEnableRealtimeHeartRateMeasurement(boolean enable) {
-
-    }
-
-    @Override
     public void onFindDevice(boolean start) {
         if (!isConnected()) {
             return;
@@ -711,56 +605,6 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onSetConstantVibration(int integer) {
-
-    }
-
-    @Override
-    public void onScreenshotReq() {
-
-    }
-
-    @Override
-    public void onEnableHeartRateSleepSupport(boolean enable) {
-
-    }
-
-    @Override
-    public void onSetHeartRateMeasurementInterval(int seconds) {
-
-    }
-
-    @Override
-    public void onAddCalendarEvent(CalendarEventSpec calendarEventSpec) {
-
-    }
-
-    @Override
-    public void onDeleteCalendarEvent(byte type, long id) {
-
-    }
-
-    @Override
-    public void onSendConfiguration(String config) {
-
-    }
-
-    @Override
-    public void onReadConfiguration(String config) {
-
-    }
-
-    @Override
-    public void onTestNewFunction() {
-
-    }
-
-    @Override
-    public void onSendWeather(WeatherSpec weatherSpec) {
-
-    }
-
-    @Override
     public boolean onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic characteristic) {
 
         if (!characteristic.getUuid().equals(CasioConstants.NAME_OF_APP_CHARACTERISTIC_UUID)) {
@@ -778,6 +622,31 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
             LOG.warn("sendMusicInfo failed: " + e.getMessage());
         }
         return true;
+    }
+
+    private GBDeviceEventMusicControl.Event parse5Button(int button) {
+        GBDeviceEventMusicControl.Event event;
+        switch(button) {
+            case 5:
+                event = GBDeviceEventMusicControl.Event.PLAYPAUSE;
+                break;
+            case 4:
+                event = GBDeviceEventMusicControl.Event.NEXT;
+                break;
+            case 3:
+                event = GBDeviceEventMusicControl.Event.VOLUMEUP;
+                break;
+            case 2:
+                event = GBDeviceEventMusicControl.Event.PREVIOUS;
+                break;
+            case 1:
+                event = GBDeviceEventMusicControl.Event.VOLUMEDOWN;
+                break;
+            default:
+                LOG.warn("Unhandled button received: " + button);
+                event =  GBDeviceEventMusicControl.Event.UNKNOWN;
+        }
+        return event;
     }
 
     private GBDeviceEventMusicControl.Event parse3Button(int button) {
@@ -834,10 +703,11 @@ public class CasioGB6900DeviceSupport extends AbstractBTLEDeviceSupport {
                     musicCmd.event = parse2Button(button);
                     break;
                 case MODEL_CASIO_6900B:
-                    musicCmd.event = parse3Button(button);
-                    break;
                 case MODEL_CASIO_GENERIC:
                     musicCmd.event = parse3Button(button);
+                    break;
+                case MODEL_CASIO_STB1000:
+                    musicCmd.event = parse5Button(button);
                     break;
                 default:
                     LOG.warn("Unhandled device");

@@ -1,4 +1,5 @@
-/*  Copyright (C) 2019-2020 Daniel Dakhno
+/*  Copyright (C) 2019-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel
+    Dakhno, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -17,7 +18,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -57,6 +57,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
@@ -95,6 +96,8 @@ public class QHybridSupport extends QHybridBaseSupport {
     public static final String QHYBRID_COMMAND_SEND_MENU_ITEMS = "nodomain.freeyourgadget.gadgetbridge.Q_SEND_MENU_ITEMS";
     public static final String QHYBRID_COMMAND_SET_WIDGET_CONTENT = "nodomain.freeyourgadget.gadgetbridge.Q_SET_WIDGET_CONTENT";
     public static final String QHYBRID_COMMAND_SET_BACKGROUND_IMAGE = "nodomain.freeyourgadget.gadgetbridge.Q_SET_BACKGROUND_IMAGE";
+    public static final String QHYBRID_COMMAND_UNINSTALL_APP = "nodomain.freeyourgadget.gadgetbridge.Q_UNINSTALL_APP";
+    public static final String QHYBRID_COMMAND_PUSH_CONFIG = "nodomain.freeyourgadget.gadgetbridge.Q_PUSH_CONFIG";
 
     public static final String QHYBRID_COMMAND_DOWNLOAD_FILE = "nodomain.freeyourgadget.gadgetbridge.Q_DOWNLOAD_FILE";
     public static final String QHYBRID_COMMAND_UPLOAD_FILE = "nodomain.freeyourgadget.gadgetbridge.Q_UPLOAD_FILE";
@@ -159,6 +162,7 @@ public class QHybridSupport extends QHybridBaseSupport {
         commandFilter.addAction(QHYBRID_COMMAND_UPDATE_WIDGETS);
         commandFilter.addAction(QHYBRID_COMMAND_SEND_MENU_ITEMS);
         commandFilter.addAction(QHYBRID_COMMAND_SET_BACKGROUND_IMAGE);
+        commandFilter.addAction(QHYBRID_COMMAND_UNINSTALL_APP);
         commandFilter.addAction(QHYBRID_COMMAND_UPLOAD_FILE);
         commandFilter.addAction(QHYBRID_COMMAND_DOWNLOAD_FILE);
         commandReceiver = new BroadcastReceiver() {
@@ -282,17 +286,17 @@ public class QHybridSupport extends QHybridBaseSupport {
                         break;
                     }
                     case QHYBRID_COMMAND_UPLOAD_FILE:{
-                        Object handleObject = intent.getSerializableExtra("EXTRA_HANDLE");
-                        if(handleObject == null || !(handleObject instanceof FileHandle)) return;
-                        FileHandle handle = (FileHandle) handleObject;
-                        String filePath = intent.getStringExtra("EXTRA_PATH");
-                        watchAdapter.uploadFile(handle, filePath, intent.getBooleanExtra("EXTRA_ENCRYPTED", false));
+                        handleFileUploadIntent(intent);
+                        break;
+                    }
+                    case QHYBRID_COMMAND_UNINSTALL_APP:{
+                        watchAdapter.uninstallApp(intent.getStringExtra("EXTRA_APP_NAME"));
                         break;
                     }
                 }
             }
         };
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(commandReceiver, commandFilter);
+        LocalBroadcastManager.getInstance(GBApplication.getContext()).registerReceiver(commandReceiver, commandFilter);
 
         helper = new PackageConfigHelper(GBApplication.getContext());
 
@@ -300,6 +304,8 @@ public class QHybridSupport extends QHybridBaseSupport {
         globalFilter.addAction(QHYBRID_ACTION_SET_ACTIVITY_HAND);
         globalFilter.addAction(QHYBRID_COMMAND_SET_MENU_MESSAGE);
         globalFilter.addAction(QHYBRID_COMMAND_SET_WIDGET_CONTENT);
+        globalFilter.addAction(QHYBRID_COMMAND_UPLOAD_FILE);
+        globalFilter.addAction(QHYBRID_COMMAND_PUSH_CONFIG);
         globalCommandReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -362,10 +368,45 @@ public class QHybridSupport extends QHybridBaseSupport {
                         }
                         break;
                     }
+                    case QHYBRID_COMMAND_UPLOAD_FILE:{
+                        if(!dangerousIntentsAllowed()) break;
+                        handleFileUploadIntent(intent);
+                        break;
+                    }
+                    case QHYBRID_COMMAND_PUSH_CONFIG:{
+                        handleConfigSetIntent(intent);
+                        break;
+                    }
                 }
             }
         };
         GBApplication.getContext().registerReceiver(globalCommandReceiver, globalFilter);
+    }
+
+    private void handleConfigSetIntent(Intent intent) {
+        String configJson = intent.getExtras().getString("EXTRA_CONFIG_JSON", "{}");
+        watchAdapter.pushConfigJson(configJson);
+    }
+
+    private boolean dangerousIntentsAllowed(){
+        return GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS, true);
+    }
+
+    private void handleFileUploadIntent(Intent intent){
+        boolean generateHeader = intent.getBooleanExtra("EXTRA_GENERATE_FILE_HEADER", false);
+        String filePath = intent.getStringExtra("EXTRA_PATH");
+        if(!generateHeader){
+            watchAdapter.uploadFileIncludesHeader(filePath);
+            return;
+        }
+        Object handleObject = intent.getSerializableExtra("EXTRA_HANDLE");
+        if(handleObject == null)return;
+        if(handleObject instanceof String){
+            handleObject = FileHandle.fromName((String)handleObject);
+        }
+        if(!(handleObject instanceof FileHandle)) return;
+        FileHandle handle = (FileHandle) handleObject;
+        watchAdapter.uploadFileGenerateHeader(handle, filePath, intent.getBooleanExtra("EXTRA_ENCRYPTED", false));
     }
 
     @Override
@@ -683,7 +724,7 @@ public class QHybridSupport extends QHybridBaseSupport {
             notificationBuilder.addAction(0, "report", intent);
         }
 
-        ((NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE)).notify((int) System.currentTimeMillis(), notificationBuilder.build());
+        GB.notify((int) System.currentTimeMillis(), notificationBuilder.build(), getContext());
     }
 
     @Override
@@ -742,4 +783,37 @@ public class QHybridSupport extends QHybridBaseSupport {
         return watchAdapter.onCharacteristicChanged(gatt, characteristic);
     }
 
+    @Override
+    public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter){
+            ((FossilHRWatchAdapter) watchAdapter).setQuickRepliesConfiguration();
+        }
+    }
+
+    @Override
+    public void onAppInfoReq() {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter){
+            ((FossilHRWatchAdapter) watchAdapter).listApplications();
+        }
+    }
+
+    @Override
+    public void onAppStart(UUID uuid, boolean start) {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter) {
+            String appName = ((FossilHRWatchAdapter) watchAdapter).getInstalledAppNameFromUUID(uuid);
+            if (appName != null) {
+                ((FossilHRWatchAdapter) watchAdapter).activateWatchface(appName);
+            }
+        }
+    }
+
+    @Override
+    public void onAppDelete(UUID uuid) {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter) {
+            String appName = ((FossilHRWatchAdapter) watchAdapter).getInstalledAppNameFromUUID(uuid);
+            if (appName != null) {
+                watchAdapter.uninstallApp(appName);
+            }
+        }
+    }
 }

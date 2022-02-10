@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Daniele Gobbetti
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Daniele Gobbetti
 
     This file is part of Gadgetbridge.
 
@@ -39,12 +39,16 @@ public class AmazfitBipSFirmwareInfo extends HuamiFirmwareInfo {
         crcToVersion.put(63673, "2.1.1.26");
         crcToVersion.put(22035, "2.1.1.36");
         crcToVersion.put(21575, "2.1.1.46");
+        crcToVersion.put(61709, "2.1.1.72");
+        crcToVersion.put(21734, "2.1.1.76");
 
         // resources
         crcToVersion.put(61617, "2.1.1.08");
         crcToVersion.put(5887, "2.1.1.16");
         crcToVersion.put(15177, "2.1.1.26-36");
         crcToVersion.put(18775, "2.1.1.46");
+        crcToVersion.put(48133, "2.1.1.72");
+        crcToVersion.put(29102, "2.1.1.76");
 
         // font
         crcToVersion.put(62927, "3 (KO/JP)");
@@ -98,6 +102,9 @@ public class AmazfitBipSFirmwareInfo extends HuamiFirmwareInfo {
         }
         if (ArrayUtils.startsWith(bytes, GPS_CEP_HEADER)) {
             return HuamiFirmwareType.GPS_CEP;
+        }
+        if (ArrayUtils.startsWith(bytes, AGPS_UIHH_HEADER)) {
+            return HuamiFirmwareType.AGPS_UIHH;
         }
         if (ArrayUtils.startsWith(bytes, NEWFT_HEADER)) {
             if (bytes[10] == 0x01 || bytes[10] == 0x06 || bytes[10] == 0x03) {

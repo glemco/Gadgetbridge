@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Daniele Gobbetti, José Rebelo
+/*  Copyright (C) 2015-2021 Andreas Shimokawa, Daniele Gobbetti, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -24,7 +24,8 @@ import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 public class GBDeviceEventBatteryInfo extends GBDeviceEvent {
     public GregorianCalendar lastChargeTime = null;
     public BatteryState state = BatteryState.UNKNOWN;
-    public short level = 50;
+    public int batteryIndex = 0;
+    public int level = 50;
     public int numCharges = -1;
     public float voltage = -1f;
 

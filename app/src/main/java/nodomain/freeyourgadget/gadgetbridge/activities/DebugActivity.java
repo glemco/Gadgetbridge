@@ -18,11 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
+import static android.content.Intent.EXTRA_SUBJECT;
+import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_ID;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,13 +35,22 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.NavUtils;
@@ -51,27 +65,43 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
+import java.util.TreeMap;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.Widget;
+import nodomain.freeyourgadget.gadgetbridge.adapter.SpinnerWithIconAdapter;
+import nodomain.freeyourgadget.gadgetbridge.adapter.SpinnerWithIconItem;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
+import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
+import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
-
-import static android.content.Intent.EXTRA_SUBJECT;
-import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_ID;
+import nodomain.freeyourgadget.gadgetbridge.util.WidgetPreferenceStorage;
 
 public class DebugActivity extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(DebugActivity.class);
+
+    private static Bundle dataLossSave;
 
     private static final String EXTRA_REPLY = "reply";
     private static final String ACTION_REPLY
@@ -98,6 +128,10 @@ public class DebugActivity extends AbstractGBActivity {
     };
     private Spinner sendTypeSpinner;
     private EditText editContent;
+    public static final long SELECT_DEVICE = 999L;
+    private long selectedTestDeviceKey = SELECT_DEVICE;
+    private String selectedTestDeviceMAC;
+
 
     private void handleRealtimeSample(Serializable extra) {
         if (extra instanceof ActivitySample) {
@@ -119,7 +153,7 @@ public class DebugActivity extends AbstractGBActivity {
 
         editContent = findViewById(R.id.editContent);
 
-        ArrayList<String> spinnerArray = new ArrayList<>();
+        final ArrayList<String> spinnerArray = new ArrayList<>();
         for (NotificationType notificationType : NotificationType.values()) {
             spinnerArray.add(notificationType.name());
         }
@@ -333,6 +367,207 @@ public class DebugActivity extends AbstractGBActivity {
                 showWarning();
             }
         });
+
+        Button showWidgetsButton = findViewById(R.id.showWidgetsButton);
+        showWidgetsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAllRegisteredAppWidgets();
+            }
+        });
+
+        Button unregisterWidgetsButton = findViewById(R.id.deleteWidgets);
+        unregisterWidgetsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                unregisterAllRegisteredAppWidgets();
+            }
+        });
+
+        Button showWidgetsPrefsButton = findViewById(R.id.showWidgetsPrefs);
+        showWidgetsPrefsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAppWidgetsPrefs();
+            }
+        });
+
+        Button deleteWidgetsPrefsButton = findViewById(R.id.deleteWidgetsPrefs);
+        deleteWidgetsPrefsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteWidgetsPrefs();
+            }
+        });
+
+        Button removeDevicePreferencesButton = findViewById(R.id.removeDevicePreferences);
+        removeDevicePreferencesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = getApplicationContext();
+                GBApplication gbApp = (GBApplication) context;
+                final GBDevice device = gbApp.getDeviceManager().getSelectedDevice();
+                if (device != null) {
+                    GBApplication.deleteDeviceSpecificSharedPrefs(device.getAddress());
+                }
+            }
+        });
+
+        Button runDebugFunction = findViewById(R.id.runDebugFunction);
+        runDebugFunction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //SharedPreferences.Editor editor = GBApplication.getPrefs().getPreferences().edit();
+                //editor.remove("notification_list_is_blacklist").apply();
+            }
+        });
+
+        Button addDeviceButtonDebug = findViewById(R.id.addDeviceButtonDebug);
+        addDeviceButtonDebug.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinkedHashMap<String, Pair<Long, Integer>> allDevices;
+                allDevices = getAllSupportedDevices(getApplicationContext());
+
+                final LinearLayout linearLayout = new LinearLayout(DebugActivity.this);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+                final LinearLayout macLayout = new LinearLayout(DebugActivity.this);
+                macLayout.setOrientation(LinearLayout.HORIZONTAL);
+                macLayout.setPadding(20, 0, 20, 0);
+
+                final TextView textView = new TextView(DebugActivity.this);
+                textView.setText("MAC Address: ");
+                final EditText editText = new EditText(DebugActivity.this);
+                selectedTestDeviceMAC = randomMac();
+                editText.setText(selectedTestDeviceMAC);
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        selectedTestDeviceMAC = editable.toString();
+
+                    }
+                });
+
+                macLayout.addView(textView);
+                macLayout.addView(editText);
+
+                final Spinner deviceListSpinner = new Spinner(DebugActivity.this);
+                ArrayList<SpinnerWithIconItem> deviceListArray = new ArrayList<>();
+                for (Map.Entry<String, Pair<Long, Integer>> item : allDevices.entrySet()) {
+                    deviceListArray.add(new SpinnerWithIconItem(item.getKey(), item.getValue().first, item.getValue().second));
+                }
+                final SpinnerWithIconAdapter deviceListAdapter = new SpinnerWithIconAdapter(DebugActivity.this,
+                        R.layout.spinner_with_image_layout, R.id.spinner_item_text, deviceListArray);
+                deviceListSpinner.setAdapter(deviceListAdapter);
+                addListenerOnSpinnerDeviceSelection(deviceListSpinner);
+
+                linearLayout.addView(deviceListSpinner);
+                linearLayout.addView(macLayout);
+
+                new AlertDialog.Builder(DebugActivity.this)
+                        .setCancelable(true)
+                        .setTitle(R.string.add_test_device)
+                        .setView(linearLayout)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                createTestDevice(DebugActivity.this, selectedTestDeviceKey, selectedTestDeviceMAC);
+                            }
+                        })
+                        .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        CheckBox activity_list_debug_extra_time_range = findViewById(R.id.activity_list_debug_extra_time_range);
+        activity_list_debug_extra_time_range.setAllCaps(true);
+        boolean activity_list_debug_extra_time_range_value = GBApplication.getPrefs().getPreferences().getBoolean("activity_list_debug_extra_time_range", false);
+        activity_list_debug_extra_time_range.setChecked(activity_list_debug_extra_time_range_value);
+
+        activity_list_debug_extra_time_range.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                GBApplication.getPrefs().getPreferences().getBoolean("activity_list_debug_extra_time_range", false);
+                SharedPreferences.Editor editor = GBApplication.getPrefs().getPreferences().edit();
+                editor.putBoolean("activity_list_debug_extra_time_range", b).apply();
+            }
+        });
+
+    }
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (dataLossSave != null ) {
+            dataLossSave.clear();
+            dataLossSave = null ;
+        }
+        dataLossSave = new Bundle();
+        dataLossSave.putString("editContent", editContent.getText().toString());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (dataLossSave != null ) {
+            editContent.setText(dataLossSave.getString("editContent", ""));
+        }else{
+            editContent.setText("Test");
+        }
+    }
+
+    private void deleteWidgetsPrefs() {
+        WidgetPreferenceStorage widgetPreferenceStorage = new WidgetPreferenceStorage();
+        widgetPreferenceStorage.deleteWidgetsPrefs(DebugActivity.this);
+        widgetPreferenceStorage.showAppWidgetsPrefs(DebugActivity.this);
+    }
+
+    private void showAppWidgetsPrefs() {
+        WidgetPreferenceStorage widgetPreferenceStorage = new WidgetPreferenceStorage();
+        widgetPreferenceStorage.showAppWidgetsPrefs(DebugActivity.this);
+
+    }
+
+    private void showAllRegisteredAppWidgets() {
+        //https://stackoverflow.com/questions/17387191/check-if-a-widget-is-exists-on-homescreen-using-appwidgetid
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(DebugActivity.this);
+        AppWidgetHost appWidgetHost = new AppWidgetHost(DebugActivity.this, 1); // for removing phantoms
+        int[] appWidgetIDs = appWidgetManager.getAppWidgetIds(new ComponentName(DebugActivity.this, Widget.class));
+        GB.toast("Number of registered app widgets: " + appWidgetIDs.length, Toast.LENGTH_SHORT, GB.INFO);
+        for (int appWidgetID : appWidgetIDs) {
+            GB.toast("Widget: " + appWidgetID, Toast.LENGTH_SHORT, GB.INFO);
+        }
+    }
+
+    private void unregisterAllRegisteredAppWidgets() {
+        //https://stackoverflow.com/questions/17387191/check-if-a-widget-is-exists-on-homescreen-using-appwidgetid
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(DebugActivity.this);
+        AppWidgetHost appWidgetHost = new AppWidgetHost(DebugActivity.this, 1); // for removing phantoms
+        int[] appWidgetIDs = appWidgetManager.getAppWidgetIds(new ComponentName(DebugActivity.this, Widget.class));
+        GB.toast("Number of registered app widgets: " + appWidgetIDs.length, Toast.LENGTH_SHORT, GB.INFO);
+        for (int appWidgetID : appWidgetIDs) {
+            appWidgetHost.deleteAppWidgetId(appWidgetID);
+            GB.toast("Removing widget: " + appWidgetID, Toast.LENGTH_SHORT, GB.INFO);
+        }
     }
 
     private void showWarning() {
@@ -383,8 +618,6 @@ public class DebugActivity extends AbstractGBActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
                 notificationIntent, 0);
 
-        NotificationManager nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_REPLY)
                 .build();
 
@@ -408,9 +641,7 @@ public class DebugActivity extends AbstractGBActivity {
                 .setContentIntent(pendingIntent)
                 .extend(wearableExtender);
 
-        if (nManager != null) {
-            nManager.notify((int) System.currentTimeMillis(), ncomp.build());
-        }
+        GB.notify((int) System.currentTimeMillis(), ncomp.build(), this);
     }
 
     private void testPebbleKitNotification() {
@@ -435,6 +666,82 @@ public class DebugActivity extends AbstractGBActivity {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         unregisterReceiver(mReceiver);
+    }
+
+    private void addListenerOnSpinnerDeviceSelection(Spinner spinner) {
+        spinner.setOnItemSelectedListener(new CustomOnDeviceSelectedListener());
+    }
+
+    protected static void createTestDevice(Context context, long deviceKey, String deviceMac) {
+        if (deviceKey == SELECT_DEVICE) {
+            return;
+        }
+        DeviceType deviceType = DeviceType.fromKey((int) deviceKey);
+        try (
+            DBHandler db = GBApplication.acquireDB()) {
+            DaoSession daoSession = db.getDaoSession();
+            GBDevice gbDevice = new GBDevice(deviceMac, deviceType.name(), "", deviceType);
+            gbDevice.setFirmwareVersion("N/A");
+            gbDevice.setFirmwareVersion2("N/A");
+
+            //this causes the attributes (fw version) to be stored as well. Not much useful, but still...
+            gbDevice.setState(GBDevice.State.INITIALIZED);
+
+            Device device = DBHelper.getDevice(gbDevice, daoSession); //the addition happens here
+            Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(refreshIntent);
+            GB.toast(context, "Added test device: " + deviceType.name(), Toast.LENGTH_SHORT, GB.INFO);
+
+        } catch (
+                Exception e) {
+            GB.log("Error accessing database", GB.ERROR, e);
+        }
+    }
+
+    private String randomMac() {
+        Random random = new Random();
+        String separator = ":";
+        String[] mac = {
+                String.format("%02x", random.nextInt(0xff)),
+                String.format("%02x", random.nextInt(0xff)),
+                String.format("%02x", random.nextInt(0xff)),
+                String.format("%02x", random.nextInt(0xff)),
+                String.format("%02x", random.nextInt(0xff)),
+                String.format("%02x", random.nextInt(0xff))
+        };
+        return TextUtils.join(separator, mac).toUpperCase(Locale.ROOT);
+    }
+
+    public static LinkedHashMap getAllSupportedDevices(Context appContext) {
+        LinkedHashMap<String, Pair<Long, Integer>> newMap = new LinkedHashMap<>(1);
+        GBApplication app = (GBApplication) appContext;
+        for (DeviceCoordinator coordinator : DeviceHelper.getInstance().getAllCoordinators()) {
+            DeviceType deviceType = coordinator.getDeviceType();
+            int icon = deviceType.getIcon();
+            String name = app.getString(deviceType.getName()) + " (" + coordinator.getManufacturer() + ")";
+            long deviceId = deviceType.getKey();
+            newMap.put(name, new Pair(deviceId, icon));
+        }
+        TreeMap <String, Pair<Long, Integer>> sortedMap = new TreeMap<>(newMap);
+        newMap = new LinkedHashMap<>(1);
+        newMap.put(app.getString(R.string.widget_settings_select_device_title), new Pair(SELECT_DEVICE, R.drawable.ic_device_unknown));
+        newMap.putAll(sortedMap);
+
+        return newMap;
+    }
+
+    public class CustomOnDeviceSelectedListener implements AdapterView.OnItemSelectedListener {
+
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            SpinnerWithIconItem selectedItem = (SpinnerWithIconItem) parent.getItemAtPosition(pos);
+            selectedTestDeviceKey = selectedItem.getId();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+            // TODO Auto-generated method stub
+        }
+
     }
 
 }

@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -56,9 +57,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -80,7 +85,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.SwipeEvents;
-//import nodomain.freeyourgadget.gadgetbridge.util.OnSwipeTouchListener;
 
 public class ActivitySummaryDetail extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(ActivitySummaryDetail.class);
@@ -89,6 +93,10 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
     private boolean show_raw_data = false;
     private int alternateColor;
     private Menu mOptionsMenu;
+    List<String> filesGpxList = new ArrayList<>();
+    int selectedGpxIndex;
+    String selectedGpxFile;
+    File export_path = null;
 
     public static int getAlternateColor(Context context) {
         TypedValue typedValue = new TypedValue();
@@ -218,7 +226,6 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
             } else {
                 hideCanvas();
             }
-
         }
 
 
@@ -274,6 +281,59 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                         .show();
             }
         });
+        ImageView activity_summary_detail_edit_gps = findViewById(R.id.activity_summary_detail_edit_gps);
+        activity_summary_detail_edit_gps.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                export_path = get_path();
+                filesGpxList = get_gpx_file_list();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySummaryDetail.this);
+                builder.setTitle(R.string.activity_summary_detail_select_gpx_track);
+                ArrayAdapter<String> directory_listing = new ArrayAdapter<String>(ActivitySummaryDetail.this, android.R.layout.simple_list_item_1, filesGpxList);
+                builder.setSingleChoiceItems(directory_listing, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedGpxIndex = which;
+                        selectedGpxFile = export_path + "/" + filesGpxList.get(selectedGpxIndex);
+                        String message = String.format("%s %s?", getString(R.string.set), filesGpxList.get(selectedGpxIndex));
+                        if (selectedGpxIndex == 0) {
+                            selectedGpxFile = null;
+                            message = String.format("%s?", getString(R.string.activity_summary_detail_clear_gpx_track));
+                        }
+
+                        new AlertDialog.Builder(ActivitySummaryDetail.this)
+                                .setCancelable(true)
+                                .setIcon(R.drawable.ic_warning)
+                                .setTitle(R.string.activity_summary_detail_editing_gpx_track)
+                                .setMessage(message)
+                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        currentItem.setGpxTrack(selectedGpxFile);
+                                        currentItem.update();
+                                        if (get_gpx_file() != null) {
+                                            showCanvas();
+                                            activitySummariesGpsFragment.set_data(get_gpx_file());
+                                        } else {
+                                            hideCanvas();
+                                        }
+                                    }
+                                })
+                                .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .show();
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
 
     private void makeSummaryHeader(BaseActivitySummary item) {
@@ -310,8 +370,53 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
 
     }
 
+    private File get_path() {
+        File path = null;
+        try {
+            path = FileUtils.getExternalFilesDir();
+        } catch (IOException e) {
+            LOG.error("Error getting path", e);
+        }
+        return path;
+    }
+
+    private List<String> get_gpx_file_list() {
+        List<String> list = new ArrayList<>();
+
+        File[] fileListing = export_path.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.getPath().toLowerCase().endsWith(".gpx");
+            }
+        });
+
+        if (fileListing != null && fileListing.length > 1) {
+            Arrays.sort(fileListing, new Comparator<File>() {
+                @Override
+                public int compare(File fileA, File fileB) {
+                    if (fileA.lastModified() < fileB.lastModified()) {
+                        return 1;
+                    }
+                    if (fileA.lastModified() > fileB.lastModified()) {
+                        return -1;
+                    }
+                    return 0;
+                }
+            });
+        }
+
+        list.add(getString(R.string.activity_summary_detail_clear_gpx_track));
+
+        for (File file : fileListing) {
+            list.add(file.getName());
+        }
+        return list;
+    }
+
     private void makeSummaryContent(BaseActivitySummary item) {
         //make view of data from summaryData of item
+        String units = GBApplication.getPrefs().getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, GBApplication.getContext().getString(R.string.p_unit_metric));
+        String UNIT_IMPERIAL = GBApplication.getContext().getString(R.string.p_unit_imperial);
 
         TableLayout fieldLayout = findViewById(R.id.summaryDetails);
         fieldLayout.removeAllViews(); //remove old widgets
@@ -349,27 +454,56 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                         double value = innerData.getDouble("value");
 
                         if (!show_raw_data) {
-                            //special casing here:
+                            //special casing here + imperial units handling
                             switch (unit) {
-                                case "meters_second":
-                                    value = value * 3.6;
-                                    unit = "km_h";
-                                    break;
-                                case "seconds_m":
-                                    value = value * (1000 / 60D);
-                                    unit = "minutes_km";
-                                    break;
-                                case "seconds_km":
-                                    value = value / 60;
-                                    unit = "minutes_km";
-                                    break;
-                                case "meters":
-                                    if (value > 2000) {
-                                        value = value / 1000;
-                                        unit = "km";
+                                case "cm":
+                                    if (units.equals(UNIT_IMPERIAL)) {
+                                        value = value * 0.0328084;
+                                        unit = "ft";
                                     }
                                     break;
-
+                                case "meters_second":
+                                    if (units.equals(UNIT_IMPERIAL)) {
+                                        value = value * 2.236936D;
+                                        unit = "mi_h";
+                                    } else { //metric
+                                        value = value * 3.6;
+                                        unit = "km_h";
+                                    }
+                                    break;
+                                case "seconds_m":
+                                    if (units.equals(UNIT_IMPERIAL)) {
+                                        value = value * (1609.344 / 60D);
+                                        unit = "minutes_mi";
+                                    } else { //metric
+                                        value = value * (1000 / 60D);
+                                        unit = "minutes_km";
+                                    }
+                                    break;
+                                case "seconds_km":
+                                    if (units.equals(UNIT_IMPERIAL)) {
+                                        value = value / 60D * 1.609344;
+                                        unit = "minutes_mi";
+                                    } else { //metric
+                                        value = value / 60D;
+                                        unit = "minutes_km";
+                                    }
+                                    break;
+                                case "meters":
+                                    if (units.equals(UNIT_IMPERIAL)) {
+                                        value = value * 3.28084D;
+                                        unit = "ft";
+                                        if (value > 6000) {
+                                            value = value * 0.0001893939D;
+                                            unit = "mi";
+                                        }
+                                    } else { //metric
+                                        if (value > 2000) {
+                                            value = value / 1000;
+                                            unit = "km";
+                                        }
+                                    }
+                                    break;
                             }
                         }
 
@@ -443,7 +577,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
             shareScreenshot(targetFile, context);
             GB.toast(getApplicationContext(), "Screenshot saved", Toast.LENGTH_LONG, GB.INFO);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error getting screenshot", e);
         }
     }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer
 
     This file is part of Gadgetbridge.
 
@@ -48,11 +48,11 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 public class InitOperation extends AbstractBTLEOperation<HuamiSupport> {
     private static final Logger LOG = LoggerFactory.getLogger(InitOperation.class);
 
-    private final TransactionBuilder builder;
+    protected final TransactionBuilder builder;
     private final boolean needsAuth;
     private final byte authFlags;
     private final byte cryptFlags;
-    private final HuamiSupport huamiSupport;
+    protected final HuamiSupport huamiSupport;
 
     public InitOperation(boolean needsAuth, byte authFlags, byte cryptFlags, HuamiSupport support, TransactionBuilder builder) {
         super(support);
@@ -87,7 +87,7 @@ public class InitOperation extends AbstractBTLEOperation<HuamiSupport> {
         }
     }
 
-    private byte[] getSecretKey() {
+    protected byte[] getSecretKey() {
         byte[] authKeyBytes = new byte[]{0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45};
 
         SharedPreferences sharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());

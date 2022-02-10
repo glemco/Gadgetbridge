@@ -1,6 +1,7 @@
-/*  Copyright (C) 2016-2020 Andreas Böhler, Andreas Shimokawa, Carsten
+/*  Copyright (C) 2016-2021 Andreas Böhler, Andreas Shimokawa, Carsten
     Pfeiffer, Daniele Gobbetti, José Rebelo
-        based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
+
+    based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
 
     This file is part of Gadgetbridge.
 
@@ -26,12 +27,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
+
+import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioConstants;
+import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioGBX100SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.CasioGBX100ActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -47,7 +51,9 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         String name = candidate.getDevice().getName();
         if (name != null) {
-            if (name.startsWith("CASIO") && name.endsWith("GBX-100")) {
+            if (name.startsWith("CASIO") && (name.endsWith("GBX-100") ||
+                    name.endsWith("GBD-200") || name.endsWith("GBD-100") ||
+                    name.endsWith("GBD-H1000"))) {
                 return DeviceType.CASIOGBX100;
             }
         }
@@ -57,7 +63,7 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public int getBondingStyle(){
-        return BONDING_STYLE_NONE;
+        return BONDING_STYLE_LAZY;
     }
 
     @Override
@@ -97,17 +103,17 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsActivityDataFetching() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supportsActivityTracking() {
-        return false;
+        return true;
     }
 
     @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
-        return null;
+        return new CasioGBX100SampleProvider(device, session);
     }
 
     @Override
@@ -147,14 +153,23 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
-
+        Long deviceId = device.getId();
+        QueryBuilder<?> qb = session.getCasioGBX100ActivitySampleDao().queryBuilder();
+        qb.where(CasioGBX100ActivitySampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_find_phone,
-                R.xml.devicesettings_wearlocation
+                R.xml.devicesettings_wearlocation,
+                R.xml.devicesettings_timeformat,
+                R.xml.devicesettings_autolight,
+                R.xml.devicesettings_key_vibration,
+                R.xml.devicesettings_operating_sounds,
+                R.xml.devicesettings_fake_ring_duration,
+                R.xml.devicesettings_autoremove_message,
+                R.xml.devicesettings_transliteration
         };
     }
 }

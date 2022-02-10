@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Carsten Pfeiffer
 
     This file is part of Gadgetbridge.
 
@@ -28,9 +28,12 @@ public enum HuamiSportsActivityType {
     OpenWaterSwimming(7),
     IndoorCycling(8),
     EllipticalTrainer(9),
+    OutdoorHiking(15),
+    Climbing(10),
     Soccer(0x12),
     JumpRope(0x15),
     RowingMachine(0x17),
+    StrengthTraining(0x34),
     Yoga(0x3c),
     Cricket(0x4e),
     Basketball(0x55),
@@ -48,6 +51,10 @@ public enum HuamiSportsActivityType {
         switch (this) {
             case OutdoorRunning:
                 return ActivityKind.TYPE_RUNNING;
+            case OutdoorHiking:
+                return ActivityKind.TYPE_HIKING;
+            case Climbing:
+                return ActivityKind.TYPE_CLIMBING;
             case Treadmill:
                 return ActivityKind.TYPE_TREADMILL;
             case Cycling:
@@ -80,6 +87,8 @@ public enum HuamiSportsActivityType {
                 return ActivityKind.TYPE_PINGPONG;
             case Badminton:
                 return ActivityKind.TYPE_BADMINTON;
+            case StrengthTraining:
+                return ActivityKind.TYPE_STRENGTH_TRAINING;
         }
         throw new RuntimeException("Not mapped activity kind for: " + this);
     }
@@ -97,6 +106,10 @@ public enum HuamiSportsActivityType {
         switch (activityKind) {
             case ActivityKind.TYPE_RUNNING:
                 return OutdoorRunning;
+            case ActivityKind.TYPE_HIKING:
+                return OutdoorHiking;
+            case ActivityKind.TYPE_CLIMBING:
+                return Climbing;
             case ActivityKind.TYPE_TREADMILL:
                 return Treadmill;
             case ActivityKind.TYPE_CYCLING:
@@ -129,6 +142,8 @@ public enum HuamiSportsActivityType {
                 return PingPong;
             case ActivityKind.TYPE_BADMINTON:
                 return Badminton;
+            case ActivityKind.TYPE_STRENGTH_TRAINING:
+                return StrengthTraining;
 
         }
         throw new RuntimeException("No matching activity activityKind: " + activityKind);

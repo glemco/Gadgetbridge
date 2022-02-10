@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
+/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniele
     Gobbetti, Vadim Kaushan
 
     This file is part of Gadgetbridge.
@@ -160,7 +160,8 @@ public class ID115Coordinator extends AbstractDeviceCoordinator {
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_wearlocation,
-                R.xml.devicesettings_screenorientation
+                R.xml.devicesettings_screenorientation,
+                R.xml.devicesettings_transliteration
         };
     }
 }

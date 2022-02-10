@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2020 Carsten Pfeiffer, Daniele Gobbetti, José Rebelo
+/*  Copyright (C) 2016-2021 Carsten Pfeiffer, Daniele Gobbetti, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -82,7 +82,7 @@ public abstract class BtClassicIoThread extends GBDeviceIoThread {
             LOG.error("mOutStream is null");
             return;
         }
-        LOG.debug("writing:" + GB.hexdump(bytes, 0, bytes.length));
+        LOG.debug("writing: {}", GB.hexdump(bytes, 0, bytes.length));
         try {
             mOutStream.write(bytes);
             mOutStream.flush();
@@ -161,7 +161,7 @@ public abstract class BtClassicIoThread extends GBDeviceIoThread {
             mOutStream = mBtSocket.getOutputStream();
             setUpdateState(GBDevice.State.CONNECTED);
         } catch (IOException e) {
-            LOG.error("Server socket cannot be started.");
+            LOG.error("Server socket cannot be started.", e);
             //LOG.error(e.getMessage());
             setUpdateState(originalState);
             mInStream = null;
@@ -170,10 +170,14 @@ public abstract class BtClassicIoThread extends GBDeviceIoThread {
             return false;
         }
 
-        write(mProtocol.encodeSetTime());
-        setUpdateState(GBDevice.State.INITIALIZED);
+        initialize();
 
         return true;
+    }
+
+    protected void initialize() {
+        write(mProtocol.encodeSetTime());
+        setUpdateState(GBDevice.State.INITIALIZED);
     }
 
     /**

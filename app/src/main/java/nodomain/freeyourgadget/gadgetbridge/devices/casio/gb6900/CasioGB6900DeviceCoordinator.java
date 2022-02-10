@@ -1,6 +1,7 @@
-/*  Copyright (C) 2016-2020 Andreas Böhler, Andreas Shimokawa, Carsten
+/*  Copyright (C) 2016-2021 Andreas Böhler, Andreas Shimokawa, Carsten
     Pfeiffer, Daniele Gobbetti, José Rebelo
-        based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
+
+    based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
 
     This file is part of Gadgetbridge.
 
@@ -47,7 +48,8 @@ public class CasioGB6900DeviceCoordinator extends AbstractDeviceCoordinator {
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         String name = candidate.getDevice().getName();
         if (name != null) {
-            if (name.startsWith("CASIO") && (name.contains("6900B") || name.contains("5600B"))) {
+            if (name.startsWith("CASIO") && (name.contains("6900B") || name.contains("5600B") ||
+                    name.contains("STB-1000"))) {
                 return DeviceType.CASIOGB6900;
             }
         }
@@ -153,7 +155,8 @@ public class CasioGB6900DeviceCoordinator extends AbstractDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[] {
-                R.xml.devicesettings_disconnectnotification_noshed
+                R.xml.devicesettings_disconnectnotification_noshed,
+                R.xml.devicesettings_transliteration
         };
     }
 }

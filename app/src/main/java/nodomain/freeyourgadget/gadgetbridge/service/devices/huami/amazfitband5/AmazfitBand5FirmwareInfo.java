@@ -1,4 +1,5 @@
-/*  Copyright (C) 2020 Andreas Shimokawa
+/*  Copyright (C) 2017-2021 Andreas Shimokawa, Cristian Alfano, Daniele
+    Gobbetti, odavo32nof
 
     This file is part of Gadgetbridge.
 
@@ -54,7 +55,7 @@ public class AmazfitBand5FirmwareInfo extends HuamiFirmwareInfo {
             }
             return HuamiFirmwareType.INVALID;
         }
-        if (ArrayUtils.startsWith(bytes, WATCHFACE_HEADER_UIHH)) {
+        if (ArrayUtils.startsWith(bytes, UIHH_HEADER) && (bytes[4] == 1 || bytes[4] == 2)) {
             return HuamiFirmwareType.WATCHFACE;
         }
         if (ArrayUtils.startsWith(bytes, NEWFT_HEADER)) {
