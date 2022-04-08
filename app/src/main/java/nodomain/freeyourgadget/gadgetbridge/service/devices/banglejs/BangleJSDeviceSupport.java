@@ -31,13 +31,22 @@ import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -77,6 +86,9 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.*;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSDeviceSupport.class);
@@ -161,15 +173,20 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             // JSON - we hope!
             try {
                 JSONObject json = new JSONObject(line);
+                LOG.info("UART RX JSON parsed successfully");
                 handleUartRxJSON(json);
             } catch (JSONException e) {
+                LOG.info("UART RX JSON parse failure: "+ e.getLocalizedMessage());
                 GB.toast(getContext(), "Malformed JSON from Bangle.js: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
             }
+        } else {
+            LOG.info("UART RX line started with "+(int)line.charAt(0)+" - ignoring");
         }
     }
 
     private void handleUartRxJSON(JSONObject json) throws JSONException {
-        switch (json.getString("t")) {
+        String packetType = json.getString("t");
+        switch (packetType) {
             case "info":
                 GB.toast(getContext(), "Bangle.js: " + json.getString("msg"), Toast.LENGTH_LONG, GB.INFO);
                 break;
@@ -193,6 +210,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     if (b > 100) b = 100;
                     batteryInfo.level = b;
                     batteryInfo.state = BatteryState.BATTERY_NORMAL;
+                }
+                if (json.has("chg") && json.getInt("chg") == 1) {
+                    batteryInfo.state = BatteryState.BATTERY_CHARGING;
                 }
                 if (json.has("volt"))
                     batteryInfo.voltage = (float) json.getDouble("volt");
@@ -267,6 +287,58 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
                 }
             } break;
+            case "http": {
+                // FIXME: This should be behind a default-off option in Gadgetbridge settings
+                RequestQueue queue = Volley.newRequestQueue(getContext());
+                String url = json.getString("url");
+                String _xmlPath = "";
+                try { _xmlPath = json.getString("xpath"); } catch (JSONException e) {}
+                final String xmlPath = _xmlPath;
+                // Request a string response from the provided URL.
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                JSONObject o = new JSONObject();
+                                if (xmlPath.length()!=0) {
+                                  try {
+                                    InputSource inputXML = new InputSource( new StringReader( response ) );
+                                    XPath xPath = XPathFactory.newInstance().newXPath();
+                                    response = xPath.evaluate(xmlPath, inputXML);                                  
+                                  } catch (Exception error) {
+                                    try {
+                                      o.put("err", error.toString());
+                                    } catch (JSONException e) {
+                                        GB.toast(getContext(), "HTTP: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                                    }
+                                  }
+                                }
+                                try {
+                                    o.put("t", "http");
+                                    o.put("resp", response);
+                                } catch (JSONException e) {
+                                    GB.toast(getContext(), "HTTP: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                                }
+                                uartTxJSON("http", o);
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        JSONObject o = new JSONObject();
+                        try {
+                            o.put("t", "http");
+                            o.put("err", error.toString());
+                        } catch (JSONException e) {
+                            GB.toast(getContext(), "HTTP: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                        }
+                        uartTxJSON("http", o);
+                    }
+                });
+                queue.add(stringRequest);
+            } break;
+            default : {
+                LOG.info("UART RX JSON packet type '"+packetType+"' not understood.");
+            }
         }
     }
 
@@ -367,9 +439,10 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 jsonalarms.put(jsonalarm);
 
                 Calendar calendar = AlarmUtils.toCalendar(alarm);
-                // TODO: getRepetition to ensure it only happens on correct day?
+
                 jsonalarm.put("h", alarm.getHour());
                 jsonalarm.put("m", alarm.getMinute());
+                jsonalarm.put("rep", alarm.getRepetition());
             }
             uartTxJSON("onSetAlarms", o);
         } catch (JSONException e) {
