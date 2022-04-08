@@ -56,6 +56,7 @@ public interface DeviceService extends EventHandler {
     String ACTION_SET_CONSTANT_VIBRATION = PREFIX + ".action.set_constant_vibration";
     String ACTION_SET_ALARMS = PREFIX + ".action.set_alarms";
     String ACTION_SAVE_ALARMS = PREFIX + ".action.save_alarms";
+    String ACTION_SET_REMINDERS = PREFIX + ".action.set_reminders";
     String ACTION_ENABLE_REALTIME_STEPS = PREFIX + ".action.enable_realtime_steps";
     String ACTION_REALTIME_SAMPLES = PREFIX + ".action.realtime_samples";
     String ACTION_ENABLE_REALTIME_HEARTRATE_MEASUREMENT = PREFIX + ".action.realtime_hr_measurement";
@@ -69,6 +70,7 @@ public interface DeviceService extends EventHandler {
     String ACTION_TEST_NEW_FUNCTION = PREFIX + ".action.test_new_function";
     String ACTION_SET_FM_FREQUENCY = PREFIX + ".action.set_fm_frequency";
     String ACTION_SET_LED_COLOR = PREFIX + ".action.set_led_color";
+    String ACTION_POWER_OFF = PREFIX + ".action.power_off";
     String EXTRA_NOTIFICATION_BODY = "notification_body";
     String EXTRA_NOTIFICATION_FLAGS = "notification_flags";
     String EXTRA_NOTIFICATION_ID = "notification_id";
@@ -83,6 +85,7 @@ public interface DeviceService extends EventHandler {
     String EXTRA_NOTIFICATION_PEBBLE_COLOR = "notification_pebble_color";
     String EXTRA_NOTIFICATION_ICONID = "notification_iconid";
     String EXTRA_NOTIFICATION_ICONB64 = "notification_iconb64";
+    String EXTRA_NOTIFICATION_DNDSUPPRESSED = "notification_dndsuppressed";
     String EXTRA_FIND_START = "find_start";
     String EXTRA_VIBRATION_INTENSITY = "vibration_intensity";
     String EXTRA_CALL_COMMAND = "call_command";
@@ -108,6 +111,7 @@ public interface DeviceService extends EventHandler {
     String EXTRA_URI = "uri";
     String EXTRA_CONFIG = "config";
     String EXTRA_ALARMS = "alarms";
+    String EXTRA_REMINDERS = "reminders";
     String EXTRA_CONNECT_FIRST_TIME = "connect_first_time";
     String EXTRA_BOOLEAN_ENABLE = "enable_realtime_steps";
     String EXTRA_INTERVAL_SECONDS = "interval_seconds";

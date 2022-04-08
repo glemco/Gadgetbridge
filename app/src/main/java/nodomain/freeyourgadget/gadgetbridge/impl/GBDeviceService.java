@@ -41,6 +41,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
@@ -53,14 +54,11 @@ public class GBDeviceService implements DeviceService {
     protected final Context mContext;
     private final Class<? extends Service> mServiceClass;
     public static final String[] transliterationExtras = new String[]{
-            EXTRA_NOTIFICATION_PHONENUMBER,
             EXTRA_NOTIFICATION_SENDER,
             EXTRA_NOTIFICATION_SUBJECT,
             EXTRA_NOTIFICATION_TITLE,
             EXTRA_NOTIFICATION_BODY,
             EXTRA_NOTIFICATION_SOURCENAME,
-            EXTRA_NOTIFICATION_ICONID,
-            EXTRA_CALL_PHONENUMBER,
             EXTRA_CALL_DISPLAYNAME,
             EXTRA_MUSIC_ARTIST,
             EXTRA_MUSIC_ALBUM,
@@ -139,13 +137,17 @@ public class GBDeviceService implements DeviceService {
 
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
+        boolean hideMessageDetails = GBApplication.getPrefs().getString("pref_message_privacy_mode",
+                GBApplication.getContext().getString(R.string.p_message_privacy_mode_off))
+                .equals(GBApplication.getContext().getString(R.string.p_message_privacy_mode_complete));
+
         Intent intent = createIntent().setAction(ACTION_NOTIFICATION)
                 .putExtra(EXTRA_NOTIFICATION_FLAGS, notificationSpec.flags)
-                .putExtra(EXTRA_NOTIFICATION_PHONENUMBER, notificationSpec.phoneNumber)
-                .putExtra(EXTRA_NOTIFICATION_SENDER, coalesce(notificationSpec.sender, getContactDisplayNameByNumber(notificationSpec.phoneNumber)))
-                .putExtra(EXTRA_NOTIFICATION_SUBJECT, notificationSpec.subject)
-                .putExtra(EXTRA_NOTIFICATION_TITLE, notificationSpec.title)
-                .putExtra(EXTRA_NOTIFICATION_BODY, notificationSpec.body)
+                .putExtra(EXTRA_NOTIFICATION_PHONENUMBER, hideMessageDetails ? null : notificationSpec.phoneNumber)
+                .putExtra(EXTRA_NOTIFICATION_SENDER, hideMessageDetails ? null : coalesce(notificationSpec.sender, getContactDisplayNameByNumber(notificationSpec.phoneNumber)))
+                .putExtra(EXTRA_NOTIFICATION_SUBJECT, hideMessageDetails ? null : notificationSpec.subject)
+                .putExtra(EXTRA_NOTIFICATION_TITLE, hideMessageDetails ? null : notificationSpec.title)
+                .putExtra(EXTRA_NOTIFICATION_BODY, hideMessageDetails ? null : notificationSpec.body)
                 .putExtra(EXTRA_NOTIFICATION_ID, notificationSpec.getId())
                 .putExtra(EXTRA_NOTIFICATION_TYPE, notificationSpec.type)
                 .putExtra(EXTRA_NOTIFICATION_ACTIONS, notificationSpec.attachedActions)
@@ -153,7 +155,8 @@ public class GBDeviceService implements DeviceService {
                 .putExtra(EXTRA_NOTIFICATION_PEBBLE_COLOR, notificationSpec.pebbleColor)
                 .putExtra(EXTRA_NOTIFICATION_SOURCEAPPID, notificationSpec.sourceAppId)
                 .putExtra(EXTRA_NOTIFICATION_ICONID, notificationSpec.iconId)
-                .putExtra(EXTRA_NOTIFICATION_ICONB64, notificationSpec.iconB64);
+                .putExtra(EXTRA_NOTIFICATION_ICONB64, notificationSpec.iconB64)
+                .putExtra(EXTRA_NOTIFICATION_DNDSUPPRESSED, notificationSpec.dndSuppressed);                
         invokeService(intent);
     }
 
@@ -173,7 +176,8 @@ public class GBDeviceService implements DeviceService {
                 .putExtra(EXTRA_NOTIFICATION_PEBBLE_COLOR, notificationSpec.pebbleColor)
                 .putExtra(EXTRA_NOTIFICATION_SOURCEAPPID, notificationSpec.sourceAppId)
                 .putExtra(EXTRA_NOTIFICATION_ICONID, notificationSpec.iconId)
-                .putExtra(EXTRA_NOTIFICATION_ICONB64, notificationSpec.iconB64);
+                .putExtra(EXTRA_NOTIFICATION_ICONB64, notificationSpec.iconB64)
+                .putExtra(EXTRA_NOTIFICATION_DNDSUPPRESSED, notificationSpec.dndSuppressed);
         invokeService(intent);
     }
 
@@ -239,6 +243,13 @@ public class GBDeviceService implements DeviceService {
                 .putExtra(EXTRA_MUSIC_STATE, stateSpec.state)
                 .putExtra(EXTRA_MUSIC_SHUFFLE, stateSpec.shuffle)
                 .putExtra(EXTRA_MUSIC_POSITION, stateSpec.position);
+        invokeService(intent);
+    }
+
+    @Override
+    public void onSetReminders(ArrayList<? extends Reminder> reminders) {
+        Intent intent = createIntent().setAction(ACTION_SET_REMINDERS)
+                .putExtra(EXTRA_REMINDERS, reminders);
         invokeService(intent);
     }
 
@@ -459,6 +470,12 @@ public class GBDeviceService implements DeviceService {
     public void onSetLedColor(int color) {
         Intent intent = createIntent().setAction(ACTION_SET_LED_COLOR)
                 .putExtra(EXTRA_LED_COLOR, color);
+        invokeService(intent);
+    }
+
+    @Override
+    public void onPowerOff() {
+        Intent intent = createIntent().setAction(ACTION_POWER_OFF);
         invokeService(intent);
     }
 }

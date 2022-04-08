@@ -17,7 +17,6 @@ vendor's servers.
 [![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Gadgetbridge/donate)
 
 
-[![Build](https://travis-ci.org/Freeyourgadget/Gadgetbridge.svg?branch=master)](https://travis-ci.org/Freeyourgadget/Gadgetbridge)
 [![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/Freeyourgadget/Gadgetbridge.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Freeyourgadget/Gadgetbridge/context:java)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/Freeyourgadget/Gadgetbridge.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Freeyourgadget/Gadgetbridge/alerts)
 [![Translate](https://hosted.weblate.org/widgets/freeyourgadget/-/gadgetbridge/svg-badge.svg)](https://hosted.weblate.org/projects/freeyourgadget/gadgetbridge)
@@ -42,13 +41,25 @@ vendor's servers.
 	- T-Rex [**\[!\]**](#special-pairing-procedures)
 	- Verge Lite [**\[!\]**](#special-pairing-procedures)
 	- [X ](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-5) [**\[!\]**](#special-pairing-procedures)
+- [Bangle.js](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Bangle.js)
 - BFH-16
-- Casio
-	- [GB-5600B/GB-6900B/GB-X6900B](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Casio-GB-5600B%2FGB-6900B%2FGB-X6900B)
-	- [GBX-100](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Casio-GBX-100)
+- [Casio](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Casio)
+    - Casio GB-X6900B
+    - Casio GB-6900B
+    - Casio GB-5600B
+    - Casio STB-1000
+    - Casio GBX-100
+    - Casio GBD-100
+    - Casio GBD-200
+    - Casio GBD-H1000
+- [FitPro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/FitPro)
 - Fossil
 	- [Hybrid HR](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Fossil-Hybrid-HR) [**\[!\]**](#special-pairing-procedures)
 	- Q Hybrid
+- [Galaxy Buds](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds)
+    - [Galaxy Buds](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#user-content-galaxy-buds)
+    - [Galaxy Buds Live](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#user-content-galaxy-buds-live)
+
 - [HPlus Devices (e.g. ZeBand)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/HPlus)
 - ID115
 - [iTag](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/iTag)
@@ -65,11 +76,14 @@ vendor's servers.
 	- Scale 2 (Currently only displays a toast after stepping on the scale)
 - [MyKronoz ZeTime](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/MyKronoz-ZeTime)
 - NO.1 F1
+- [Nothing Ear (1)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Nothing-Ear-%281%29)
 - [Nut Mini 3, Nut 2 and possibly others](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Nut)
 - Pebble
 	- [Pebble, Steel, Time, Time Steel, Time Round, 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Pebble)
 - PineTime (InfiniTime Firmware)
+- Roidmi, Roidmi 3, Mojietu 3 (Bluetooth FM Transmitters)
 - [SMA](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/SMA) Q2 (SMA-Q2-OSS Firmware)
+- [Sony WH-1000XM3, WH-1000XM4, WF-SP800N](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)
 - Teclast H10, H30
 - TLW64
 - Vibratissimo (Experimental)
@@ -94,6 +108,7 @@ Please see [FEATURES.md](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/ma
 * Andreas Shimokawa
 * Carsten Pfeiffer
 * Daniele Gobbetti
+* Petr Vaněk
 
 ### Additional device support
 * João Paulo Barraca (HPlus)

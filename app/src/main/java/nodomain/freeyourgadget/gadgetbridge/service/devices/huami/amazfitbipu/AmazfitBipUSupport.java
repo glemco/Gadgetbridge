@@ -24,11 +24,18 @@ import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbipu.AmazfitBipUFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2020;
 
 public class AmazfitBipUSupport extends AmazfitBipSSupport {
+
+    @Override
+    protected HuamiSupport setLanguage(TransactionBuilder builder) {
+        return setLanguageByIdNew(builder);
+    }
 
     @Override
     public boolean supportsSunriseSunsetWindHumidity() {

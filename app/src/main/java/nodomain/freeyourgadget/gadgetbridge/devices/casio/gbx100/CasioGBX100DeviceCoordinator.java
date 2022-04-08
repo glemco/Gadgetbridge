@@ -51,7 +51,9 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         String name = candidate.getDevice().getName();
         if (name != null) {
-            if (name.startsWith("CASIO") && name.endsWith("GBX-100")) {
+            if (name.startsWith("CASIO") && (name.endsWith("GBX-100") ||
+                    name.endsWith("GBD-200") || name.endsWith("GBD-100") ||
+                    name.endsWith("GBD-H1000"))) {
                 return DeviceType.CASIOGBX100;
             }
         }
@@ -61,7 +63,7 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public int getBondingStyle(){
-        return BONDING_STYLE_NONE;
+        return BONDING_STYLE_LAZY;
     }
 
     @Override
@@ -166,7 +168,8 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
                 R.xml.devicesettings_key_vibration,
                 R.xml.devicesettings_operating_sounds,
                 R.xml.devicesettings_fake_ring_duration,
-                R.xml.devicesettings_autoremove_message
+                R.xml.devicesettings_autoremove_message,
+                R.xml.devicesettings_transliteration
         };
     }
 }

@@ -171,9 +171,12 @@ public class NotificationListener extends NotificationListenerService {
                         LOG.info("could not lookup handle for mute action");
                         break;
                     }
-
                     LOG.info("going to mute " + packageName);
-                    GBApplication.addAppToNotifBlacklist(packageName);
+                    if (GBApplication.getPrefs().getString("notification_list_is_blacklist", "true").equals("true")) {
+                        GBApplication.addAppToNotifBlacklist(packageName);
+                    } else {
+                        GBApplication.removeFromAppsNotifBlacklist(packageName);
+                    }
                     break;
                 case ACTION_DISMISS: {
                     StatusBarNotification[] sbns = NotificationListener.this.getActiveNotifications();
@@ -266,11 +269,13 @@ public class NotificationListener extends NotificationListenerService {
      @Override
     public void onNotificationPosted(StatusBarNotification sbn, RankingMap rankingMap) {
         logNotification(sbn, true);
+        LOG.debug("notificationAppListIsBlackList: " + GBApplication.getPrefs().getString("notification_list_is_blacklist","true"));
+
 
         notificationStack.remove(sbn.getPackageName());
         notificationStack.add(sbn.getPackageName());
 
-        if (shouldIgnoreNotifications()) return;
+        if (isServiceNotRunningAndShouldIgnoreNotifications()) return;
 
         if (shouldIgnoreSource(sbn)) {
             LOG.debug("Ignoring notification source");
@@ -279,14 +284,19 @@ public class NotificationListener extends NotificationListenerService {
 
         if (handleMediaSessionNotification(sbn)) return;
 
+        int dndSuppressed = 0;
+        if (GBApplication.isRunningLollipopOrLater() && rankingMap != null) {
+            // Handle priority notifications for Do Not Disturb
+            Ranking ranking = new Ranking();
+            if (rankingMap.getRanking(sbn.getKey(), ranking)) {
+                if (!ranking.matchesInterruptionFilter()) dndSuppressed = 1;
+            }
+        }
+
         Prefs prefs = GBApplication.getPrefs();
         if (GBApplication.isRunningLollipopOrLater()) {
-            if (prefs.getBoolean("notification_filter", false) && rankingMap != null) {
-                // Handle priority notifications for Do Not Disturb
-                Ranking ranking = new Ranking();
-                if (rankingMap.getRanking(sbn.getKey(), ranking)) {
-                    if (!ranking.matchesInterruptionFilter()) return;
-                }
+            if (prefs.getBoolean("notification_filter", false) && dndSuppressed == 1) {
+                return;
             }
             if (NotificationCompat.CATEGORY_CALL.equals(sbn.getNotification().category)
                     && prefs.getBoolean("notification_support_voip_calls", false)
@@ -395,6 +405,7 @@ public class NotificationListener extends NotificationListenerService {
         }
 
         notificationSpec.attachedActions = new ArrayList<>();
+        notificationSpec.dndSuppressed = dndSuppressed;
 
         // DISMISS action
         NotificationSpec.Action dismissAction = new NotificationSpec.Action();
@@ -763,7 +774,7 @@ public class NotificationListener extends NotificationListenerService {
 
         notificationStack.remove(sbn.getPackageName());
 
-        if (shouldIgnoreNotifications()) return;
+        if (isServiceNotRunningAndShouldIgnoreNotifications()) return;
         if (shouldIgnoreSource(sbn)) return;
 
         if (handleMediaSessionNotification(sbn)) return;
@@ -838,7 +849,7 @@ public class NotificationListener extends NotificationListenerService {
     }
 
 
-    private boolean shouldIgnoreNotifications() {
+    private boolean isServiceNotRunningAndShouldIgnoreNotifications() {
         /*
          * return early if DeviceCommunicationService is not running,
          * else the service would get started every time we get a notification.
@@ -882,9 +893,19 @@ public class NotificationListener extends NotificationListenerService {
             }
         }
 
-        if (GBApplication.appIsNotifBlacklisted(source)) {
-            LOG.info("Ignoring notification, application is blacklisted");
-            return true;
+        if (GBApplication.getPrefs().getString("notification_list_is_blacklist", "true").equals("true")) {
+            if (GBApplication.appIsNotifBlacklisted(source)) {
+                LOG.info("Ignoring notification, application is blacklisted");
+                return true;
+            }
+        } else {
+            if (GBApplication.appIsNotifBlacklisted(source)) {
+                LOG.info("Allowing notification, application is whitelisted");
+                return false;
+            } else {
+                LOG.info("Ignoring notification, application is not whitelisted");
+                return true;
+            }
         }
 
         return false;
@@ -908,6 +929,7 @@ public class NotificationListener extends NotificationListenerService {
         String source = sbn.getPackageName();
         if (source.equals("de.dennisguse.opentracks")
                 || source.equals("de.dennisguse.opentracks.debug")
+                || source.equals("de.dennisguse.opentracks.nightly")
                 || source.equals("de.tadris.fitness")
                 || source.equals("de.tadris.fitness.debug")
         ) {

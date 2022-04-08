@@ -89,7 +89,7 @@ public class BLETypeConversions {
         return rawOffset;
     }
 
-    private static byte dayOfWeekToRawBytes(Calendar cal) {
+    public static byte dayOfWeekToRawBytes(Calendar cal) {
         int calValue = cal.get(Calendar.DAY_OF_WEEK);
         switch (calValue) {
             case Calendar.SUNDAY:
@@ -219,18 +219,21 @@ public class BLETypeConversions {
      * @return sint8 value from -48..+56
      */
     public static byte mapTimeZone(TimeZone timeZone) {
-        return mapTimeZone(timeZone, TZ_FLAG_NONE);
+        int offsetMillis = timeZone.getRawOffset();
+        int utcOffsetInQuarterHours = (offsetMillis / (1000 * 60 * 15));
+        return (byte) utcOffsetInQuarterHours;
     }
 
     /**
      * https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.time_zone.xml
-     * @param timeZone
+     *
+     * @param calendar
      * @return sint8 value from -48..+56
      */
-    public static byte mapTimeZone(TimeZone timeZone, int timezoneFlags) {
-        int offsetMillis = timeZone.getRawOffset();
+    public static byte mapTimeZone(Calendar calendar, int timezoneFlags) {
+        int offsetMillis = calendar.getTimeZone().getRawOffset();
         if (timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
-            offsetMillis += timeZone.getDSTSavings();
+            offsetMillis = calendar.getTimeZone().getOffset(calendar.getTimeInMillis());
         }
         int utcOffsetInQuarterHours = (offsetMillis / (1000 * 60 * 15));
         return (byte) utcOffsetInQuarterHours;

@@ -32,13 +32,22 @@ import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +62,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
@@ -80,6 +90,9 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.*;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSDeviceSupport.class);
     private BluetoothGattCharacteristic rxCharacteristic = null;
@@ -105,6 +118,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
         gbDevice.setState(GBDevice.State.INITIALIZING);
         gbDevice.sendDeviceUpdateIntent(getContext());
+        gbDevice.setBatteryThresholdPercent((short) 30);
 
         rxCharacteristic = getCharacteristic(BangleJSConstants.UUID_CHARACTERISTIC_NORDIC_UART_RX);
         txCharacteristic = getCharacteristic(BangleJSConstants.UUID_CHARACTERISTIC_NORDIC_UART_TX);
@@ -161,19 +175,24 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
         if (">Uncaught ReferenceError: \"GB\" is not defined".equals(line))
           GB.toast(getContext(), "Gadgetbridge plugin not installed on Bangle.js", Toast.LENGTH_LONG, GB.ERROR);
-        else if (line.charAt(0)=='{') {
+        else if (line.length() > 0 && line.charAt(0)=='{') {
             // JSON - we hope!
             try {
                 JSONObject json = new JSONObject(line);
+                LOG.info("UART RX JSON parsed successfully");
                 handleUartRxJSON(json);
             } catch (JSONException e) {
+                LOG.info("UART RX JSON parse failure: "+ e.getLocalizedMessage());
                 GB.toast(getContext(), "Malformed JSON from Bangle.js: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
             }
+        } else {
+            LOG.info("UART RX line started with "+(int)line.charAt(0)+" - ignoring");
         }
     }
 
     private void handleUartRxJSON(JSONObject json) throws JSONException {
-        switch (json.getString("t")) {
+        String packetType = json.getString("t");
+        switch (packetType) {
             case "info":
                 GB.toast(getContext(), "Bangle.js: " + json.getString("msg"), Toast.LENGTH_LONG, GB.INFO);
                 break;
@@ -190,23 +209,20 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     getDevice().setFirmwareVersion2(json.getString("fw2"));
             } break;
             case "status": {
-                Context context = getContext();
+                GBDeviceEventBatteryInfo batteryInfo = new GBDeviceEventBatteryInfo();
                 if (json.has("bat")) {
                     int b = json.getInt("bat");
-                    if (b<0) b=0;
-                    if (b>100) b=100;
-                    gbDevice.setBatteryLevel((short)b);
-                    if (b < 30) {
-                        gbDevice.setBatteryState(BatteryState.BATTERY_LOW);
-                        GB.updateBatteryNotification(context.getString(R.string.notif_battery_low_percent, gbDevice.getName(), String.valueOf(b)), "", context);
-                    } else {
-                        gbDevice.setBatteryState(BatteryState.BATTERY_NORMAL);
-                        GB.removeBatteryNotification(context);
-                    }
+                    if (b < 0) b = 0;
+                    if (b > 100) b = 100;
+                    batteryInfo.level = b;
+                    batteryInfo.state = BatteryState.BATTERY_NORMAL;
+                }
+                if (json.has("chg") && json.getInt("chg") == 1) {
+                    batteryInfo.state = BatteryState.BATTERY_CHARGING;
                 }
                 if (json.has("volt"))
-                    gbDevice.setBatteryVoltage((float)json.getDouble("volt"));
-                gbDevice.sendDeviceUpdateIntent(context);
+                    batteryInfo.voltage = (float) json.getDouble("volt");
+                handleGBDeviceEvent(batteryInfo);
             } break;
             case "findPhone": {
                 boolean start = json.has("n") && json.getBoolean("n");
@@ -277,6 +293,58 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
                 }
             } break;
+            case "http": {
+                // FIXME: This should be behind a default-off option in Gadgetbridge settings
+                RequestQueue queue = Volley.newRequestQueue(getContext());
+                String url = json.getString("url");
+                String _xmlPath = "";
+                try { _xmlPath = json.getString("xpath"); } catch (JSONException e) {}
+                final String xmlPath = _xmlPath;
+                // Request a string response from the provided URL.
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                JSONObject o = new JSONObject();
+                                if (xmlPath.length()!=0) {
+                                  try {
+                                    InputSource inputXML = new InputSource( new StringReader( response ) );
+                                    XPath xPath = XPathFactory.newInstance().newXPath();
+                                    response = xPath.evaluate(xmlPath, inputXML);                                  
+                                  } catch (Exception error) {
+                                    try {
+                                      o.put("err", error.toString());
+                                    } catch (JSONException e) {
+                                        GB.toast(getContext(), "HTTP: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                                    }
+                                  }
+                                }
+                                try {
+                                    o.put("t", "http");
+                                    o.put("resp", response);
+                                } catch (JSONException e) {
+                                    GB.toast(getContext(), "HTTP: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                                }
+                                uartTxJSON("http", o);
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        JSONObject o = new JSONObject();
+                        try {
+                            o.put("t", "http");
+                            o.put("err", error.toString());
+                        } catch (JSONException e) {
+                            GB.toast(getContext(), "HTTP: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                        }
+                        uartTxJSON("http", o);
+                    }
+                });
+                queue.add(stringRequest);
+            } break;
+            default : {
+                LOG.info("UART RX JSON packet type '"+packetType+"' not understood.");
+            }
         }
     }
 
@@ -418,9 +486,10 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 jsonalarms.put(jsonalarm);
 
                 Calendar calendar = AlarmUtils.toCalendar(alarm);
-                // TODO: getRepetition to ensure it only happens on correct day?
+
                 jsonalarm.put("h", alarm.getHour());
                 jsonalarm.put("m", alarm.getMinute());
+                jsonalarm.put("rep", alarm.getRepetition());
             }
             uartTxJSON("onSetAlarms", o);
         } catch (JSONException e) {
@@ -459,8 +528,11 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         try {
             JSONObject o = new JSONObject();
             o.put("t", "musicstate");
+            int musicState = stateSpec.state;
             String[] musicStates = {"play", "pause", "stop", ""};
-            o.put("state", musicStates[stateSpec.state]);
+            if (musicState<0) musicState=3;
+            if (musicState>=musicStates.length) musicState = musicStates.length-1;
+            o.put("state", musicStates[musicState]);
             o.put("position", stateSpec.position);
             o.put("shuffle", stateSpec.shuffle);
             o.put("repeat", stateSpec.repeat);
@@ -631,6 +703,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("t", "weather");
             o.put("temp", weatherSpec.currentTemp);
             o.put("hum", weatherSpec.currentHumidity);
+            o.put("code", weatherSpec.currentConditionCode);
             o.put("txt", weatherSpec.currentCondition);
             o.put("wind", weatherSpec.windSpeed);
             o.put("wdir", weatherSpec.windDirection);
@@ -671,23 +744,34 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     /** Convert a drawable to a bitmap, for use with bitmapToEspruino */
     public static Bitmap drawableToBitmap(Drawable drawable) {
+        final int maxWidth = 32;
+        final int maxHeight = 32;
+        /* Return bitmap directly but only if it's small enough. It could be
+        we have a bitmap but it's just too big to send direct to the bangle */
         if (drawable instanceof BitmapDrawable) {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if (bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
+            Bitmap bmp = bitmapDrawable.getBitmap();
+            if (bmp != null && bmp.getWidth()<=maxWidth && bmp.getHeight()<=maxHeight)
+                return bmp;
         }
-        int w = 24;
-        int h = 24;
+        /* Otherwise render this to a bitmap ourselves.. work out size */
+        int w = maxWidth;
+        int h = maxHeight;
         if (drawable.getIntrinsicWidth() > 0 && drawable.getIntrinsicHeight() > 0) {
             w = drawable.getIntrinsicWidth();
             h = drawable.getIntrinsicHeight();
-            // don't allocate anything too big
-            if (w>24) w=24;
-            if (h>24) h=24;
+            // don't allocate anything too big, but keep the ratio
+            if (w>maxWidth) {
+                h = h * maxWidth / w;
+                w = maxWidth;
+            }
+            if (h>maxHeight) {
+                w = w * maxHeight / h;
+                h = maxHeight;
+            }
         }
+        /* render */
         Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
-
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);

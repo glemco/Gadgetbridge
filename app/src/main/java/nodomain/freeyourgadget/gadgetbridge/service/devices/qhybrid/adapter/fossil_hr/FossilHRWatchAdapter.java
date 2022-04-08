@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.adapter.fossil_hr;
 
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.configuration.ConfigurationPutRequest.*;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.configuration.ConfigurationPutRequest.UnitsConfigItem;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.configuration.ConfigurationPutRequest.VibrationStrengthConfigItem;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.music.MusicControlRequest.MUSIC_PHONE_REQUEST;
@@ -62,6 +63,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,6 +89,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.NotificationListener;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
@@ -110,6 +114,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fos
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.application.ApplicationInformation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.application.ApplicationsListRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.async.ConfirmAppStatusRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.authentication.CheckDeviceNeedsConfirmationRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.authentication.ConfirmOnDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.authentication.VerifyPrivateKeyRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.buttons.ButtonConfiguration;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.buttons.ButtonConfigurationPutRequest;
@@ -138,6 +144,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fos
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.widget.CustomWidgetElement;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.widget.Widget;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.widget.WidgetsPutRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.workout.WorkoutRequestHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.misfit.FactoryResetRequest;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
@@ -205,15 +212,82 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     }
 
     public void listApplications() {
-        queueWrite(new ApplicationsListRequest(this));
+        queueWrite(new ApplicationsListRequest(this){
+            @Override
+            public void handleApplicationsList(List<ApplicationInformation> installedApplications) {
+                ((FossilHRWatchAdapter) getAdapter()).setInstalledApplications(installedApplications);
+                GBDevice device = getAdapter().getDeviceSupport().getDevice();
+                JSONArray array = new JSONArray();
+                for(ApplicationInformation info : installedApplications){
+                    array.put(info.getAppName());
+                }
+                device.addDeviceInfo(new GenericItem("INSTALLED_APPS", array.toString()));
+                device.sendDeviceUpdateIntent(getAdapter().getContext());
+            }
+        });
     }
 
     private void initializeAfterAuthentication(boolean authenticated) {
         queueWrite(new SetDeviceStateRequest(GBDevice.State.INITIALIZING));
 
-        if (!authenticated)
+        if (!authenticated) {
             GB.toast(getContext().getString(R.string.fossil_hr_auth_failed), Toast.LENGTH_LONG, GB.ERROR);
+            initializeAfterWatchConfirmation(false);
+            return;
+        }
+        boolean versionSupportsConfirmation = getCleanFWVersion().compareTo(new Version("1.0.2.22")) != -1;
+        if(!versionSupportsConfirmation){
+            initializeAfterWatchConfirmation(true);
+            return;
+        }
+        boolean shouldAuthenticateOnWatch = getDeviceSpecificPreferences().getBoolean("enable_on_device_confirmation", true);
+        if (!shouldAuthenticateOnWatch) {
+            GB.toast("Skipping on-device confirmation", Toast.LENGTH_SHORT, GB.INFO);
+            initializeAfterWatchConfirmation(false);
+            return;
+        }
+        confirmOnWatch();
+    }
 
+    TimerTask confirmTimeoutRunnable = new TimerTask() {
+        @Override
+        public void run() {
+            if (!(fossilRequest instanceof ConfirmOnDeviceRequest)) {
+                return;
+            }
+            GB.toast("Confirmation timeout, continuing", Toast.LENGTH_SHORT, GB.INFO);
+            ((ConfirmOnDeviceRequest) fossilRequest).onResult(false);
+        }
+    };
+
+    private void confirmOnWatch() {
+        queueWrite(new CheckDeviceNeedsConfirmationRequest() {
+            @Override
+            public void onResult(boolean needsConfirmation) {
+                GB.log("needs confirmation: " + needsConfirmation, GB.INFO, null);
+                if (needsConfirmation) {
+                    final Timer timer = new Timer();
+                    GB.toast("please confirm on device.", Toast.LENGTH_SHORT, GB.INFO);
+                    queueWrite(new ConfirmOnDeviceRequest() {
+                        @Override
+                        public void onResult(boolean confirmationSuccess) {
+                            isFinished = true;
+                            timer.cancel();
+                            if (!confirmationSuccess) {
+                                GB.toast("connection unconfirmed on watch, unauthenticated mode", Toast.LENGTH_LONG, GB.ERROR);
+                            }
+                            initializeAfterWatchConfirmation(confirmationSuccess);
+                        }
+                    }, true);
+                    timer.schedule(confirmTimeoutRunnable, 30000);
+                } else {
+                    initializeAfterWatchConfirmation(true);
+                }
+            }
+        });
+    }
+
+    private void initializeAfterWatchConfirmation(boolean authenticated) {
         setNotificationConfigurations();
         setQuickRepliesConfiguration();
 
@@ -294,9 +368,9 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         // Set default icons
         ArrayList<NotificationImage> images = new ArrayList<>();
         images.add(new NotificationImage("icIncomingCall.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_phone_outline)), 24, 24));
-        images.add(new NotificationImage("icMissedCall.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_phone_missed_outline)), 24,24));
-        images.add(new NotificationImage("icMessage.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_message_outline)),24,24));
-        images.add(new NotificationImage("general_white.bin", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_alert_circle_outline)),24,24));
+        images.add(new NotificationImage("icMissedCall.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_phone_missed_outline)), 24, 24));
+        images.add(new NotificationImage("icMessage.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_message_outline)), 24, 24));
+        images.add(new NotificationImage("general_white.bin", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_alert_circle_outline)), 24, 24));
 
         // Set default notification filters
         ArrayList<NotificationHRConfiguration> notificationFilters = new ArrayList<>();
@@ -326,7 +400,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     private String[] getQuickReplies() {
         ArrayList<String> configuredReplies = new ArrayList<>();
         Prefs prefs = new Prefs(getDeviceSpecificPreferences());
-        for (int i=1; i<=16; i++) {
+        for (int i = 1; i <= 16; i++) {
             String quickReply = prefs.getString("canned_message_dismisscall_" + i, null);
             if (quickReply != null) {
                 configuredReplies.add(quickReply);
@@ -1030,14 +1104,14 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             for (NotificationHRConfiguration configuration : this.notificationConfigurations) {
                 if (configuration.getPackageName().equals(sourceAppId)) {
                     LOG.info("Package found in notificationConfigurations, using custom icon: " + sourceAppId);
-                    queueWrite(new PlayTextNotificationRequest(sourceAppId, senderOrTitle, notificationSpec.body, notificationSpec.getId(), this));
+                    queueWrite(new PlayTextNotificationRequest(sourceAppId, senderOrTitle, notificationSpec, this));
                     packageFound = true;
                 }
             }
 
-            if(!packageFound) {
+            if (!packageFound) {
                 LOG.info("Package not found in notificationConfigurations, using generic icon: " + sourceAppId);
-                queueWrite(new PlayTextNotificationRequest("generic", senderOrTitle, notificationSpec.body, notificationSpec.getId(), this));
+                queueWrite(new PlayTextNotificationRequest("generic", senderOrTitle, notificationSpec, this));
             }
         } catch (Exception e) {
             LOG.error("Error while forwarding notification", e);
@@ -1224,39 +1298,13 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     @Override
     public void onTestNewFunction() {
-        /*queueWrite(new ButtonConfigurationPutRequest(
-                new String[]{"test"},
-                new ButtonConfiguration[]{
-                        new ButtonConfiguration(
-                            "short_press_release", "stopwatchApp"
-                        )
-                },
-                this
-        ));*/
-        /*queueWrite(new FileLookupAndGetRequest(FileHandle.APP_CODE, this) {
+        queueWrite((FileEncryptedInterface) new ConfigurationGetRequest(this){
             @Override
-            public void handleFileData(byte[] fileData) {
-                log("test");
+            protected void handleConfiguration(ConfigItem[] items) {
+                super.handleConfiguration(items);
+                LOG.debug(items[items.length - 1].toString());
             }
-
-            @Override
-            public void handleFileLookupError(FILE_LOOKUP_ERROR error) {
-
-            }
-        });*/
-        /*queueWrite(new TranslationsGetRequest(this){
-            @Override
-            public void handleTranslations(TranslationData translationData) {
-                translationData.replaceByOriginal("ON", "oi m8");
-                translationData.replaceByOriginal("OFF", "nah go away");
-                translationData.replaceByOriginal("Device is about to reset.", "oh frick no no no");
-                translationData.replaceByOriginal("Release button to stop reset.", "please don't let me die like that");
-                translationData.replaceByOriginal("Serial number", "Gadgetbridge :)");
-                translationData.replaceByOriginal("Dial Info", "Widgets");
-                TranslationsPutRequest request = new TranslationsPutRequest(translationData, FossilHRWatchAdapter.this);
-                queueWrite(request);
-            }
-        });*/
+        });
     }
 
     public byte[] getSecretKey() throws IllegalAccessException {
@@ -1277,6 +1325,12 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         }
 
         return authKeyBytes;
+    }
+
+    @Override
+    public void pushConfigJson(String configJson) {
+        configJson = configJson.replace("\n", "");
+        queueWrite(new JsonPutRequest(configJson, this));
     }
 
     public void setPhoneRandomNumber(byte[] phoneRandomNumber) {
@@ -1351,6 +1405,27 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         }
     }
 
+    private void setActivityRecognition(){
+        SharedPreferences prefs = getDeviceSpecificPreferences();
+        String modeRunning = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING, "none");
+        String modeBiking = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING, "none");
+        String modeWalking = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING, "none");
+        String modeRowing = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING, "none");
+
+        FitnessConfigItem fitnessConfigItem = new FitnessConfigItem(
+                !modeRunning.equals("none"),
+                modeRunning.equals("ask"),
+                !modeBiking.equals("none"),
+                modeBiking.equals("ask"),
+                !modeWalking.equals("none"),
+                modeWalking.equals("ask"),
+                !modeRowing.equals("none"),
+                modeRowing.equals("ask")
+        );
+
+        queueWrite((FileEncryptedInterface) new ConfigurationPutRequest(fitnessConfigItem, this));
+    }
+
     @Override
     public void onSendConfiguration(String config) {
         switch (config) {
@@ -1381,6 +1456,12 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             }
             case SettingsActivity.PREF_MEASUREMENT_SYSTEM:
                 setUnitsConfig();
+                break;
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING:
+                setActivityRecognition();
                 break;
         }
     }
@@ -1478,19 +1559,47 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                         return;
                     }
 
-                    queueWrite(new SetCommuteMenuMessage(getContext().getString(R.string.fossil_hr_commute_processing), false, this));
-
                     Intent menuIntent = new Intent(QHybridSupport.QHYBRID_EVENT_COMMUTE_MENU);
                     menuIntent.putExtra("EXTRA_ACTION", action);
                     getContext().sendBroadcast(menuIntent);
                 } else if (request.has("master._.config.app_status")) {
                     queueWrite(new ConfirmAppStatusRequest(requestId, this));
+                } else if (request.has("workoutApp")) {
+                    JSONObject workoutRequest = request.getJSONObject("workoutApp");
+                    String workoutState = workoutRequest.optString("state");
+                    String workoutType = workoutRequest.optString("type");
+                    LOG.info("Got workoutApp request, state=" + workoutState + ", type=" + workoutType);
+                    JSONObject workoutResponse = WorkoutRequestHandler.handleRequest(getContext(), requestId, workoutRequest);
+                    if (workoutResponse.length() > 0) {
+                        JSONObject responseObject = new JSONObject()
+                            .put("res", new JSONObject()
+                                .put("id", requestId)
+                                .put("set", workoutResponse)
+                            );
+                        queueWrite(new JsonPutRequest(responseObject, this));
+                    }
                 } else {
                     LOG.warn("Unhandled request from watch: " + requestJson.toString());
                 }
             } catch (JSONException e) {
                 LOG.error("Error while handling received characteristic", e);
             }
+        }
+    }
+
+    @Override
+    public void onFindDevice(boolean start) {
+        super.onFindDevice(start);
+
+        boolean versionSupportsConfirmation = getCleanFWVersion().compareTo(new Version("1.0.2.22")) != -1;
+
+        if(!versionSupportsConfirmation){
+            GB.toast("not supported in this version", Toast.LENGTH_SHORT, GB.ERROR);
+            return;
+        }
+
+        if (start) {
+            queueWrite(new ConfirmOnDeviceRequest());
         }
     }
 

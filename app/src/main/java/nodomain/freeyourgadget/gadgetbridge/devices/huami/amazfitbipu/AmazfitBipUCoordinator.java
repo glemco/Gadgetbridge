@@ -84,19 +84,59 @@ public class AmazfitBipUCoordinator extends HuamiCoordinator {
     }
 
     @Override
+    public boolean supportsUnicodeEmojis() {
+        return true;
+    }
+
+    @Override
+    public int getReminderSlotCount() {
+        return 0;
+    }
+
+    @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_amazfitbipu,
+                //R.xml.devicesettings_canned_dismisscall_16,
                 R.xml.devicesettings_timeformat,
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_custom_emoji_font,
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_reserve_reminders_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_high_mtu,
                 R.xml.devicesettings_device_actions,
-                R.xml.devicesettings_pairingkey
+                R.xml.devicesettings_pairingkey,
+                R.xml.devicesettings_transliteration
+        };
+    }
+
+    @Override
+    public String[] getSupportedLanguageSettings(GBDevice device) {
+        return new String[]{
+                "auto",
+                "cs_CZ",
+                "de_DE",
+                "el_GR",
+                "en_US",
+                "es_ES",
+                "fr_FR",
+                "id_ID",
+                "it_IT",
+                "ja_JP",
+                "ko_KO",
+                "nl_NL",
+                "pl_PL",
+                "pt_BR",
+                "ru_RU",
+                "th_TH",
+                "tr_TR",
+                "uk_UA",
+                "vi_VN",
+                "zh_CH",
+                "zh_TW",
         };
     }
 

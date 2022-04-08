@@ -100,11 +100,22 @@ public class AmazfitXCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_swipeunlock,
                 R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_reserve_reminders_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_pairingkey,
-                R.xml.devicesettings_high_mtu
+                R.xml.devicesettings_high_mtu,
+                R.xml.devicesettings_transliteration
+        };
+    }
+
+    public String[] getSupportedLanguageSettings(GBDevice device) {
+        return new String[]{
+                "auto",
+                "en_US",
+                "zh_CN",
+                "zh_TW",
         };
     }
 

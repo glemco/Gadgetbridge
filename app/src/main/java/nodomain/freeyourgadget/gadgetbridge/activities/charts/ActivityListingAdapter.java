@@ -31,6 +31,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySession;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.FormatUtils;
 
 public class ActivityListingAdapter extends AbstractActivityListingAdapter<ActivitySession> {
     public static final String CHART_COLOR_START = "#e74c3c";
@@ -41,8 +42,8 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
     private final int SESSION_EMPTY = ActivitySession.SESSION_EMPTY;
     ActivityUser activityUser = new ActivityUser();
     int stepsGoal = activityUser.getStepsGoal();
-    int distanceGoalMeters = activityUser.getDistanceMeters();
-    long activeTimeGoalTimeMillis = activityUser.getActiveTimeMinutes() * 60 * 1000L;
+    int distanceGoalMeters = activityUser.getDistanceGoalMeters();
+    long activeTimeGoalTimeMillis = activityUser.getActiveTimeGoalMinutes() * 60 * 1000L;
 
     public ActivityListingAdapter(Context context) {
         super(context);
@@ -247,37 +248,7 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
 
     @Override
     protected String getDistanceLabel(ActivitySession item) {
-        double distanceMeters = item.getDistance();
-        double distanceFeet = distanceMeters * 3.28084f;
-        double distanceFormatted = 0;
-
-        String unit = "###m";
-        distanceFormatted = distanceMeters;
-        if (distanceMeters > 2000) {
-            distanceFormatted = distanceMeters / 1000;
-            unit = "###.#km";
-        }
-
-        if (distanceMeters > 999000) {
-            distanceFormatted = distanceMeters / 1000;
-            unit = "###km";
-        }
-
-        String units = GBApplication.getPrefs().getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, GBApplication.getContext().getString(R.string.p_unit_metric));
-        if (units.equals(GBApplication.getContext().getString(R.string.p_unit_imperial))) {
-            unit = "###ft";
-            distanceFormatted = distanceFeet;
-            if (distanceFeet > 6000) {
-                distanceFormatted = distanceFeet * 0.0001893939f;
-                unit = "###.#mi";
-            }
-            if (distanceFeet > 5274721) {
-                distanceFormatted = distanceFeet * 0.0001893939f;
-                unit = "###mi";
-            }
-        }
-        DecimalFormat df = new DecimalFormat(unit);
-        return df.format(distanceFormatted);
+        return FormatUtils.getFormattedDistanceLabel(item.getDistance());
     }
 
     @Override

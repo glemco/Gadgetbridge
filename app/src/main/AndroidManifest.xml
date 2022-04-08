@@ -96,6 +96,10 @@
             android:label="@string/activity_prefs_charts"
             android:parentActivityName=".activities.charts.ChartsPreferencesActivity" />
         <activity
+            android:name=".activities.DiscoveryPairingPreferenceActivity"
+            android:label="@string/activity_prefs_discovery_pairing"
+            android:parentActivityName=".activities.SettingsActivity" />
+        <activity
             android:name=".devices.miband.MiBandPreferencesActivity"
             android:label="@string/preferences_miband_settings"
             android:parentActivityName=".activities.SettingsActivity" />
@@ -114,12 +118,16 @@
             android:parentActivityName=".activities.ControlCenterv2" />
         <activity
             android:name=".activities.AppBlacklistActivity"
-            android:label="@string/title_activity_appblacklist"
+            android:label="@string/title_activity_notification_management"
             android:parentActivityName=".activities.SettingsActivity" />
         <activity
             android:name=".activities.CalBlacklistActivity"
             android:label="@string/title_activity_calblacklist"
             android:parentActivityName=".activities.SettingsActivity" />
+        <activity
+            android:name=".devices.vesc.VescControlActivity"
+            android:label="@string/devicetype_vesc"
+            android:parentActivityName=".activities.ControlCenterv2" />
         <activity
             android:name=".activities.FwAppInstallerActivity"
             android:label="@string/title_activity_fw_app_insaller"
@@ -448,6 +456,11 @@
             android:parentActivityName=".activities.ControlCenterv2"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".activities.NotificationManagementActivity"
+            android:label="@string/title_activity_notification_management"
+            android:parentActivityName=".activities.ControlCenterv2"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".activities.DiscoveryActivity"
             android:label="@string/title_activity_discovery"
             android:parentActivityName=".activities.ControlCenterv2" />
@@ -481,6 +494,10 @@
             android:label="@string/title_activity_set_alarm"
             android:parentActivityName=".activities.ControlCenterv2" />
         <activity
+            android:name=".activities.ConfigureReminders"
+            android:label="@string/title_activity_set_reminders"
+            android:parentActivityName=".activities.ControlCenterv2" />
+        <activity
             android:name=".activities.devicesettings.DeviceSettingsActivity"
             android:label="@string/title_activity_device_specific_settings"
             android:parentActivityName=".activities.ControlCenterv2" />
@@ -489,6 +506,12 @@
             android:label="@string/title_activity_alarm_details"
             android:parentActivityName=".activities.ConfigureAlarms"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ReminderDetails"
+            android:label="@string/title_activity_reminder_details"
+            android:parentActivityName=".activities.ConfigureReminders"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.VibrationActivity"
             android:label="@string/title_activity_vibration"
@@ -504,7 +527,7 @@
 
         <provider
             android:name=".contentprovider.PebbleContentProvider"
-            android:authorities="com.getpebble.android.provider"
+            android:authorities="@string/pebble_content_provider"
             android:exported="true" />
 
         <provider
@@ -622,7 +645,13 @@
             android:name=".devices.qhybrid.HybridHRWatchfaceDesignerActivity"
             android:label="@string/qhybrid_title_watchface_designer"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             android:parentActivityName=".activities.appmanager.AppManagerActivity" />
+        <activity
+            android:name=".devices.qhybrid.HybridHRWatchfaceSettingsActivity"
+            android:label="@string/watchface_dialog_title_settings"
+            android:parentActivityName=".devices.qhybrid.HybridHRWatchfaceDesignerActivity" />
+
         <activity
             android:name=".devices.um25.Activity.DataActivity"
             android:exported="true" />
@@ -639,5 +668,10 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".externalevents.OpenTracksController"
+            android:label="OpenTracks controller and intent receiver"
+            android:exported="true"/>
     </application>
 </manifest>

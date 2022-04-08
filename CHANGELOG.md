@@ -1,5 +1,124 @@
 ### Changelog
 
+### 0.66.0
+* Add basic support for Casio GBD-H1000
+* Add support for Hama Fit Track 1900 - via FitPro device support
+* Add OpenTracksController for interactions with OpenTracks
+* Fossil Hybrid HR: Start/stop track in OpenTracks from GPS workout on watch
+* Fossil Hybrid HR: Try guessing new widget position
+* Fossil Hybrid HR: Allow assigning no function to a button
+* Add Huami button/device action to control fitness tracking via OpenTracksController
+* Mi Band 6: Sync alarms set on the watch like on Amazfit Bip U and others
+* Bangle.js: Handle battery charging status and fix battery chart.
+* Bangle.js: Prevent exception in case UART RX line is empty
+* Bangle.js: Add repetitions in alarm JSON
+* WaspOS: Fix battery chart.
+* WaspOS: Add condition code to weather JSON
+* XWatch: Add notifications and calls support
+* UM-25: Make cumulative values resettable
+* VESC: Fixed crash when loading a saved value
+* Allow to open Android notification settings from Notification settings
+* AutoExporter changes for better operation and troubleshooting
+* Change Nightly icons background color
+
+### 0.65.0
+* Amazfit Pop/Pro: Initial Support (probably the same as Bip U but has a different firmware)
+* Sony WH-1000XM4: Initial Support
+* Sony WH-1000XM3: Disable equalizer, surround and sound position while in SBC codec
+* Sony Headphones: Improve initialization on connection
+* Sony Headphones: Implement Noise Cancelling Optimizer
+* Casio: Fix accidentally disabled time synchronization and pairing of new Casio GBX/GBD-series watches
+* Fossil Hybrid HR: Improve Device Applications List handling
+* Fossil Hybrid HR: Added ability to change activity recognition settings on the watch
+* Fossil Hybrid HR: Make width of custom widget configurable
+* Fossil Hybrid HR: Disable non-configurable buttons preferences
+* Amazfip Bip U: Read alarm from the watch on connect and update in Gadgetbrige when changing alarms on the watch (might work on other Huami devices)
+* Add icon for VESC devices
+* Add commit id into About screen
+* Make debug activity notification test to persist text while switching apps
+* Add Portuguese to the list of language options
+* Update configuration button icon in app notification settings
+
+### 0.64.0
+* Initial support for VESC NRF/HM10 devices
+* Initial support vor Bose QC35
+* Initial support for Sony WF-SP800N
+* Fossil Hybrid HR: Fix on-device confirmation for older firmwares
+* Sony WH-1000XM3: Fix Ambient Sound Control commands, potentially improving ANC quality
+* Sony WH-1000XM3: Read configuration from device
+* InfiniTime: Remove debug Toast and subscription to UUID_CHARACTERISTIC_MOTION_RAW_XYZ_VALUES
+* Roidmi: Fix frequency configuration on some non-english languages
+* Roidmi 3: Add support for Mojietu 3 rebrand
+* Huami: Support hiking and climbing activities, decode some more activity details
+* Amazfit GTS 2 mini: Fix notification title not appearing for non-chat apps
+* Amazfit Bip U/Pro: Disable event reminder feature, it is not supported by the device.
+* Amazfit Bip U/Pro: Allow enabling Todo List menu (feature still not supported)
+* Bangle.js: send weather condition code to device
+* Allow adding test device directly from the discovery screen
+* Keep device info on the correct device during reordering
+
+### 0.63.1
+* Huami: Support native reminders
+* InfiniTime: Initial support for step counting (currently very limited by the device firmware)
+* Bangle.js: Fix Gadgetbridge crashes when playing music with some players
+* Fossil Hybrid HR: Add support for on-device paring confirmation, for watches that are in a state which makes this neccessary
+* Fossil Hybrid HR: Fix widget configuration bug
+* Mi Band 3: Support lift wrist during DND setting
+* Amazfit GTS 2 Mini: Fix language setting
+* Amazfit GTS 2 Mini: Fix setting menu items on the watch
+* Activity card: Open specific Charts tab for each activity
+* Activity Card: React to User settings, unify step length
+* Activity card: simplify the layout and only show each chart if there is data (Cleaner layout for users with multiple devices)
+
+### 0.63.0
+* Galaxy Buds Live: Initial Support
+* Sony WH-1000XM3: Initial Support
+* Add support for Casio GBD-200 and untested support for GBD-100
+* Casio: Fix alarm handling on all devices
+* Fossil Hybrid HR: Add button for removing the watchface background image
+* Fossil Hybrid HR: Support multiple 2nd-TZ and Custom widgets
+* Fossil Hybrid HR: Add support for native DND functionality
+* Nothing Ear (1): Add multiple batteries support
+* Galaxy Buds: Add multiple batteries support
+* Roidmi: New FM Frequency selector with presets
+* Mi Band 6: Try to add Alipay to menu settings, untested
+* FitPro: Support more bands with different bluetooth names
+* Add activity info to device cards
+* Add Nekogram X to Telegram notifications
+* Move location settings out of pebble menu
+* Sort devices by alias, if available
+
+### 0.62.0
+* Iniital support for Galaxy Buds 2019
+* Huami: Fix syncing of data in non-DST time
+* InfiniTime: Fix wrong time zone being sent in non-DST mode
+* Amazfit Bip U Pro: Support flashing AGPS updates
+* FitPro: recognize LH716 devices
+* Add support for Casio STB-1000. Limitations of GB-5600B/GB-6900B apply
+* Prevent crash when receiving broken weather data from TinyWeatherForecastGermany
+
+### 0.61.0
+* Initial support for Nothing Ear(1)
+* Amazfit Bip U/Pro: Fix flashing firmware and watchfaces
+* Amazfit Bip U/Pro: Fix language setting
+* Amazfit Bip U/Pro: Allow unicode emoji
+* Huami: fix supported languages list on many devices
+* Fossil Hybrid HR: Support rotation of backgrounds in watchface editor
+* UM25: Show more measured data
+* Improved notification management including blacklist or whitelist apps settings or discrete notifications with removed text
+* Fix default daily target distance from 5 to 5000 meters
+
+### 0.60.0
+* Initial support for FitPro bands
+* Mi Band 6: really fix weather on new firmware
+* Casio GBX-100: Fix connection
+* Fossil Hybrid HR: Lower battery level warning threshold to 10%
+* Add ringtine preference setting for find your phone feature
+* Fix a bug where GB_LOGFILES_DIR_IS_UNDEFINED is used as a logfile directory
+* Remove per-device preferences upon device removal (backup your keys if you do that)
+* Exclude not worn sleep times from sleep sessions
+* Add Icelandic and Czech transliteration
+
 ### 0.59.3
 * Mi Band 6: Properly support firmware 1.0.4.38
 * Mi Band 6: Add Flashlight to menu items

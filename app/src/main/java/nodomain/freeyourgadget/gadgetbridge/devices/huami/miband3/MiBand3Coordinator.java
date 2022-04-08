@@ -84,7 +84,6 @@ public class MiBand3Coordinator extends HuamiCoordinator {
         return true;
     }
 
-
     public static String getNightMode(String deviceAddress) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
 
@@ -109,12 +108,41 @@ public class MiBand3Coordinator extends HuamiCoordinator {
                 R.xml.devicesettings_nightmode,
                 R.xml.devicesettings_donotdisturb_withauto,
                 R.xml.devicesettings_liftwrist_display,
+                R.xml.devicesettings_donotdisturb_lift_wrist,
                 R.xml.devicesettings_swipeunlock,
                 R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_reserve_reminders_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
-                R.xml.devicesettings_pairingkey
+                R.xml.devicesettings_pairingkey,
+                R.xml.devicesettings_transliteration
+        };
+    }
+
+    @Override
+    public String[] getSupportedLanguageSettings(GBDevice device) {
+        return new String[]{
+                "auto",
+                "ar_SA",
+                "de_DE",
+                "en_US",
+                "es_ES",
+                "fr_FR",
+                "id_ID",
+                "it_IT",
+                "ja_JP",
+                "ko_KO",
+                "pt_PT",
+                "nl_NL",
+                "pl_PL",
+                "ru_RU",
+                "th_TH",
+                "tr_TR",
+                "uk_UA",
+                "vi_VN",
+                "zh_CN",
+                "zh_TW",
         };
     }
 }

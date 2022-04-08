@@ -91,7 +91,28 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_pairingkey,
-                R.xml.devicesettings_high_mtu
+                R.xml.devicesettings_high_mtu,
+                R.xml.devicesettings_transliteration
+        };
+    }
+
+    public String[] getSupportedLanguageSettings(GBDevice device) {
+        return new String[]{
+                "auto",
+                "de_DE",
+                "el_GR",
+                "en_US",
+                "es_ES",
+                "fr_FR",
+                "id_ID",
+                "it_IT",
+                "pt_PT",
+                "pl_PL",
+                "ru_RU",
+                "uk_UA",
+                "vi_VN",
+                "zh_CN",
+                "zh_TW",
         };
     }
 

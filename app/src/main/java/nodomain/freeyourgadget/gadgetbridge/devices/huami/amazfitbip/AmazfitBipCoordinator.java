@@ -87,10 +87,12 @@ public class AmazfitBipCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_disconnectnotification,
                 R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_reserve_reminders_calendar,
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_buttonactions_with_longpress,
                 R.xml.devicesettings_device_actions,
-                R.xml.devicesettings_pairingkey
+                R.xml.devicesettings_pairingkey,
+                R.xml.devicesettings_transliteration
         };
     }
 }

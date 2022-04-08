@@ -16,7 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.qhybrid;
 
-public class HybridHRWatchfaceSettings {
+import java.io.Serializable;
+
+public class HybridHRWatchfaceSettings implements Serializable {
     private int displayTimeoutFull = 60;
     private int displayTimeoutPartial = 15;
     private boolean wristFlickHandsMoveRelative = true;
@@ -25,6 +27,7 @@ public class HybridHRWatchfaceSettings {
     private int wristFlickMoveMinute = -360;
     private boolean powersaveDisplay = false;
     private boolean powersaveHands = false;
+    private boolean lightUpOnNotification = false;
 
     public HybridHRWatchfaceSettings() {
     }
@@ -59,6 +62,14 @@ public class HybridHRWatchfaceSettings {
 
     public void setWristFlickDuration(int wristFlickDuration) {
         this.wristFlickDuration = wristFlickDuration;
+    }
+
+    public boolean getLightUpOnNotification() {
+        return lightUpOnNotification;
+    }
+
+    public void setLightUpOnNotification(boolean lightUpOnNotification) {
+        this.lightUpOnNotification = lightUpOnNotification;
     }
 
     public int getWristFlickMoveHour() {

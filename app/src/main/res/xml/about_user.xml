@@ -40,7 +40,7 @@
         <EditTextPreference
             android:defaultValue="10000"
             android:inputType="number"
-            android:key="mi_fitness_goal"
+            android:key="fitness_goal"
             android:maxLength="5"
             android:title="@string/miband_prefs_fitness_goal" />
 
@@ -58,7 +58,7 @@
             android:title="@string/activity_prefs_calories_burnt" />
 
         <EditTextPreference
-            android:defaultValue="5"
+            android:defaultValue="5000"
             android:inputType="number"
             android:key="activity_user_distance_meters"
             android:maxLength="5"

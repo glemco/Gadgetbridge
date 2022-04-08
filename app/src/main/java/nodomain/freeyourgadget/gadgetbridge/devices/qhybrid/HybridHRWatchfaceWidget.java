@@ -31,21 +31,34 @@ public class HybridHRWatchfaceWidget {
     private String widgetType;
     private int posX;
     private int posY;
-    private int color = 0;
+    private int width;
+    private int height;
+    private int color;
     private String timezone;
+    private int updateTimeout = -1;
+    private boolean timeoutHideText = true;
+    private boolean timeoutShowCircle = true;
 
     public static int COLOR_WHITE = 0;
     public static int COLOR_BLACK = 1;
 
-    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int color) {
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color) {
         this.widgetType = widgetType;
         this.posX = posX;
         this.posY = posY;
+        this.width = width;
+        this.height = height;
         this.color = color;
     }
-    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int color, String timezone) {
-        this(widgetType, posX, posY, color);
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color, String timezone) {
+        this(widgetType, posX, posY, width, height, color);
         this.timezone = timezone;
+    }
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color, int updateTimeout, boolean timeoutHideText, boolean timeoutShowCircle) {
+        this(widgetType, posX, posY, width, height, color);
+        this.updateTimeout = updateTimeout;
+        this.timeoutHideText = timeoutHideText;
+        this.timeoutShowCircle = timeoutShowCircle;
     }
 
 
@@ -59,6 +72,7 @@ public class HybridHRWatchfaceWidget {
         widgetTypes.put("widgetCalories", context.getString(R.string.watchface_widget_type_calories));
         widgetTypes.put("widget2ndTZ", context.getString(R.string.watchface_widget_type_2nd_tz));
         widgetTypes.put("widgetActiveMins", context.getString(R.string.watchface_widget_type_active_mins));
+        widgetTypes.put("widgetCustom", context.getString(R.string.watchface_widget_type_custom));
 //        widgetTypes.put("widgetChanceOfRain", context.getString(R.string.watchface_widget_type_chance_rain));  // Disabled due to missing support in Gadgetbridge
         return widgetTypes;
     }
@@ -90,11 +104,34 @@ public class HybridHRWatchfaceWidget {
         this.posY = posY;
     }
 
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public int getColor() {
         return color;
     }
 
     public String getTimezone() {
         return timezone;
+    }
+    public int getUpdateTimeout() {
+        return updateTimeout;
+    }
+    public boolean getTimeoutHideText() {
+        return timeoutHideText;
+    }
+    public boolean getTimeoutShowCircle() {
+        return timeoutShowCircle;
     }
 }

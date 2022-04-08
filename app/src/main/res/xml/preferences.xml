@@ -98,13 +98,6 @@
                 android:title="@string/pref_title_weather_location" />
         </PreferenceScreen>
 
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="minimize_priority"
-            android:summaryOff="@string/pref_summary_minimize_priority_off"
-            android:summaryOn="@string/pref_summary_minimize_priority_on"
-            android:title="@string/pref_title_minimize_priority" />
     </PreferenceCategory>
 
     <Preference
@@ -125,82 +118,35 @@
             android:summary="@string/pref_summary_datetime_syctimeonconnect"
             android:title="@string/pref_title_datetime_syctimeonconnect" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:key="pref_key_notifications"
-        android:title="@string/pref_header_notifications">
-
-        <ListPreference
-            android:defaultValue="always"
-            android:entries="@array/notification_mode_toggle"
-            android:entryValues="@array/notification_mode_values_toggle"
-            android:key="notification_mode_calls"
-            android:title="@string/pref_title_notifications_call"
-            android:summary="%s" />
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="notification_support_voip_calls"
-            android:title="@string/pref_title_support_voip_calls" />
-
-        <ListPreference
-            android:defaultValue="when_screen_off"
-            android:entries="@array/notification_mode"
-            android:entryValues="@array/notification_mode_values"
-            android:key="notification_mode_sms"
-            android:title="@string/pref_title_notifications_sms"
-            android:summary="%s" />
-
-        <ListPreference
-            android:defaultValue="when_screen_off"
-            android:entries="@array/notification_mode"
-            android:entryValues="@array/notification_mode_values"
-            android:key="notification_mode_pebblemsg"
-            android:summary="@string/pref_summary_notifications_pebblemsg"
-            android:title="@string/pref_title_notifications_pebblemsg" />
-
+    <PreferenceCategory android:title="@string/pref_header_location">
         <Preference
-            android:key="notifications_generic"
-            android:title="@string/pref_title_notifications_generic" />
-
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="notifications_generic_whenscreenon"
-            android:title="@string/pref_title_whenscreenon" />
-
-        <ListPreference
+            android:key="location_aquire"
+            android:title="@string/pref_title_location_aquire" />
+        <EditTextPreference
             android:defaultValue="0"
-            android:entries="@array/notifications_timeout"
-            android:entryValues="@array/notifications_timeout_values"
-            android:key="notifications_timeout"
-            android:title="@string/pref_title_notifications_timeout"
-            android:summary="%s" />
-
+            android:inputType="numberDecimal|numberSigned"
+            android:key="location_latitude"
+            android:maxLength="7"
+            android:title="@string/pref_title_location_latitude" />
+        <EditTextPreference
+            android:defaultValue="0"
+            android:inputType="numberDecimal|numberSigned"
+            android:key="location_longitude"
+            android:maxLength="7"
+            android:title="@string/pref_title_location_longitude" />
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="location_aquire"
+            android:key="use_updated_location_if_available"
             android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="notification_filter"
-            android:summary="@string/pref_summary_notification_filter"
-            android:title="@string/pref_title_notification_filter" />
-
+            android:summary="@string/pref_summary_location_keep_uptodate"
+            android:title="@string/pref_title_location_keep_uptodate" />
         <Preference
-            android:key="pref_key_blacklist"
-            android:title="@string/pref_blacklist" />
+            android:key="pref_key_opentracks_packagename"
+            android:summary="@string/pref_summary_opentracks_packagename"
+            android:title="@string/pref_title_opentracks_packagename" />
     </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pref_header_privacy">
-    <ListPreference
-        android:defaultValue="@string/p_call_privacy_mode_off"
-        android:key="pref_call_privacy_mode"
-        android:title="@string/pref_title_call_privacy_mode"
-        android:entries="@array/pref_call_privacy_mode"
-        android:entryValues="@array/pref_call_privacy_mode_values"
-        android:summary="%s" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/preferences_category_device_specific_settings">
+    <PreferenceCategory android:title="@string/preferences_category_device_specific_settings">
 
         <Preference
             android:icon="@drawable/ic_device_pebble"
@@ -290,31 +236,6 @@
                     android:defaultValue="true"
                     android:key="pebble_sync_morpheuz"
                     android:title="@string/pref_title_pebble_sync_morpheuz" />
-            </PreferenceCategory>
-            <PreferenceCategory
-                android:title="@string/pref_header_location">
-            <Preference
-                android:key="location_aquire"
-                android:title="@string/pref_title_location_aquire"/>
-            <EditTextPreference
-                android:maxLength="7"
-                android:inputType="numberDecimal|numberSigned"
-                android:defaultValue="0"
-                android:key="location_latitude"
-                android:title="@string/pref_title_location_latitude" />
-            <EditTextPreference
-                android:maxLength="7"
-                android:inputType="numberDecimal|numberSigned"
-                android:defaultValue="0"
-                android:key="location_longitude"
-                android:title="@string/pref_title_location_longitude" />
-                <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-                    android:defaultValue="true"
-                    android:dependency="location_aquire"
-                    android:key="use_updated_location_if_available"
-                    android:summary="@string/pref_summary_location_keep_uptodate"
-                    android:title="@string/pref_title_location_keep_uptodate" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:title="@string/pref_header_development">
@@ -459,24 +380,9 @@
             android:layout="@layout/preference_checkbox"
             android:summary="@string/pref_check_permission_status_summary"
             android:title="@string/pref_check_permission_status" />
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="true"
-            android:key="ignore_bonded_devices"
-            android:summary="@string/ignore_bonded_devices_description"
-            android:title="@string/ignore_bonded_devices" />
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="disable_new_ble_scanning"
-            android:summary="@string/pref_summary_disable_new_ble_scanning"
-            android:title="@string/pref_disable_new_ble_scanning" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="enable_companiondevice_pairing"
-            android:layout="@layout/preference_checkbox"
-            android:summary="@string/companiondevice_pairing_details"
-            android:title="@string/companiondevice_pairing" />
+        <Preference
+            android:key="pref_discovery_pairing"
+            android:title="@string/activity_prefs_discovery_pairing" />
 
     </PreferenceCategory>
 </PreferenceScreen>

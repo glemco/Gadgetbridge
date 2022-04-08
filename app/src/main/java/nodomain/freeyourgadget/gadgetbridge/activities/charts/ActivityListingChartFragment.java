@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -152,9 +154,11 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
             getChartsHost().enableSwipeRefresh(false); //disable pull to refresh as it collides with swipable view
         }
 
-        stepsDateView.setText(DateTimeUtils.formatDate(new Date(tsDateTo * 1000L)));
+        Date activityDate = new Date(tsDateTo * 1000L);
+        stepsDateView.setText(DateTimeUtils.formatDate(activityDate));
+
         if (GBApplication.getPrefs().getBoolean("charts_show_ongoing_activity", true)) {
-            if (mcd.getOngoingSession() != null) {
+            if (mcd.getOngoingSession() != null && DateUtils.isToday(activityDate.getTime())) {
                 showOngoingActivitySnackbar(mcd.getOngoingSession());
             }
         }
