@@ -147,6 +147,16 @@ public class SettingsActivity extends AbstractSettingsActivity {
             }
         });
 
+        //FIXME isn't there a better way than duplicating the key?
+        pref = findPreference("pref_key_blacklist_calendars_bangle");
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent enableIntent = new Intent(SettingsActivity.this, CalBlacklistActivity.class);
+                startActivity(enableIntent);
+                return true;
+            }
+        });
+
         pref = findPreference("pebble_emu_addr");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override

@@ -93,7 +93,7 @@ public class BangleJSCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsCalendarEvents() {
-        return false;
+        return true;
     }
 
     @Override
